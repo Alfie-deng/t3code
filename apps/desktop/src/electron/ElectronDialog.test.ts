@@ -58,11 +58,11 @@ describe("ElectronDialog", () => {
         owner,
         {
           type: "question",
-          buttons: ["No", "Yes"],
+          buttons: ["否", "是"],
           defaultId: 0,
           cancelId: 0,
           noLink: true,
-          message: "Delete worktree?",
+          message: "删除工作树？",
         },
       ]);
     }).pipe(Effect.provide(ElectronDialog.layer)),
@@ -82,11 +82,11 @@ describe("ElectronDialog", () => {
       assert.deepEqual(showMessageBoxMock.mock.calls[0], [
         {
           type: "question",
-          buttons: ["No", "Yes"],
+          buttons: ["否", "是"],
           defaultId: 0,
           cancelId: 0,
           noLink: true,
-          message: "Delete worktree?",
+          message: "删除工作树？",
         },
       ]);
     }).pipe(Effect.provide(ElectronDialog.layer)),

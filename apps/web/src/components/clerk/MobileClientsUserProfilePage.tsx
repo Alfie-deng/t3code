@@ -24,7 +24,7 @@ function MobileClientStatusBadge({
 }) {
   return (
     <Badge variant={enabled ? "success" : "outline"}>
-      {label}: {enabled ? "On" : "Off"}
+      {label}: {enabled ? "开" : "关"}
     </Badge>
   );
 }
@@ -47,14 +47,8 @@ function MobileClientRow({ device }: { readonly device: RelayClientDeviceRecord 
             </p>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            <MobileClientStatusBadge
-              enabled={device.notifications.enabled}
-              label="Push notifications"
-            />
-            <MobileClientStatusBadge
-              enabled={device.liveActivities.enabled}
-              label="Live Activities"
-            />
+            <MobileClientStatusBadge enabled={device.notifications.enabled} label="推送通知" />
+            <MobileClientStatusBadge enabled={device.liveActivities.enabled} label="实时活动" />
           </div>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground/80">
             {mobileClientNotificationDetail(device)}
@@ -67,7 +61,7 @@ function MobileClientRow({ device }: { readonly device: RelayClientDeviceRecord 
 
 function MobileClientsSkeleton() {
   return (
-    <div aria-label="Loading mobile clients" className="space-y-3" role="status">
+    <div aria-label="正在加载移动客户端" className="space-y-3" role="status">
       {MOBILE_CLIENT_SKELETON_ROWS.map((row) => (
         <div key={row} className="rounded-xl border p-4">
           <div className="flex gap-3">
@@ -94,10 +88,9 @@ function EmptyMobileClients() {
         <SmartphoneIcon />
       </EmptyMedia>
       <EmptyHeader>
-        <EmptyTitle>No mobile clients</EmptyTitle>
+        <EmptyTitle>没有移动客户端</EmptyTitle>
         <EmptyDescription>
-          Sign in to T3 Code on your iPhone to register it for push notifications and Live
-          Activities.
+          在 iPhone 上登录 T3 Code，即可注册设备以接收推送通知和实时活动。
         </EmptyDescription>
       </EmptyHeader>
     </Empty>
@@ -115,9 +108,9 @@ export function MobileClientsUserProfilePage() {
     <div className="flex min-h-[30rem] w-full flex-col bg-background text-foreground">
       <header className="flex flex-col gap-4 border-b px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold tracking-[-0.01em]">Mobile clients</h2>
+          <h2 className="text-base font-semibold tracking-[-0.01em]">移动客户端</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Devices registered to receive T3 Connect activity from your environments.
+            已注册、用于接收环境 T3 Connect 活动的设备。
           </p>
         </div>
         <Button
@@ -127,7 +120,7 @@ export function MobileClientsUserProfilePage() {
           onClick={devicesState.refresh}
         >
           <RefreshCwIcon className={cn("size-3.5", devicesState.isPending && "animate-spin")} />
-          Refresh
+          刷新
         </Button>
       </header>
 
@@ -138,13 +131,11 @@ export function MobileClientsUserProfilePage() {
             role="alert"
           >
             <div>
-              <p className="font-medium text-destructive-foreground">
-                Could not load mobile clients
-              </p>
+              <p className="font-medium text-destructive-foreground">无法加载移动客户端</p>
               <p className="mt-0.5 text-xs text-muted-foreground">{devicesState.error}</p>
             </div>
             <Button size="xs" variant="outline" onClick={devicesState.refresh}>
-              Try again
+              重试
             </Button>
           </div>
         ) : null}

@@ -12,6 +12,7 @@ import {
 
 import { useEnvironmentSettings, useUpdateEnvironmentSettings } from "../../hooks/useSettings";
 import { cn } from "../../lib/utils";
+import { translateZhCnUiText } from "../../localization/zhCN";
 import { normalizeProviderAccentColor } from "../../providerInstances";
 import { Button } from "../ui/button";
 import { ACPRegistryIcon, Gemini, GithubCopilotIcon, PiAgentIcon, type Icon } from "../Icons";
@@ -235,8 +236,9 @@ export function AddProviderInstanceDialog({
           <DialogHeader>
             <DialogTitle>Add provider instance</DialogTitle>
             <DialogDescription>
-              Configure an additional provider instance on {environmentLabel} — for example, a
-              second Codex install pointed at a different workspace.
+              {translateZhCnUiText(
+                `Configure an additional provider instance on ${environmentLabel} — for example, a second Codex install pointed at a different workspace.`,
+              )}
             </DialogDescription>
             <AddProviderInstanceWizardSteps
               currentStep={wizardStep}

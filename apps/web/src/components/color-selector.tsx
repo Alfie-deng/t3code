@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "~/lib/utils";
+import { translateZhCnUiText } from "~/localization/zhCN";
 
 interface ColorSelectorProps {
   colors: string[];
@@ -91,7 +92,7 @@ export function ColorSelector({
             }}
             tabIndex={0}
             role="button"
-            aria-label={`Select ${color} color`}
+            aria-label={translateZhCnUiText(`Select ${color} color`)}
             aria-pressed={selectedColor === color}
           />
         );

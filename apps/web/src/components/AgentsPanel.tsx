@@ -26,6 +26,7 @@ import { Bot, Braces, Check, ChevronDown, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "~/lib/utils";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { orchestrationEnvironment } from "~/state/orchestration";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
@@ -533,8 +534,9 @@ export function AgentsPanel({
         <Bot aria-hidden className="size-6 text-muted-foreground/60" />
         <p className="text-sm font-medium">No agents yet</p>
         <p className="max-w-56 text-xs text-muted-foreground">
-          When this thread spawns subagents or runs a workflow, they show up here with live status,
-          activity, and token usage.
+          {translateZhCnUiText(
+            "When this thread spawns subagents or runs a workflow, they show up here with live status, activity, and token usage.",
+          )}
         </p>
       </div>
     );

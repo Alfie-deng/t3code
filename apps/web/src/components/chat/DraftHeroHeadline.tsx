@@ -6,6 +6,7 @@ import { useCallback, useMemo } from "react";
 import { openCommandPalette } from "~/commandPaletteBus";
 import { useNewThreadHandler } from "~/hooks/useHandleNewThread";
 import { useClientSettings } from "~/hooks/useSettings";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { selectProjectGroupingSettings } from "~/logicalProject";
 import {
   buildSidebarProjectPickerEntries,
@@ -100,11 +101,11 @@ export function DraftHeroHeadline({
   const projectSelector = shouldShowProjectMenu ? (
     <Menu>
       <MenuTrigger
-        aria-label={hasResolvedProject ? "Change project" : "Choose a project"}
+        aria-label={translateZhCnUiText(hasResolvedProject ? "Change project" : "Choose a project")}
         className="pointer-events-auto inline-block max-w-64 truncate border-foreground/60 border-b border-dotted align-bottom text-foreground transition-colors hover:border-foreground/80 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         title={activeProjectDisplayName ?? undefined}
       >
-        {activeProjectDisplayName ?? "Choose a project"}
+        {activeProjectDisplayName ?? translateZhCnUiText("Choose a project")}
       </MenuTrigger>
       <MenuPopup align="center" className="max-h-80 min-w-40! w-max max-w-64 overflow-y-auto">
         <MenuRadioGroup
@@ -133,7 +134,7 @@ export function DraftHeroHeadline({
         <MenuSeparator />
         <MenuItem onClick={openAddProject}>
           <FolderPlusIcon />
-          New project
+          {translateZhCnUiText("New project")}
         </MenuItem>
       </MenuPopup>
     </Menu>
@@ -143,18 +144,23 @@ export function DraftHeroHeadline({
       onClick={openAddProject}
       className="pointer-events-auto inline cursor-pointer border-muted-foreground/35 border-b border-dotted text-muted-foreground/60 transition-colors hover:border-muted-foreground/60 hover:text-muted-foreground/80 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
     >
-      {activeProjectTitle ?? "Add a project"}
+      {activeProjectTitle ?? translateZhCnUiText("Add a project")}
     </button>
   );
 
   return (
-    <h1 className="mx-auto w-full max-w-5xl text-center font-normal text-2xl text-foreground tracking-tight sm:text-3xl">
+    <h1 className="mx-auto w-full max-w-5xl text-center text-[26px] font-normal leading-[1.15] tracking-[-0.015em] text-foreground/95 sm:text-[30px]">
       {hasResolvedProject ? (
-        <>What should we build in {projectSelector}?</>
+        <>
+          {translateZhCnUiText("What should we build in")} {projectSelector}{" "}
+          {translateZhCnUiText("Build what?")}
+        </>
       ) : canChooseProject ? (
-        <>{projectSelector} to start</>
+        <>
+          {projectSelector} {translateZhCnUiText("to start")}
+        </>
       ) : (
-        <>Add a project to start</>
+        <>{translateZhCnUiText("Add a project to start")}</>
       )}
     </h1>
   );

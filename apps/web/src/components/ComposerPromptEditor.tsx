@@ -884,6 +884,7 @@ interface ComposerPromptEditorProps {
   disabled: boolean;
   placeholder: string;
   className?: string;
+  compact?: boolean;
   onRemoveTerminalContext: (contextId: string) => void;
   onChange: (
     nextValue: string,
@@ -1533,6 +1534,7 @@ function ComposerPromptEditorInner({
   disabled,
   placeholder,
   className,
+  compact,
   onRemoveTerminalContext,
   onChange,
   onCommandKeyDown,
@@ -1754,7 +1756,8 @@ function ComposerPromptEditorInner({
               className={cn(
                 // The size comes from .composer-editor-surface so Settings -> Appearance
                 // can drive it; keep everything else here.
-                "block max-h-50 min-h-17.5 w-full overflow-y-auto whitespace-pre-wrap wrap-break-word bg-transparent leading-relaxed text-foreground focus:outline-none",
+                "block w-full overflow-y-auto whitespace-pre-wrap wrap-break-word bg-transparent leading-relaxed text-foreground focus:outline-none",
+                compact ? "max-h-[9.375rem] min-h-[2lh]" : "max-h-50 min-h-17.5",
                 className,
               )}
               data-testid="composer-editor"
@@ -1795,6 +1798,7 @@ export function ComposerPromptEditor({
   disabled,
   placeholder,
   className,
+  compact,
   onRemoveTerminalContext,
   onChange,
   onCommandKeyDown,
@@ -1832,6 +1836,7 @@ export function ComposerPromptEditor({
         skills={skills}
         disabled={disabled}
         placeholder={placeholder}
+        {...(compact ? { compact } : {})}
         onRemoveTerminalContext={onRemoveTerminalContext}
         onChange={onChange}
         onPaste={onPaste}

@@ -106,6 +106,7 @@ import { cn } from "~/lib/utils";
 import { useUiStateStore } from "~/uiStateStore";
 import { type TimestampFormat } from "@t3tools/contracts/settings";
 import { formatChatTimestampTooltip, formatShortTimestamp } from "../../timestampFormat";
+import { translateZhCnUiText } from "~/localization/zhCN";
 
 import {
   buildInlineTerminalContextText,
@@ -1364,9 +1365,11 @@ const WorkGroupSection = memo(function WorkGroupSection({
   if (nonEmptyEntries.length === 0) return null;
 
   return (
-    <section className="-mx-1 space-y-0.5 px-1 py-0.5" aria-label={groupLabel}>
+    <section className="-mx-1 space-y-0.5 px-1 py-0.5" aria-label={translateZhCnUiText(groupLabel)}>
       {!onlyToolEntries && (
-        <p className="px-0.5 pb-0.5 font-medium text-secondary-label text-[11px]">{groupLabel}</p>
+        <p className="px-0.5 pb-0.5 font-medium text-secondary-label text-[11px]">
+          {translateZhCnUiText(groupLabel)}
+        </p>
       )}
       <div className="space-y-px">
         {nonEmptyEntries.map((workEntry) => (
@@ -1412,11 +1415,11 @@ function WorkGroupToggleTimelineRow({
       </span>
       {row.expanded ? (
         <span className="font-medium text-foreground">
-          Show fewer {row.onlyToolEntries ? "tool calls" : "log entries"}
+          {translateZhCnUiText(`Show fewer ${row.onlyToolEntries ? "tool calls" : "log entries"}`)}
         </span>
       ) : (
         <span className="font-medium text-foreground">
-          +{row.hiddenCount} previous {labelNoun}
+          {translateZhCnUiText(`+${row.hiddenCount} previous ${labelNoun}`)}
         </span>
       )}
     </button>

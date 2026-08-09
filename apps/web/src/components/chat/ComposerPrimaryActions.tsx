@@ -53,6 +53,8 @@ const preventPointerFocus: PointerEventHandler<HTMLElement> = (event) => {
   event.preventDefault();
 };
 
+const SYNARA_ARROW_UP_MASK = 'url("/synara-icons/arrow-up.svg") center / contain no-repeat';
+
 export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
   compact,
   pendingAction,
@@ -80,15 +82,18 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
       type="button"
       className={cn(
         "flex cursor-pointer items-center justify-center rounded-full bg-destructive/90 text-white shadow-xs shadow-destructive/24 inset-shadow-[0_1px_--theme(--color-white/16%)] transition-all duration-150 hover:bg-destructive hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none",
-        insidePendingAction ? "size-8 sm:size-7" : "size-8 sm:h-8 sm:w-8",
+        "relative left-0.5",
+        insidePendingAction ? "size-[30px] sm:size-[26px]" : "size-[30px] sm:h-[30px] sm:w-[30px]",
       )}
       {...pointerFocusProps}
       onClick={onInterrupt}
       aria-label="Stop generation"
     >
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-        <rect x="2" y="2" width="8" height="8" rx="1.5" />
-      </svg>
+      <span
+        aria-hidden="true"
+        data-synara-icon="stop-square"
+        className="block size-2.5 rounded-[1px] bg-current"
+      />
     </button>
   );
 
@@ -212,7 +217,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
     <button
       type="submit"
       className={cn(
-        "relative isolate flex h-9 w-9 items-center justify-center overflow-hidden rounded-full text-message-action-foreground shadow-xs transition-all duration-150 enabled:cursor-pointer enabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none disabled:pointer-events-none disabled:opacity-30 disabled:shadow-none disabled:hover:scale-100 sm:h-8 sm:w-8",
+        "relative left-0.5 isolate flex h-[34px] w-[34px] items-center justify-center overflow-hidden rounded-full text-message-action-foreground shadow-xs transition-all duration-150 enabled:cursor-pointer enabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none disabled:pointer-events-none disabled:opacity-30 disabled:shadow-none disabled:hover:scale-100 sm:h-[30px] sm:w-[30px]",
         "bg-message-action enabled:shadow-message-action/24 hover:bg-message-action-hover",
       )}
       {...pointerFocusProps}
@@ -240,15 +245,12 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
       {isConnecting || isSendBusy ? (
         <Spinner className="size-3.5" aria-hidden="true" />
       ) : (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <span
+          aria-hidden="true"
+          data-synara-icon="arrow-up"
+          className="inline-block size-4.5 shrink-0 translate-y-px bg-current"
+          style={{ WebkitMask: SYNARA_ARROW_UP_MASK, mask: SYNARA_ARROW_UP_MASK }}
+        />
       )}
     </button>
   );

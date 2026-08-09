@@ -24,6 +24,7 @@ import * as Option from "effect/Option";
 import { cn } from "../../lib/utils";
 import { resolveAndPersistPreferredEditor } from "../../editorPreferences";
 import { formatRelativeTimeLabel, getRelativeTimeState } from "../../timestampFormat";
+import { translateZhCnUiText } from "../../localization/zhCN";
 import { useEnvironmentQuery } from "../../state/query";
 import {
   primaryServerAvailableEditorsAtom,
@@ -762,20 +763,18 @@ function DiagnosticsLastChecked({ checkedAt }: { checkedAt: DateTime.Utc | null 
   }
 
   if (relative.status === "invalid") {
-    return <span className="text-[11px] text-muted-foreground/50">Checked unavailable</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/50">
+        {translateZhCnUiText("Checked unavailable")}
+      </span>
+    );
   }
 
-  return (
-    <span className="text-[11px] text-muted-foreground/60">
-      {relative.suffix ? (
-        <>
-          Checked <span className="font-mono tabular-nums">{relative.value}</span> {relative.suffix}
-        </>
-      ) : (
-        <>Checked {relative.value}</>
-      )}
-    </span>
+  const checkedLabel = translateZhCnUiText(
+    relative.suffix ? `Checked ${relative.value} ${relative.suffix}` : `Checked ${relative.value}`,
   );
+
+  return <span className="text-[11px] text-muted-foreground/60">{checkedLabel}</span>;
 }
 
 function DiagnosticsRefreshButton({

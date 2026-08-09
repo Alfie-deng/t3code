@@ -1,6 +1,7 @@
 import { type ResolvedKeybindingsConfig } from "@t3tools/contracts";
 import { ChevronRightIcon } from "lucide-react";
 import { shortcutLabelForCommand } from "../keybindings";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import {
   type CommandPaletteActionItem,
   type CommandPaletteGroup,
@@ -92,10 +93,12 @@ export function CommandPaletteResults(props: CommandPaletteResultsProps) {
   if (props.groups.length === 0) {
     return (
       <div className="py-10 text-center text-sm text-muted-foreground">
-        {props.emptyStateMessage ??
-          (props.isActionsOnly
-            ? "No matching actions."
-            : "No matching commands, projects, or threads.")}
+        {translateZhCnUiText(
+          props.emptyStateMessage ??
+            (props.isActionsOnly
+              ? "No matching actions."
+              : "No matching commands, projects, or threads."),
+        )}
       </div>
     );
   }
@@ -104,7 +107,9 @@ export function CommandPaletteResults(props: CommandPaletteResultsProps) {
     <CommandList>
       {props.groups.map((group) => (
         <CommandGroup items={group.items} key={group.value}>
-          <CommandGroupLabel className="ps-[9px]">{group.label}</CommandGroupLabel>
+          <CommandGroupLabel className="ps-[9px]">
+            {translateZhCnUiText(group.label)}
+          </CommandGroupLabel>
           <CommandCollection>
             {(item) =>
               item.disabled ? (

@@ -7,6 +7,7 @@ import * as Schema from "effect/Schema";
 import type * as Electron from "electron";
 
 import { makeComponentLogger } from "../app/DesktopObservability.ts";
+import { buildZhEditMenu, buildZhViewMenu, buildZhWindowMenu } from "../applicationMenuZh.ts";
 import * as ElectronApp from "../electron/ElectronApp.ts";
 import * as ElectronDialog from "../electron/ElectronDialog.ts";
 import * as ElectronMenu from "../electron/ElectronMenu.ts";
@@ -143,79 +144,61 @@ export const make = Effect.gen(function* () {
       template.push({
         label: appName,
         submenu: [
-          { role: "about" },
+          { label: `关于 ${appName}`, role: "about" },
           {
-            label: "Check for Updates...",
+            label: "检查更新…",
             click: checkForUpdatesClick,
           },
           { type: "separator" },
           {
-            label: "Settings...",
+            label: "设置…",
             accelerator: "CmdOrCtrl+,",
             click: settingsClick,
           },
           { type: "separator" },
-          { role: "services" },
+          { label: "服务", role: "services" },
           { type: "separator" },
-          { role: "hide" },
-          { role: "hideOthers" },
-          { role: "unhide" },
+          { label: "隐藏", role: "hide" },
+          { label: "隐藏其他", role: "hideOthers" },
+          { label: "全部显示", role: "unhide" },
           { type: "separator" },
-          { role: "quit" },
+          { label: `退出 ${appName}`, role: "quit" },
         ],
       });
     }
 
     template.push(
       {
-        label: "File",
+        label: "文件",
         submenu: [
           ...(environment.platform === "darwin"
             ? []
             : [
                 {
-                  label: "Settings...",
+                  label: "设置…",
                   accelerator: "CmdOrCtrl+,",
                   click: settingsClick,
                 },
                 { type: "separator" as const },
               ]),
-          { role: environment.platform === "darwin" ? "close" : "quit" },
-        ],
-      },
-      { role: "editMenu" },
-      {
-        label: "View",
-        submenu: [
-          { role: "reload" },
-          { role: "forceReload" },
-          { role: "toggleDevTools" },
-          { type: "separator" },
-          /*
-            Not the zoom roles: those act on the focused webContents, so with
-            an embedded preview WebContentsView focused they zoom the guest
-            page and the app UI appears stuck. These always zoom the main
-            window (see DesktopWindow.zoomMain).
-          */
-          { label: "Actual Size", accelerator: "CmdOrCtrl+0", click: zoomClick("reset") },
-          { label: "Zoom In", accelerator: "CmdOrCtrl+=", click: zoomClick("in") },
           {
-            label: "Zoom In",
-            accelerator: "CmdOrCtrl+Plus",
-            visible: false,
-            click: zoomClick("in"),
+            label: environment.platform === "darwin" ? "关闭" : `退出 ${appName}`,
+            role: environment.platform === "darwin" ? "close" : "quit",
           },
-          { label: "Zoom Out", accelerator: "CmdOrCtrl+-", click: zoomClick("out") },
-          { type: "separator" },
-          { role: "togglefullscreen" },
         ],
       },
-      { role: "windowMenu" },
+      buildZhEditMenu(),
+      buildZhViewMenu({
+        resetZoom: zoomClick("reset"),
+        zoomIn: zoomClick("in"),
+        zoomOut: zoomClick("out"),
+      }),
+      buildZhWindowMenu(),
       {
-        role: "help",
+        label: "帮助",
         submenu: [
           {
-            label: "Check for Updates...",
+            label: "检查更新…",
             click: checkForUpdatesClick,
           },
         ],

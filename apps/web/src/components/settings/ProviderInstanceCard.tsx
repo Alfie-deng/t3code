@@ -25,6 +25,7 @@ import {
 
 import { cn } from "../../lib/utils";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { translateZhCnUiText } from "../../localization/zhCN";
 import { normalizeProviderAccentColor } from "../../providerInstances";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -587,11 +588,16 @@ export function ProviderInstanceCard({
         </>
       ) : (
         <>
-          <span>{summary.headline}</span>
+          <span>
+            {translateZhCnUiText(summary.headline)}
+            {summary.detail ? `：${translateZhCnUiText(summary.detail)}` : ""}
+          </span>
           <ProviderAuthEmail email={authEmail} separator prefix="Email" />
         </>
       )}
-      {summary.detail ? <span>- {summary.detail}</span> : null}
+      {hasAuthenticatedEmail && summary.detail ? (
+        <span>：{translateZhCnUiText(summary.detail)}</span>
+      ) : null}
     </p>
   );
 

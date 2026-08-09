@@ -37,6 +37,7 @@ import { threadEnvironment } from "../../state/threads";
 import { useAtomCommand } from "../../state/use-atom-command";
 import { ProjectFavicon } from "../ProjectFavicon";
 import { cn } from "~/lib/utils";
+import { PERSONAL_UI } from "~/personalUi";
 
 interface ChatHeaderProps {
   activeThreadEnvironmentId: EnvironmentId;
@@ -303,7 +304,7 @@ export const ChatHeader = memo(function ChatHeader({
           rightPanelOpen ? "pr-0" : "pr-16",
         )}
       >
-        {activeProjectScripts && (
+        {activeProjectScripts && !PERSONAL_UI.hideTopBarProjectActions ? (
           <ProjectScriptsControl
             scripts={activeProjectScripts}
             fileScripts={fileScripts}
@@ -314,22 +315,22 @@ export const ChatHeader = memo(function ChatHeader({
             onUpdateScript={onUpdateProjectScript}
             onDeleteScript={onDeleteProjectScript}
           />
-        )}
-        {showOpenInPicker && (
+        ) : null}
+        {showOpenInPicker && !PERSONAL_UI.hideTopBarOpenInEditor ? (
           <OpenInPicker
             environmentId={activeThreadEnvironmentId}
             keybindings={keybindings}
             availableEditors={availableEditors}
             openInCwd={openInCwd}
           />
-        )}
-        {activeProjectName && (
+        ) : null}
+        {activeProjectName && !PERSONAL_UI.hideTopBarGitActions ? (
           <GitActionsControl
             gitCwd={gitCwd}
             activeThreadRef={scopeThreadRef(activeThreadEnvironmentId, activeThreadId)}
             {...(draftId ? { draftId } : {})}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );

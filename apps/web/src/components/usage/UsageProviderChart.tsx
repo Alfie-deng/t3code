@@ -277,7 +277,7 @@ export function UsageProviderChart({ days, daily, metric }: UsageProviderChartPr
             viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
             preserveAspectRatio="none"
             role="img"
-            aria-label={`Daily ${metric === "tokens" ? "processed tokens" : "cost"} by provider`}
+            aria-label={`每日${metric === "tokens" ? "已处理令牌" : "成本"}（按提供商）`}
           >
             {ticks.map((tick) => {
               const y = toY(tick);
@@ -351,7 +351,7 @@ export function UsageProviderChart({ days, daily, metric }: UsageProviderChartPr
                 );
               })}
               <div className="mt-1 flex items-center justify-between gap-3 border-t border-border pt-1">
-                <span className="text-muted-foreground">Total</span>
+                <span className="text-muted-foreground">总计</span>
                 <span className="text-foreground tabular-nums">
                   {format(hoveredColumn?.total ?? 0)}
                 </span>

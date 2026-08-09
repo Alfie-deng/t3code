@@ -37,6 +37,7 @@ import { isElectron } from "../../env";
 import { useOpenInPreferredEditor } from "../../editorPreferences";
 import { formatShortcutLabel } from "../../keybindings";
 import { cn } from "../../lib/utils";
+import { translateZhCnUiText, translateZhCnWhenExpression } from "../../localization/zhCN";
 import {
   primaryServerAvailableEditorsAtom,
   primaryServerKeybindingsAtom,
@@ -313,7 +314,7 @@ function WhenVariableSelect({
         size="xs"
         className="h-7 min-h-7 min-w-0 flex-1 rounded-md font-mono text-xs sm:h-7"
       >
-        <SelectValue placeholder="Condition" className="leading-7" />
+        <SelectValue placeholder={translateZhCnUiText("Condition")} className="leading-7" />
         {unknownIdentifiers && unknownIdentifiers.length > 0 ? (
           <UnknownWhenVariableWarning identifiers={unknownIdentifiers} focusable={false} />
         ) : null}
@@ -330,7 +331,7 @@ function WhenVariableSelect({
             value={option}
             className="min-h-7 w-full py-1 font-mono text-[12px]"
           >
-            <span className="truncate">{option}</span>
+            <span className="truncate">{translateZhCnUiText(option)}</span>
           </SelectItem>
         ))}
       </SelectContent>
@@ -368,7 +369,7 @@ function WhenExpressionNodeEditor({
           size="xs"
           className="h-7 min-w-10 px-2 text-[11px] sm:h-7"
         >
-          Not
+          {translateZhCnUiText("Not")}
         </Toggle>
         <WhenVariableSelect
           value={condition.identifier}
@@ -409,7 +410,7 @@ function WhenExpressionNodeEditor({
             size="xs"
             className="h-7 min-w-10 px-2 text-[11px] sm:h-7"
           >
-            Not
+            {translateZhCnUiText("Not")}
           </Toggle>
           {onRemove ? (
             <Button
@@ -668,9 +669,9 @@ function WhenExpressionBuilder({
           <Input
             value={expressionDraft}
             onChange={(event) => updateExpressionDraft(event.currentTarget.value)}
-            placeholder="Always"
+            placeholder={translateZhCnUiText("Always")}
             aria-invalid={Boolean(parseError)}
-            aria-label="When expression"
+            aria-label={translateZhCnUiText("When expression")}
             className={cn(
               "h-7 rounded-md font-mono text-[12px] leading-7 sm:h-7 sm:leading-7",
               unknownIdentifiers.length > 0 && "pr-9",
@@ -882,7 +883,9 @@ function KeybindingTableRow({
             )}
             aria-label={`Edit when clause for ${commandLabel(row.command)}`}
           >
-            <span className="truncate">{whenDraftExpression || "Always"}</span>
+            <span className="truncate">
+              {translateZhCnWhenExpression(whenDraftExpression) || translateZhCnUiText("Always")}
+            </span>
             <ChevronDownIcon className="size-3.5 shrink-0 opacity-60" />
           </PopoverTrigger>
           <PopoverContent align="start" sideOffset={6}>
@@ -1044,7 +1047,9 @@ function NewKeybindingTableRow({
             )}
             aria-label={`Edit when clause for ${commandLabelText}`}
           >
-            <span className="truncate">{whenDraftExpression || "Always"}</span>
+            <span className="truncate">
+              {translateZhCnWhenExpression(whenDraftExpression) || translateZhCnUiText("Always")}
+            </span>
             <ChevronDownIcon className="size-3.5 shrink-0 opacity-60" />
           </PopoverTrigger>
           <PopoverContent align="start" sideOffset={6}>

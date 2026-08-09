@@ -62,7 +62,7 @@ describe("ElectronMenu", () => {
     Effect.gen(function* () {
       buildFromTemplateMock.mockImplementation(
         (template: Electron.MenuItemConstructorOptions[]) => ({
-          popup: () => {
+          popup: (options: Electron.PopupOptions) => {
             const firstItem = template[0];
             assert.isDefined(firstItem);
             const click = firstItem.click;
@@ -106,9 +106,48 @@ describe("ElectronMenu", () => {
       assert.equal(popupOptions?.x, 21);
       assert.equal(popupOptions?.y, 40);
       assert.deepEqual(buildFromTemplateMock.mock.calls[0]?.[0][0], {
-        label: "Copy",
+        label: "复制",
         enabled: true,
         click: buildFromTemplateMock.mock.calls[0]?.[0][0].click,
+      });
+    }).pipe(Effect.provide(TestLayer)),
+  );
+
+  it.effect("translates native context-menu labels and nested actions", () =>
+    Effect.gen(function* () {
+      buildFromTemplateMock.mockImplementation(
+        (template: Electron.MenuItemConstructorOptions[]) => ({
+          popup: (options: Electron.PopupOptions) => {
+            assert.deepEqual(
+              template.filter((item) => item.type !== "separator").map((item) => item.label),
+              ["固定对话", "暂缓", "删除"],
+            );
+            const snoozeSubmenu = template.find((item) => item.label === "暂缓")?.submenu;
+            if (!Array.isArray(snoozeSubmenu)) {
+              throw new Error("Expected the snooze submenu template.");
+            }
+            assert.deepEqual(
+              snoozeSubmenu.map((item) => item.label),
+              ["1 小时后"],
+            );
+            options.callback?.();
+          },
+        }),
+      );
+
+      const electronMenu = yield* ElectronMenu.ElectronMenu;
+      yield* electronMenu.showContextMenu({
+        window: makeWindow(),
+        items: [
+          { id: "pin", label: "Pin thread" },
+          {
+            id: "snooze",
+            label: "Snooze",
+            children: [{ id: "snooze:hour", label: "In 1 hour" }],
+          },
+          { id: "delete", label: "Delete", destructive: true },
+        ],
+        position: Option.none(),
       });
     }).pipe(Effect.provide(TestLayer)),
   );

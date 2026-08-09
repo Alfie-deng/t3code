@@ -48,6 +48,7 @@ import { EMPTY_SERVER_PROVIDERS, serverEnvironment } from "../../state/server";
 import { useEnvironmentSessionState } from "../../state/session";
 import { useAtomCommand } from "../../state/use-atom-command";
 import { getRelativeTimeState } from "../../timestampFormat";
+import { translateZhCnUiText } from "../../localization/zhCN";
 import {
   ConnectionStatusDot,
   connectionPhaseDotClassName,
@@ -128,21 +129,20 @@ function ProviderLastChecked({ lastCheckedAt }: { lastCheckedAt: string | null }
   }
 
   if (lastCheckedRelative.status === "invalid") {
-    return <span className="text-[11px] text-muted-foreground/50">Checked unavailable</span>;
+    return (
+      <span className="text-[11px] text-muted-foreground/50">
+        {translateZhCnUiText("Checked unavailable")}
+      </span>
+    );
   }
 
-  return (
-    <span className="text-[11px] text-muted-foreground/60">
-      {lastCheckedRelative.suffix ? (
-        <>
-          Checked <span className="font-mono tabular-nums">{lastCheckedRelative.value}</span>{" "}
-          {lastCheckedRelative.suffix}
-        </>
-      ) : (
-        <>Checked {lastCheckedRelative.value}</>
-      )}
-    </span>
+  const checkedLabel = translateZhCnUiText(
+    lastCheckedRelative.suffix
+      ? `Checked ${lastCheckedRelative.value} ${lastCheckedRelative.suffix}`
+      : `Checked ${lastCheckedRelative.value}`,
   );
+
+  return <span className="text-[11px] text-muted-foreground/60">{checkedLabel}</span>;
 }
 
 function providerEnvironmentIcon(environment: EnvironmentPresentation) {

@@ -6,6 +6,8 @@ import * as Schema from "effect/Schema";
 
 import * as Electron from "electron";
 
+import { translateDesktopUiText, translateMessageBoxOptions } from "../desktopDialogZh.ts";
+
 const CONFIRM_BUTTON_INDEX = 1;
 
 export class ElectronDialogPickFolderError extends Schema.TaggedErrorClass<ElectronDialogPickFolderError>()(
@@ -196,11 +198,11 @@ export const make = ElectronDialog.of({
 
     const options = {
       type: "question" as const,
-      buttons: ["No", "Yes"],
+      buttons: ["否", "是"],
       defaultId: 0,
       cancelId: 0,
       noLink: true,
-      message: normalizedMessage,
+      message: translateDesktopUiText(normalizedMessage),
     };
     const ownerWindowId = Option.match(input.owner, {
       onNone: () => null,
@@ -221,9 +223,10 @@ export const make = ElectronDialog.of({
     });
     return result.response === CONFIRM_BUTTON_INDEX;
   }),
-  showMessageBox: (options) =>
-    Effect.tryPromise({
-      try: () => Electron.dialog.showMessageBox(options),
+  showMessageBox: (options) => {
+    const localizedOptions = translateMessageBoxOptions(options);
+    return Effect.tryPromise({
+      try: () => Electron.dialog.showMessageBox(localizedOptions),
       catch: (cause) =>
         new ElectronDialogShowMessageBoxError({
           type: options.type ?? null,
@@ -233,10 +236,15 @@ export const make = ElectronDialog.of({
           buttonCount: options.buttons?.length ?? 0,
           cause,
         }),
-    }),
+    });
+  },
   showErrorBox: (title, content) =>
     Effect.try({
-      try: () => Electron.dialog.showErrorBox(title, content),
+      try: () =>
+        Electron.dialog.showErrorBox(
+          translateDesktopUiText(title),
+          translateDesktopUiText(content),
+        ),
       catch: (cause) =>
         new ElectronDialogShowErrorBoxError({
           titleLength: title.length,

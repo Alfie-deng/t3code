@@ -2,6 +2,7 @@ import { type ServerProvider } from "@t3tools/contracts";
 import { memo } from "react";
 import { InfoIcon, XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { formatProviderDriverKindLabel } from "../../providerModels";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
@@ -32,15 +33,18 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
 
   const providerName = status.displayName?.trim() || formatProviderDriverKindLabel(status.driver);
   const isUnauthenticated = status.status === "error" && status.auth.status === "unauthenticated";
-  const title = isUnauthenticated
+  const rawTitle = isUnauthenticated
     ? `${providerName} is unauthenticated`
     : `${providerName} provider status`;
-  const message = isUnauthenticated
+  const rawMessage = isUnauthenticated
     ? "Sign in via the CLI to authenticate again."
     : (status.message ??
       (status.status === "error"
         ? `${providerName} provider is unavailable.`
         : `${providerName} provider has limited availability.`));
+  const title = translateZhCnUiText(rawTitle);
+  const message = translateZhCnUiText(rawMessage);
+  const dismissLabel = translateZhCnUiText(`Dismiss ${providerName} provider ${status.status}`);
 
   return (
     <div className="pointer-events-auto mx-auto w-fit max-w-[calc(100%-2rem)] pt-3">
@@ -68,7 +72,7 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
         </div>
         <button
           type="button"
-          aria-label={`Dismiss ${providerName} provider ${status.status}`}
+          aria-label={dismissLabel}
           className="absolute top-2 right-2 inline-flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-foreground/8 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
           onClick={onDismiss}
         >

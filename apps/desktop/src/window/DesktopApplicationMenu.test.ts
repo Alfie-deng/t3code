@@ -130,16 +130,16 @@ describe("DesktopApplicationMenu", () => {
       yield* configureMenu(selectedAction, applicationMenuTemplate);
 
       const template = yield* Deferred.await(applicationMenuTemplate);
-      const fileMenu = template.find((item) => item.label === "File");
+      const fileMenu = template.find((item) => item.label === "文件");
       assert.isDefined(fileMenu);
       if (!Array.isArray(fileMenu.submenu)) {
-        throw new Error("Expected File menu submenu to be an array.");
+        throw new Error("Expected 文件 menu submenu to be an array.");
       }
-      const settingsItem = fileMenu.submenu.find((item) => item.label === "Settings...");
+      const settingsItem = fileMenu.submenu.find((item) => item.label === "设置…");
       assert.isDefined(settingsItem);
       const settingsClick = settingsItem.click;
       if (typeof settingsClick !== "function") {
-        throw new Error("Expected Settings menu item to have a click handler.");
+        throw new Error("Expected 设置 menu item to have a click handler.");
       }
 
       settingsClick({} as Electron.MenuItem, {} as Electron.BrowserWindow, {} as KeyboardEvent);
@@ -159,21 +159,21 @@ describe("DesktopApplicationMenu", () => {
       yield* configureMenu(selectedAction, applicationMenuTemplate);
 
       const template = yield* Deferred.await(applicationMenuTemplate);
-      const viewMenu = template.find((item) => item.label === "View");
+      const viewMenu = template.find((item) => item.label === "视图");
       assert.isDefined(viewMenu);
       if (!Array.isArray(viewMenu.submenu)) {
-        throw new Error("Expected View menu submenu to be an array.");
+        throw new Error("Expected 视图 menu submenu to be an array.");
       }
 
       assert.isUndefined(
         viewMenu.submenu.find((item) => item.role?.toLowerCase().includes("zoom")),
       );
 
-      const zoomIn = viewMenu.submenu.find((item) => item.label === "Zoom In");
+      const zoomIn = viewMenu.submenu.find((item) => item.label === "放大");
       assert.isDefined(zoomIn);
       assert.equal(zoomIn.accelerator, "CmdOrCtrl+=");
       if (typeof zoomIn.click !== "function") {
-        throw new Error("Expected Zoom In menu item to have a click handler.");
+        throw new Error("Expected 放大 menu item to have a click handler.");
       }
 
       zoomIn.click({} as Electron.MenuItem, {} as Electron.BrowserWindow, {} as KeyboardEvent);

@@ -1,6 +1,7 @@
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { Command, CommandFooter, CommandInput, CommandPanel } from "./ui/command";
 import { Kbd, KbdGroup } from "./ui/kbd";
 
@@ -23,7 +24,7 @@ type CommandPaletteContentProps = Omit<ComponentProps<typeof Command>, "children
  */
 export function CommandPaletteContent({
   children,
-  escapeLabel = "Close",
+  escapeLabel = "关闭",
   footerActionLabel,
   footerTrailing,
   inputAccessory,
@@ -33,6 +34,13 @@ export function CommandPaletteContent({
   testId,
   ...commandProps
 }: CommandPaletteContentProps) {
+  const localizedEscapeLabel =
+    typeof escapeLabel === "string" ? translateZhCnUiText(escapeLabel) : escapeLabel;
+  const localizedFooterActionLabel =
+    typeof footerActionLabel === "string"
+      ? translateZhCnUiText(footerActionLabel)
+      : footerActionLabel;
+
   return (
     <div className="contents" data-testid={testId}>
       <Command {...commandProps}>
@@ -50,23 +58,23 @@ export function CommandPaletteContent({
               <Kbd>
                 <ArrowDownIcon />
               </Kbd>
-              <span>Navigate</span>
+              <span>导航</span>
             </KbdGroup>
             {footerActionLabel !== undefined ? (
               <KbdGroup className="items-center gap-1.5">
                 <Kbd>Enter</Kbd>
-                <span>{footerActionLabel}</span>
+                <span>{localizedFooterActionLabel}</span>
               </KbdGroup>
             ) : null}
             {showBackHint ? (
               <KbdGroup className="items-center gap-1.5">
                 <Kbd>Backspace</Kbd>
-                <span>Back</span>
+                <span>后退</span>
               </KbdGroup>
             ) : null}
             <KbdGroup className="items-center gap-1.5">
               <Kbd>Esc</Kbd>
-              <span>{escapeLabel}</span>
+              <span>{localizedEscapeLabel}</span>
             </KbdGroup>
           </div>
           {footerTrailing}

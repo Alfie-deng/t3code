@@ -7,6 +7,7 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 
 import * as Electron from "electron";
+import { translateDesktopUiText } from "../desktopDialogZh.ts";
 
 export interface ElectronMenuPosition {
   readonly x: number;
@@ -75,7 +76,7 @@ function normalizeContextMenuItems(source: readonly ContextMenuItem[]): ContextM
 
     const normalizedItem: ContextMenuItem = {
       id: sourceItem.id,
-      label: sourceItem.label,
+      label: translateDesktopUiText(sourceItem.label),
       destructive: sourceItem.destructive === true,
       disabled: sourceItem.disabled === true,
     };
