@@ -155,6 +155,10 @@
 - `apps/web/src/components/chat/MessagesTimeline.test.tsx`：回归测试改为确认存在变更数据时不渲染该卡片。
 - `apps/web/src/components/ChatView.tsx`：将“滚动到末尾”文字胶囊替换为 Synara 风格的纯下箭头圆形按钮；点击和无障碍标签仍保留。
 
+## 2026-08-10 隐藏搜索快捷键提示
+
+- `apps/web/src/components/LegacySidebar.tsx`：搜索入口继续保留点击和 `⌘K` 快捷键功能，但隐藏搜索栏右侧的可见 `⌘K` 提示；同步移除该入口不再需要的 `Kbd` 展示依赖。
+
 ## 上游同步原则
 
 更新入口：
