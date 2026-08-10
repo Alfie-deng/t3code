@@ -51,14 +51,14 @@ const MONO_FONT = Platform.select({
 });
 
 // Status hues follow the system-wide convention set by sidebar v1 and the
-// Live Activity/widgets (amber approval, indigo input, sky working) so a
+// Live Activity/widgets (amber approval, indigo input, indigo working) so a
 // thread reads the same color everywhere it surfaces.
 const STATUS_LABEL_BY_STATUS: Partial<
   Record<ThreadListV2Status, { label: string; className: string }>
 > = {
   approval: { label: t("Approval"), className: "text-amber-700 dark:text-amber-300" },
   input: { label: t("Input"), className: "text-indigo-600 dark:text-indigo-300" },
-  working: { label: t("Working"), className: "text-sky-600 dark:text-sky-400" },
+  working: { label: t("Working"), className: "text-indigo-600 dark:text-indigo-400" },
   failed: { label: t("Failed"), className: "text-red-700 dark:text-red-300" },
 };
 
