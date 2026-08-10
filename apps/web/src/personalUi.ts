@@ -11,6 +11,7 @@ export const PERSONAL_UI = {
   hideTopBarGitActions: true,
   hideTopBarTerminalToggle: true,
   hideRuntimeModeControl: true,
+  hideComposerContextStrip: true,
   compactComposer: true,
   hideComposerGuide: true,
   newThreadComposerPlaceholder: "随心构建你的想法",

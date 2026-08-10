@@ -23,22 +23,24 @@ export function formatCount(value: number): string {
 }
 
 /**
- * Compacts a token count to three significant figures with a unit suffix, so
- * columns of numbers line up at a glance (`19.9B`, `76.7M`, `804K`).
+ * Formats token counts with Chinese large-number units used throughout the
+ * usage page: 亿 at one hundred million, 万 below that, and comma-separated
+ * integers for smaller values.
  */
 export function formatTokens(value: number): string {
   const abs = Math.abs(value);
-  if (abs >= 1e12) return `${trim(value / 1e12)}T`;
-  if (abs >= 1e9) return `${trim(value / 1e9)}B`;
-  if (abs >= 1e6) return `${trim(value / 1e6)}M`;
-  if (abs >= 1e3) return `${trim(value / 1e3)}K`;
+  if (abs >= 1e8) return `${trim(value / 1e8)}亿`;
+  if (abs >= 1e4) return `${trim(value / 1e4)}万`;
   return INTEGER.format(Math.round(value));
 }
 
 function trim(value: number): string {
   const abs = Math.abs(value);
   const digits = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
-  return value.toFixed(digits).replace(/\.0+$/, "");
+  return value
+    .toFixed(digits)
+    .replace(/(\.\d*?[1-9])0+$/, "$1")
+    .replace(/\.0+$/, "");
 }
 
 export function formatPercent(share: number, digits = 1): string {

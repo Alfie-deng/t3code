@@ -5631,7 +5631,7 @@ export function translateExact(value: string): string {
   );
   if (showPreviousWorkEntriesMatch) {
     const noun = showPreviousWorkEntriesMatch[2]?.startsWith("tool") ? "工具调用" : "日志条目";
-    return `显示 ${showPreviousWorkEntriesMatch[1]} 个之前的${noun}`;
+    return `显示 ${showPreviousWorkEntriesMatch[1]} 个${noun}`;
   }
   providerUiMatch = /^Show (.+)$/i.exec(value);
   if (
@@ -5679,7 +5679,7 @@ export function translateExact(value: string): string {
   const previousWorkEntriesMatch = /^\+(\d+) previous (tool calls?|log entr(?:y|ies))$/.exec(value);
   if (previousWorkEntriesMatch) {
     const noun = previousWorkEntriesMatch[2]?.startsWith("tool") ? "工具调用" : "日志条目";
-    return `+${previousWorkEntriesMatch[1]} 个之前的${noun}`;
+    return `+${previousWorkEntriesMatch[1]} 个${noun}`;
   }
   const stoppedAfterMatch = /^You stopped after (.+)$/i.exec(value);
   if (stoppedAfterMatch) {

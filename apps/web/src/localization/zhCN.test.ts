@@ -8,7 +8,8 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Working for 1m 2s")).toBe("正在运行 1 分 2 秒");
     expect(translateZhCnUiText("Ran command pwd && ls -la")).toBe("已运行命令 pwd && ls -la");
     expect(translateZhCnUiText("2 tool calls")).toBe("2 次工具调用");
-    expect(translateZhCnUiText("+2 previous tool calls")).toBe("+2 个之前的工具调用");
+    expect(translateZhCnUiText("+2 previous tool calls")).toBe("+2 个工具调用");
+    expect(translateZhCnUiText("Show 2 previous tool calls")).toBe("显示 2 个工具调用");
     expect(translateZhCnUiText("You stopped after 39s")).toBe("已停止，运行 39 秒");
     expect(translateZhCnUiText("Waiting for demo's configuration.")).toBe("等待 demo 的配置。");
   });

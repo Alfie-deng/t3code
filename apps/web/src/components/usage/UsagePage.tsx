@@ -177,7 +177,7 @@ export function UsagePage() {
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {metric === "cost"
-                          ? `${formatPercent(share)} 的成本 · ${formatTokens(provider.totalTokens)} 个 Token`
+                          ? `${formatPercent(share)} 的成本 · ${formatTokens(provider.totalTokens)} Token`
                           : `${formatPercent(share)} 的 Token · ${formatUsd(provider.costUsd)}`}
                       </span>
                     </div>
@@ -219,7 +219,7 @@ export function UsagePage() {
               <Metric
                 label="已处理令牌"
                 value={formatTokens(merged.totalTokens)}
-                detail={`活跃日均 ${formatTokens(dailyAverage)} 个 Token`}
+                detail={`活跃日均 ${formatTokens(dailyAverage)} Token`}
               />
               <Metric
                 label="已缓存输入"
@@ -229,12 +229,12 @@ export function UsagePage() {
               <Metric
                 label="未缓存输入"
                 value={formatTokens(merged.uncachedInputTokens)}
-                detail={`新增缓存写入 ${formatTokens(merged.cacheCreationTokens)} 个 Token`}
+                detail={`新增缓存写入 ${formatTokens(merged.cacheCreationTokens)} Token`}
               />
               <Metric
                 label="输出"
                 value={formatTokens(merged.outputTokens)}
-                detail={`其中推理 ${formatTokens(merged.reasoningTokens)} 个 Token`}
+                detail={`其中推理 ${formatTokens(merged.reasoningTokens)} Token`}
               />
               <Metric
                 label="缓存节省"
