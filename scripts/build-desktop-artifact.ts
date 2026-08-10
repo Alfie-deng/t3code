@@ -13,6 +13,7 @@ import serverPackageJson from "../apps/server/package.json" with { type: "json" 
 import { applyWebBrandAssets } from "./apply-web-brand-assets.ts";
 import {
   BRAND_ASSET_PATHS,
+  PERSONAL_DEFAULT_APP_ICON_PATHS,
   resolveWebAssetBrandForChannel,
   type WebAssetBrand,
 } from "./lib/brand-assets.ts";
@@ -1492,9 +1493,9 @@ export function resolveDesktopBuildIconAssets(version: string): DesktopBuildIcon
   }
 
   return {
-    macIconPng: BRAND_ASSET_PATHS.productionMacIconPng,
-    linuxIconPng: BRAND_ASSET_PATHS.productionLinuxIconPng,
-    windowsIconIco: BRAND_ASSET_PATHS.productionWindowsIconIco,
+    macIconPng: PERSONAL_DEFAULT_APP_ICON_PATHS.macos,
+    linuxIconPng: PERSONAL_DEFAULT_APP_ICON_PATHS.linux,
+    windowsIconIco: PERSONAL_DEFAULT_APP_ICON_PATHS.windows,
   };
 }
 

@@ -3083,6 +3083,9 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Cancel new keybinding": "取消新增快捷键",
   "Cache savings": "缓存节省",
   "Cached input": "已缓存输入",
+  Totals: "总计",
+  Unpriced: "未计价",
+  "By model": "按模型",
   "Check installed provider CLIs for newer available versions.":
     "检查已安装的提供商 CLI 是否有可用的新版本。",
   Checkouts: "检出",

@@ -57,6 +57,17 @@
 2. 任何会改变用户可见默认值或工作流行为的定制，都必须写出真实验收项。
 3. 不把密钥、Token、Cookie、代理订阅或账号凭据写进本文件、仓库或构建日志。
 
+### 3.1 Nightly 应用图标常态化
+
+状态：**已启用；应用图标固定使用 nightly 视觉，不随稳定版/后续图标导出恢复为黑色生产图标。**
+
+- 个人图标真源：`scripts/lib/brand-assets.ts` 的 `PERSONAL_DEFAULT_APP_ICON_PATHS`。
+- iOS/Android production 应用图标与移动端 `BrandMark` 使用 `assets/nightly/nightly-ios-icon-solid.png`；该文件不是临时构建产物，必须随仓库保留。
+- 桌面 macOS、Linux、Windows 打包的稳定版和 nightly 版统一使用 nightly 平台图标；桌面开发启动器和回退资源也保持 nightly 图标。
+- 相关入口：`apps/mobile/app.config.ts`、`apps/mobile/src/components/BrandMark.tsx`、`scripts/build-desktop-artifact.ts`、`apps/desktop/scripts/electron-launcher.mjs`、`apps/desktop/resources/icon.*`。
+- 以后运行 `icons:export` 时只能更新渠道生成资产；不能把 production 图标路径改回 `assets/prod/black-*`，也不能删除个人 solid 图标。
+- 本次只固定应用图标；网页 favicon 和启动画面仍按各自渠道配置，避免把渠道识别误改成应用图标替换。
+
 ### 4. Alfie 的顶部工作区精简
 
 状态：**已启用；仅隐藏入口，不删除能力。**

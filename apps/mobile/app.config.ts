@@ -1,6 +1,9 @@
 import type { ExpoConfig } from "expo/config";
 
-import { BRAND_ASSET_PATHS } from "../../scripts/lib/brand-assets.ts";
+import {
+  BRAND_ASSET_PATHS,
+  PERSONAL_DEFAULT_APP_ICON_PATHS,
+} from "../../scripts/lib/brand-assets.ts";
 import { loadRepoEnv } from "../../scripts/lib/public-config.ts";
 
 type AppVariant = "development" | "preview" | "production";
@@ -49,8 +52,8 @@ const PREVIEW_ASSETS = {
 } as const;
 
 const RELEASE_ASSETS = {
-  appIcon: fromRepoRoot("assets/nightly/nightly-ios-icon-solid.png"),
-  iosIcon: fromRepoRoot("assets/nightly/nightly-ios-icon-solid.png"),
+  appIcon: fromRepoRoot(PERSONAL_DEFAULT_APP_ICON_PATHS.ios),
+  iosIcon: fromRepoRoot(PERSONAL_DEFAULT_APP_ICON_PATHS.ios),
   splashIcon: fromRepoRoot(BRAND_ASSET_PATHS.productionIosIconPng),
   androidAdaptiveForeground: "./assets/android-icon-mark.png",
   androidAdaptiveBackgroundColor: "#000000",

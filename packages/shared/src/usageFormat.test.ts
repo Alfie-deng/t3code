@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { formatTokens } from "./usageFormat";
+import { formatTokens } from "./usageFormat.ts";
 
 describe("formatTokens", () => {
   it("uses 亿 for counts at or above one hundred million", () => {

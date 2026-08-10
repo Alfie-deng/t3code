@@ -257,7 +257,7 @@ function ConfiguredSettingsRouteScreen() {
     }
     setNotificationStatus("disabled");
     if (result.value.canAskAgain) {
-      Alert.alert(t(t("Notifications disabled")), t(t("Notifications were not enabled.")));
+      Alert.alert(t("Notifications disabled"), t("Notifications were not enabled."));
       return;
     }
     Alert.alert(
@@ -339,8 +339,8 @@ function ConfiguredSettingsRouteScreen() {
       Alert.alert(
         t("Live Activities enabled"),
         environmentCount > 0
-          ? `${environmentCount} environment${environmentCount === 1 ? "t(" : ")st("} linked for Live Activity updates.`
-          : ")Live Activity updates are enabled. Add an environment to start receiving updates.",
+          ? `${environmentCount} 个环境已关联，可接收实时活动更新。`
+          : "实时活动更新已启用。添加环境后即可开始接收更新。",
       );
     } else {
       Alert.alert(
@@ -540,6 +540,7 @@ function GeneralSettingsSection() {
   return (
     <SettingsSection title="General">
       <SettingsRow icon="folder" label="Project Grouping" target="SettingsProjectGrouping" />
+      <SettingsRow icon="chart.bar.xaxis" label={t("Usage")} target="SettingsUsage" />
     </SettingsSection>
   );
 }
@@ -602,7 +603,7 @@ function AppSettingsSection() {
     updateInFlight.current = true;
     try {
       await runAppUpdateCheck({
-        onFailure: (message) => Alert.alert(t(t("Update failed")), message),
+        onFailure: (message) => Alert.alert(t("Update failed"), message),
         onStateChange: setUpdateState,
       });
     } finally {
@@ -621,13 +622,13 @@ function AppSettingsSection() {
 
   const statusLabel =
     updateState === "checking"
-      ? "Checking…"
+      ? "检查中…"
       : updateState === "downloading"
-        ? "Downloading…"
+        ? "下载中…"
         : updateState === "restarting"
-          ? "Restarting…"
+          ? "重启中…"
           : updateState === "current"
-            ? "Up to date"
+            ? "已是最新"
             : null;
 
   const versionRow = (

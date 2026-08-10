@@ -4,6 +4,7 @@ import {
   BRAND_ASSET_PATHS,
   DEVELOPMENT_ICON_OVERRIDES,
   DEVELOPMENT_PUBLIC_ICON_OVERRIDES,
+  PERSONAL_DEFAULT_APP_ICON_PATHS,
   resolveWebAssetBrandForChannel,
   resolveWebAssetBrandForPackageVersion,
   resolveWebIconOverrides,
@@ -96,5 +97,14 @@ describe("brand-assets", () => {
     expect(BRAND_ASSET_PATHS.developmentDesktopIconPng).toMatch(/^assets\/dev\/blueprint-/);
     expect(BRAND_ASSET_PATHS.nightlyMacIconPng).toMatch(/^assets\/nightly\/nightly-/);
     expect(BRAND_ASSET_PATHS.productionMacIconPng).toMatch(/^assets\/prod\/black-/);
+  });
+
+  it("keeps Alfie's personal app icon override on the nightly artwork", () => {
+    expect(PERSONAL_DEFAULT_APP_ICON_PATHS).toEqual({
+      ios: "assets/nightly/nightly-ios-icon-solid.png",
+      macos: BRAND_ASSET_PATHS.nightlyMacIconPng,
+      linux: BRAND_ASSET_PATHS.nightlyLinuxIconPng,
+      windows: BRAND_ASSET_PATHS.nightlyWindowsIconIco,
+    });
   });
 });

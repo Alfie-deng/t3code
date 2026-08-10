@@ -31,6 +31,16 @@ export const BRAND_ASSET_PATHS = {
   developmentWebAppleTouchIconPng: "assets/dev/blueprint-web-apple-touch-180.png",
 } as const;
 
+// Alfie's personal app-icon override. Keep this separate from the channel
+// families so a future stable/nightly asset export cannot silently restore the
+// production black icon for the installed app.
+export const PERSONAL_DEFAULT_APP_ICON_PATHS = {
+  ios: "assets/nightly/nightly-ios-icon-solid.png",
+  macos: BRAND_ASSET_PATHS.nightlyMacIconPng,
+  linux: BRAND_ASSET_PATHS.nightlyLinuxIconPng,
+  windows: BRAND_ASSET_PATHS.nightlyWindowsIconIco,
+} as const;
+
 export type WebAssetBrand = "development" | "nightly" | "production";
 
 export const WEB_ASSET_CHANNELS = ["latest", "nightly"] as const;
