@@ -91,6 +91,12 @@
 - 工作流术语：独立的 `Bash` / `Shell` / `Command execution` 显示为“运行命令”；“已运行命令”等完整状态不重复叠加。
 - 最终覆盖安装：`/Applications/T3 Code.app`，签名使用 `Apple Development: jet.deng@me.com (PTY74USJAK)`，并保留 Electron JIT/动态库所需 entitlements。
 
+## 2026-08-10 最终变更卡片
+
+- 对话最终助手消息下的变更文件摘要卡片已隐藏；不再显示变更文件数量、增删统计、“显示文件”和“打开差异”。
+- 变更数据与差异查看底层逻辑未删除，后续若需要恢复展示，只需恢复 `MessagesTimeline` 的卡片挂载。
+- 滚动提示：保留“滚动到末尾”的无障碍语义和点击功能，视觉上只显示 Synara 风格下箭头，不再显示文字胶囊。
+
 ## P0 工作流验收矩阵
 
 | 阶段       | 中文必须覆盖                                                           | 证据                                                                            |

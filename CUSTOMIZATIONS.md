@@ -149,6 +149,12 @@
 - 弹窗真实截图：`/tmp/t3code-final-rename-dialog-20260810.jpeg`；英文 `Environment:` 不再出现。
 - 当前覆盖安装：`/Applications/T3 Code.app`，版本 `0.0.32`；签名身份仍为 `Apple Development: jet.deng@me.com (PTY74USJAK)`，并带 `customizations/macos-electron.entitlements.plist`，无密码提示。
 
+## 2026-08-10 隐藏最终变更卡片
+
+- `apps/web/src/components/chat/MessagesTimeline.tsx`：隐藏最终助手消息下的变更文件摘要卡片，不再在对话末尾显示 `1 changed file +N -N / 显示文件 / 打开差异`；差异数据和底层差异查看能力保留。
+- `apps/web/src/components/chat/MessagesTimeline.test.tsx`：回归测试改为确认存在变更数据时不渲染该卡片。
+- `apps/web/src/components/ChatView.tsx`：将“滚动到末尾”文字胶囊替换为 Synara 风格的纯下箭头圆形按钮；点击和无障碍标签仍保留。
+
 ## 上游同步原则
 
 更新入口：

@@ -6126,7 +6126,7 @@ function ChatViewContent(props: ChatViewProps) {
                 loadEarlier={loadEarlierTurns}
               />
 
-              {/* scroll to end pill — shown when user has scrolled away from the live edge */}
+              {/* scroll to end button — shown when user has scrolled away from the live edge */}
               {showScrollToBottom && (
                 <div
                   className="pointer-events-none absolute left-1/2 z-30 flex -translate-x-1/2 justify-center py-1.5"
@@ -6137,10 +6137,9 @@ function ChatViewContent(props: ChatViewProps) {
                     aria-label="Scroll to end"
                     title="Scroll to end"
                     onClick={() => scrollToEnd(true)}
-                    className="chat-composer-glass pointer-events-auto flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-muted-foreground text-xs shadow-sm transition-colors hover:border-border hover:text-foreground hover:cursor-pointer"
+                    className="chat-composer-glass pointer-events-auto flex size-8 items-center justify-center rounded-full border border-border/60 text-muted-foreground shadow-sm backdrop-blur-md transition-colors hover:border-border hover:text-foreground hover:cursor-pointer"
                   >
-                    <ChevronDownIcon className="size-3.5" />
-                    Scroll to end
+                    <ChevronDownIcon aria-hidden="true" className="size-3.5" />
                   </button>
                 </div>
               )}
