@@ -305,7 +305,7 @@ const config: ExpoConfig = {
         image: variant.assets.splashIcon,
         resizeMode: "contain",
         backgroundColor: "#ffffff",
-        imageWidth: 220,
+        imageWidth: 110,
         dark: {
           image: variant.assets.splashIcon,
           backgroundColor: "#0a0a0a",

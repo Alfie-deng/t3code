@@ -959,6 +959,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "World Cup 2026": "2026 世界杯",
   "Loading projects": "正在加载项目",
   "Loading projects...": "正在加载项目…",
+  "Loading projects and threads from the saved environment.": "正在从已保存的环境加载项目和对话。",
   "Loading conversation": "正在加载对话",
   "This conversation didn't load.": "对话未能加载。",
   "Expand all projects": "展开所有项目",
@@ -2761,6 +2762,7 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   Port: "端口",
   "Managed above": "由上方管理",
   "Sign in to T3 Connect": "登录 T3 Connect",
+  "Sign in to T3 Connect to connect this environment.": "登录 T3 Connect 以连接此环境。",
   "No mobile clients": "没有移动客户端",
   "Mobile clients": "移动客户端",
   "Devices registered to receive T3 Connect activity from your environments.":
