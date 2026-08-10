@@ -291,7 +291,7 @@ export function ThreadWorkGroupToggle(props: {
     : props.hiddenCount === 1
       ? "log entry"
       : "log entries";
-  const collapsedLabel = `Show ${props.hiddenCount} previous ${t(noun)}`;
+  const collapsedLabel = t(`Show ${props.hiddenCount} previous ${noun}`);
   const expandedLabel = props.onlyToolActivities
     ? t("Show fewer tool calls")
     : t("Show fewer log entries");
@@ -325,7 +325,7 @@ export function ThreadWorkGroupToggle(props: {
           />
         </View>
         <Text className="font-t3-medium text-xs text-foreground opacity-80">
-          {props.expanded ? expandedLabel : `+${props.hiddenCount} previous ${t(noun)}`}
+          {props.expanded ? expandedLabel : t(`+${props.hiddenCount} previous ${noun}`)}
         </Text>
       </Pressable>
     </View>

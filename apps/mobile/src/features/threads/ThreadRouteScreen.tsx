@@ -826,7 +826,7 @@ function ThreadRouteContent(
           headerTitleStyle: usesNativeHeaderGlass
             ? {
                 fontSize: 17,
-                fontWeight: "800",
+                fontWeight: "700",
               }
             : undefined,
           title: selectedThread.title,
@@ -864,9 +864,8 @@ function ThreadRouteContent(
 
       {/* Android surfaces the git/files/inspector actions in its in-flow
           header above, so the fallback action toolbar stays iOS-only. */}
-      {renderThreadRouteBody(
-        Platform.OS !== "android" && !layout.usesSplitView && !usesNativeHeaderGlass,
-      )}
+      {/* Alfie: 隐藏线程页右上角的 git/files/terminal 工具栏按钮。 */}
+      {renderThreadRouteBody(false)}
     </>
   );
 }

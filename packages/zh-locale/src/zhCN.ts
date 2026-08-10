@@ -3928,7 +3928,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Annotation attached to draft": "标注已附加到草稿",
   "Anyone on the web": "网页上的任何人",
   "Ask anything...": "输入任何问题…",
-  "Ask the repo agent, or run a command…": "向仓库智能体提问，或运行命令…",
+  "Ask the repo agent, or run a command…": "提出后续修改",
   "Browser storage is unavailable, so this stash is kept in memory only for this session.":
     "浏览器存储不可用，此暂存内容只会保留在本次会话的内存中。",
   "Browser storage rejected the delete, so this prompt could reappear after a reload.":
@@ -5620,6 +5620,13 @@ export function translateExact(value: string): string {
   if (providerUiMatch) return `在选择器中显示 ${providerUiMatch[1]}`;
   providerUiMatch = /^Hide (.+) from picker$/i.exec(value);
   if (providerUiMatch) return `在选择器中隐藏 ${providerUiMatch[1]}`;
+  const showPreviousWorkEntriesMatch = /^Show (\d+) previous (tool calls?|log entr(?:y|ies))$/.exec(
+    value,
+  );
+  if (showPreviousWorkEntriesMatch) {
+    const noun = showPreviousWorkEntriesMatch[2]?.startsWith("tool") ? "工具调用" : "日志条目";
+    return `显示 ${showPreviousWorkEntriesMatch[1]} 个之前的${noun}`;
+  }
   providerUiMatch = /^Show (.+)$/i.exec(value);
   if (
     providerUiMatch &&
@@ -5663,7 +5670,7 @@ export function translateExact(value: string): string {
   if (waitingConfigurationMatch) {
     return `等待 ${waitingConfigurationMatch[1]} 的配置。`;
   }
-  const previousWorkEntriesMatch = /^\+(\d+) previous (tool calls?|log entries?)$/.exec(value);
+  const previousWorkEntriesMatch = /^\+(\d+) previous (tool calls?|log entr(?:y|ies))$/.exec(value);
   if (previousWorkEntriesMatch) {
     const noun = previousWorkEntriesMatch[2]?.startsWith("tool") ? "工具调用" : "日志条目";
     return `+${previousWorkEntriesMatch[1]} 个之前的${noun}`;

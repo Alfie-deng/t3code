@@ -391,20 +391,14 @@ function useThreadGitHeaderActionItems(props: ThreadGitControlsProps): ThreadGit
   );
 }
 
-export function useThreadGitRightHeaderItems(props: ThreadGitControlsProps): HeaderItems {
-  const actionItems = useThreadGitHeaderActionItems(props);
-  return useMemo(
-    () => [actionItems.git, actionItems.files, actionItems.terminal] as HeaderItems,
-    [actionItems],
-  );
+export function useThreadGitRightHeaderItems(_props: ThreadGitControlsProps): HeaderItems {
+  // Alfie: 隐藏线程页右上角的 git/files/terminal 三个按钮。
+  return [] as HeaderItems;
 }
 
-export function useThreadGitCenterHeaderItems(props: ThreadGitControlsProps): HeaderItems {
-  const actionItems = useThreadGitHeaderActionItems(props);
-  return useMemo(
-    () => [actionItems.files, actionItems.git, actionItems.terminal] as HeaderItems,
-    [actionItems],
-  );
+export function useThreadGitCenterHeaderItems(_props: ThreadGitControlsProps): HeaderItems {
+  // Alfie: 隐藏分栏模式下线程页的 git/files/terminal 三个按钮。
+  return [] as HeaderItems;
 }
 
 export function ThreadGitControls(props: ThreadGitControlsProps) {
