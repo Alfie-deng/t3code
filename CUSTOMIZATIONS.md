@@ -85,6 +85,15 @@
 - 右侧智能体空状态正文与面板快捷键提示也纳入汉化验收，避免只翻标题、不翻说明。
 - 发送和停止按钮的外圆在原尺寸基础上各缩小 `2px`，并整体向右移动 `2px`；颜色与交互保持 T3 原样。内部箭头直接复用 `apps/web/public/synara-icons/arrow-up.svg`，按 `18px`、`bg-current` 的 CSS mask 呈现；停止方块最终为 `10px`、`1px` 圆角。
 
+### 5.1 线程正文字号
+
+状态：**已启用；线程内每个文字层级增加 `1px`，不改变后台全局字号设置。**
+
+- `apps/web/src/personalUi.ts`：`threadContentFontSizeStepPx: 1` 是本人的独立线程字号定制，不接入 Settings → Appearance 的全局 `fontSizeInterface`。
+- `apps/web/src/components/chat/MessagesTimeline.tsx`：给线程时间线建立 `data-thread-content` 范围，覆盖我的正文、助手正文、工具标题/预览、助手工具卡片、工作流状态、计划步骤和时间戳；空线程提示也在同一范围内。
+- `apps/web/src/index.css`：在该范围内同步放大 Tailwind 的 `text-xs/text-sm` 等层级、工具卡片的固定 `10/11/12/13px` 文本、Markdown 标题、行内代码、代码块和 diff 字号；侧边栏、顶部栏、输入框和后台全局字号不受影响。
+- 上游同步时保留 `data-thread-content` 与 `threadContentFontSizeStepPx`，不要把这项个人偏好改写成全局根字号。
+
 ### 6. 本次代码改动逐文件对照
 
 这份对照是给以后同步上游用的。看到同名文件冲突时，不能整文件选择上游版本；先保留下面列出的本地行为，再把上游的新功能合并进来。

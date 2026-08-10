@@ -1499,6 +1499,106 @@ code {
   font-size: var(--font-size-prompt, 0.875rem);
 }
 
+/* Alfie's personal thread typography: one pixel larger than each existing
+   thread text tier, without changing the global interface/prompt settings.
+   The wrapper is applied by MessagesTimeline, so the sidebar, header and
+   composer stay at their normal sizes. */
+[data-thread-content="true"] {
+  --thread-font-size-xs: calc(var(--text-xs, 0.75rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-sm: calc(var(--text-sm, 0.875rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-base: calc(var(--text-base, 1rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-lg: calc(var(--text-lg, 1.125rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-xl: calc(var(--text-xl, 1.25rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-2xl: calc(var(--text-2xl, 1.5rem) + var(--thread-content-font-size-step, 1px));
+  --thread-font-size-3xl: calc(
+    var(--text-3xl, 1.875rem) + var(--thread-content-font-size-step, 1px)
+  );
+  --thread-font-size-code: calc(
+    var(--font-size-code, 0.8125rem) + var(--thread-content-font-size-step, 1px)
+  );
+  --diffs-font-size: var(--thread-font-size-code);
+}
+
+[data-thread-content="true"] .text-xs {
+  font-size: var(--thread-font-size-xs);
+}
+
+[data-thread-content="true"] .text-sm {
+  font-size: var(--thread-font-size-sm);
+}
+
+[data-thread-content="true"] .text-base {
+  font-size: var(--thread-font-size-base);
+}
+
+[data-thread-content="true"] .text-lg {
+  font-size: var(--thread-font-size-lg);
+}
+
+[data-thread-content="true"] .text-xl {
+  font-size: var(--thread-font-size-xl);
+}
+
+[data-thread-content="true"] .text-2xl {
+  font-size: var(--thread-font-size-2xl);
+}
+
+[data-thread-content="true"] .text-3xl {
+  font-size: var(--thread-font-size-3xl);
+}
+
+[data-thread-content="true"] [class~="text-[10px]"] {
+  font-size: calc(10px + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] [class~="text-[11px]"] {
+  font-size: calc(11px + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] [class~="text-[12px]"] {
+  font-size: calc(12px + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] [class~="text-[13px]"] {
+  font-size: calc(13px + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] [class~="text-[.7rem]"] {
+  font-size: calc(0.7rem + var(--thread-content-font-size-step, 1px));
+}
+
+/* ChatMarkdown has a few deliberate rem/px sizes outside Tailwind utilities;
+   bring those tiers along without touching code outside a thread. */
+[data-thread-content="true"] .chat-markdown h1 {
+  font-size: calc(1.25rem + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] .chat-markdown h2 {
+  font-size: calc(1.125rem + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] .chat-markdown h3 {
+  font-size: calc(1rem + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] .chat-markdown h4,
+[data-thread-content="true"] .chat-markdown h5,
+[data-thread-content="true"] .chat-markdown h6,
+[data-thread-content="true"] .chat-markdown section[data-footnotes],
+[data-thread-content="true"] .chat-markdown :not(pre) > code {
+  font-size: calc(0.75rem + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] .chat-markdown a[data-footnote-ref],
+[data-thread-content="true"] .chat-markdown a[data-footnote-backref] {
+  font-size: calc(0.6875rem + var(--thread-content-font-size-step, 1px));
+}
+
+[data-thread-content="true"] .chat-markdown .chat-markdown-shiki .shiki,
+[data-thread-content="true"] .chat-markdown pre code {
+  font-size: var(--thread-font-size-code);
+}
+
 /* Touch browsers zoom the page when a focused field is under 16px, so keep
    the floor there regardless of the preference. Gated on a coarse pointer:
    the zoom quirk does not exist on desktop, where a narrow window must not

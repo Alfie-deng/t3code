@@ -25,6 +25,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -104,6 +105,7 @@ import { cn } from "~/lib/utils";
 import { type TimestampFormat } from "@t3tools/contracts/settings";
 import { formatChatTimestampTooltip, formatShortTimestamp } from "../../timestampFormat";
 import { translateZhCnUiText } from "~/localization/zhCN";
+import { PERSONAL_UI } from "~/personalUi";
 
 import {
   buildInlineTerminalContextText,
@@ -118,6 +120,10 @@ import {
   parseReviewCommentMessageSegments,
   type ReviewCommentContext,
 } from "../../reviewCommentContext";
+
+const THREAD_CONTENT_STYLE = {
+  "--thread-content-font-size-step": `${PERSONAL_UI.threadContentFontSizeStepPx}px`,
+} as CSSProperties;
 
 // ---------------------------------------------------------------------------
 // Context — shared state consumed by every row component via Context.
@@ -560,7 +566,11 @@ export const MessagesTimeline = memo(function MessagesTimeline({
       return null;
     }
     return (
-      <div className="flex h-full items-center justify-center">
+      <div
+        className="flex h-full items-center justify-center"
+        data-thread-content="true"
+        style={THREAD_CONTENT_STYLE}
+      >
         <p className="text-placeholder text-sm">Send a message to start the conversation.</p>
       </div>
     );
@@ -569,7 +579,12 @@ export const MessagesTimeline = memo(function MessagesTimeline({
   return (
     <TimelineRowCtx value={sharedState}>
       <TimelineRowActivityCtx value={activityState}>
-        <div ref={setTimelineViewportElement} className="relative h-full min-h-0">
+        <div
+          ref={setTimelineViewportElement}
+          className="relative h-full min-h-0"
+          data-thread-content="true"
+          style={THREAD_CONTENT_STYLE}
+        >
           <LegendList<MessagesTimelineRow>
             ref={listRef}
             data={rows}
