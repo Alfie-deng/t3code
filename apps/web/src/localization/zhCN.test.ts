@@ -134,6 +134,43 @@ describe("T3 Code 简体中文工作流文案", () => {
     );
   });
 
+  it("translates runtime and provider transport errors into actionable Chinese", () => {
+    expect(translateZhCnUiText("Runtime error")).toBe("运行错误");
+    expect(
+      translateZhCnUiText(
+        "Provider unreachable: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()",
+      ),
+    ).toBe("提供商无法连接：模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。");
+    expect(
+      translateZhCnUiText(
+        "The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()",
+      ),
+    ).toBe("模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。");
+    expect(
+      translateZhCnUiText(
+        "Provider unreachable: upstream fetch failed after a credential-visible connection reset: Unable to connect. Is the computer able to access the url?",
+      ),
+    ).toBe("提供商无法连接：上游服务重置了连接，当前无法连接。请检查网络、代理或登录状态后重试。");
+    expect(
+      translateZhCnUiText(
+        "Provider unreachable: Unable to connect. Is the computer able to access the url?",
+      ),
+    ).toBe("提供商无法连接：无法连接到上游服务。请检查网络或代理后重试。");
+    expect(
+      translateZhCnUiText("Provider unreachable: unknown certificate verification error"),
+    ).toBe("提供商无法连接：证书校验失败。请检查系统时间、代理证书或网络拦截。");
+    expect(
+      translateZhCnUiText("Cannot connect to API: The socket connection was closed unexpectedly."),
+    ).toBe("无法连接 API：模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。");
+    expect(
+      translateZhCnUiText(
+        'OpenCode retrying {"message":"upstream stream ended without a terminal signal ([DONE] or finish_reason) — possible truncation","type":"server_error"}',
+      ),
+    ).toBe(
+      "OpenCode 正在重试：上游输出流提前结束，内容可能不完整。请重试；若持续失败，请切换模型。",
+    );
+  });
+
   it("translates keybinding conditions for display without changing expressions", () => {
     expect(translateZhCnUiText("terminalFocus")).toBe("终端已聚焦");
     expect(translateZhCnUiText("modelPickerOpen")).toBe("模型选择器已打开");

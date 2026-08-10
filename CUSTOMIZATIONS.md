@@ -94,6 +94,15 @@
 - `apps/web/src/index.css`：在该范围内同步放大 Tailwind 的 `text-xs/text-sm` 等层级、工具卡片的固定 `10/11/12/13px` 文本、Markdown 标题、行内代码、代码块和 diff 字号；侧边栏、顶部栏、输入框和后台全局字号不受影响。
 - 上游同步时保留 `data-thread-content` 与 `threadContentFontSizeStepPx`，不要把这项个人偏好改写成全局根字号。
 
+### 5.2 运行时错误集中汉化
+
+状态：**已启用；错误信息统一从共享词典输出，避免看到半截英文和开发者调试提示。**
+
+- `packages/zh-locale/src/zhCN.ts`：集中覆盖 `Runtime error`、提供商不可达、连接意外关闭、上游重置连接、证书校验失败、上游输出流提前结束和自动重试等运行时错误。
+- 已观察到的 `Provider unreachable` 变体统一转成“提供商无法连接：……”并保留必要的错误语义；`verbose: true` 等开发者调试提示不再直接展示给用户。
+- 动态错误仍保留 URL、错误码、请求 ID、会话 ID 和可执行命令等技术证据；未知尾部不吞掉，只在前面补上中文错误类别。
+- 桌面 Web 的 MutationObserver 和移动端 `t()` 共用这份词典；以后新增运行时错误，先补这里和 `apps/web/src/localization/zhCN.test.ts`，不要在单个组件里零散硬编码。
+
 ### 6. 本次代码改动逐文件对照
 
 这份对照是给以后同步上游用的。看到同名文件冲突时，不能整文件选择上游版本；先保留下面列出的本地行为，再把上游的新功能合并进来。

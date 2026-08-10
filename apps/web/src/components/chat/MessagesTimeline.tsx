@@ -2170,14 +2170,15 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
   const iconConfig = workToneIcon(workEntry.tone);
   const showWarningIndicator = workEntry.sourceActivityKind === "runtime.warning";
   const entryIconName = showWarningIndicator ? "x" : workEntryIconName(workEntry);
-  const heading = toolWorkEntryHeading(workEntry);
+  const heading = translateZhCnUiText(toolWorkEntryHeading(workEntry));
   const rawPreview = workEntryPreview(workEntry, workspaceRoot);
+  const translatedPreview = rawPreview ? translateZhCnUiText(rawPreview) : null;
   const preview =
-    rawPreview &&
-    normalizeCompactToolLabel(rawPreview).toLowerCase() ===
+    translatedPreview &&
+    normalizeCompactToolLabel(translatedPreview).toLowerCase() ===
       normalizeCompactToolLabel(heading).toLowerCase()
       ? null
-      : rawPreview;
+      : translatedPreview;
   const displayText = preview ? `${heading} - ${preview}` : heading;
   const expandedBody = buildToolCallExpandedBody(workEntry, workspaceRoot);
   const canExpand = expandedBody !== null;

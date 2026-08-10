@@ -3,6 +3,7 @@ import { Alert, AlertAction, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { CircleAlertIcon, XIcon } from "lucide-react";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
+import { translateZhCnUiText } from "~/localization/zhCN";
 
 export const ThreadErrorBanner = memo(function ThreadErrorBanner({
   error,
@@ -12,15 +13,18 @@ export const ThreadErrorBanner = memo(function ThreadErrorBanner({
   onDismiss?: () => void;
 }) {
   if (!error) return null;
+  const translatedError = translateZhCnUiText(error);
   return (
     <div className="mx-auto w-fit max-w-[min(48rem,calc(100%-2rem))] pt-3">
       <Alert variant="error" controlAlignment="first-line">
         <CircleAlertIcon />
         <AlertDescription>
           <Tooltip>
-            <TooltipTrigger render={<div className="line-clamp-3" />}>{error}</TooltipTrigger>
+            <TooltipTrigger render={<div className="line-clamp-3" />}>
+              {translatedError}
+            </TooltipTrigger>
             <TooltipPopup side="top" className="max-w-96 whitespace-pre-wrap">
-              {error}
+              {translatedError}
             </TooltipPopup>
           </Tooltip>
         </AlertDescription>

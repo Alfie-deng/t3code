@@ -20,4 +20,14 @@ describe("ThreadErrorBanner", () => {
     expect(markup).toContain("h-lh w-4");
     expect(markup).toContain("h-lh self-start");
   });
+
+  it("translates the complete provider error in both the banner and tooltip", () => {
+    const markup = renderToStaticMarkup(
+      <ThreadErrorBanner error="Provider unreachable: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()" />,
+    );
+
+    expect(markup).toContain("提供商无法连接：模型服务连接意外中断");
+    expect(markup).not.toContain("Provider unreachable");
+    expect(markup).not.toContain("The socket connection was closed unexpectedly");
+  });
 });

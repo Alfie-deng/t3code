@@ -2011,6 +2011,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   TodoWrite: "待办",
   "Read file": "读取文件",
   "Read File": "读取文件",
+  "Runtime error": "运行错误",
   "Runtime warning": "运行警告",
   "Provider runtime error": "发生错误",
   "Turn failed": "此回合失败",
@@ -2232,15 +2233,16 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Cancelled: "已取消",
   Todowrite: "待办",
   notices: "条通知",
-  "unknown certificate verification error": "未知证书验证错误",
-  "Provider request failed; retrying.": "提供商请求失败，正在重试。",
+  "unknown certificate verification error": "证书校验失败。请检查系统时间、代理证书或网络拦截。",
+  "Provider request failed; retrying.": "提供商请求失败，正在自动重试。",
   "Quarantined provider runtime event 'item.completed' after a permanent journal failure.":
     "永久性日志失败后，提供方运行时事件「item.completed」已被隔离。",
   "Cannot connect to API: The socket connection was closed unexpectedly.":
-    "无法连接 API：套接字连接意外关闭。",
+    "无法连接 API：模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。",
   "The socket connection was closed unexpectedly. For more information pass `--verbose`":
-    "套接字连接意外关闭。如需更多信息请传入 `--verbose`",
-  "The socket connection was closed unexpectedly.": "套接字连接意外关闭。",
+    "模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。",
+  "The socket connection was closed unexpectedly.":
+    "模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。",
   "Running tool": "正在运行工具",
   "Active now": "刚刚活跃",
   " out of ": " / ",
@@ -4759,6 +4761,9 @@ function translateLiveActivityLead(value: string): string | null {
 }
 
 function translateRuntimeMessageBody(value: string): string {
+  const runtimeError = translateRuntimeError(value);
+  if (runtimeError) return runtimeError;
+
   const exact = UI_TEXT_ALL[value];
   if (exact) return exact;
 
@@ -4779,6 +4784,39 @@ function translateRuntimeMessageBody(value: string): string {
   }
 
   return value;
+}
+
+function translateProviderTransportDetail(value: string): string {
+  const detail = value
+    .replace(
+      /\s*For more information,?\s+pass `verbose: true` in the second argument to fetch\(\)\.?$/i,
+      "",
+    )
+    .trim();
+
+  const structuredMessageMatch = /^\{"message":"([^\"]+)"(?:,|\})/i.exec(detail);
+  if (structuredMessageMatch) {
+    const structuredMessage = translateProviderTransportDetail(structuredMessageMatch[1] ?? "");
+    if (structuredMessage !== structuredMessageMatch[1]) return structuredMessage;
+  }
+
+  if (/^The socket connection was closed unexpectedly\b/i.test(detail)) {
+    return "模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。";
+  }
+  if (/^upstream fetch failed after a credential-visible connection reset:/i.test(detail)) {
+    return "上游服务重置了连接，当前无法连接。请检查网络、代理或登录状态后重试。";
+  }
+  if (/^Unable to connect\b/i.test(detail)) {
+    return "无法连接到上游服务。请检查网络或代理后重试。";
+  }
+  if (/^unknown certificate verification error\.?$/i.test(detail)) {
+    return "证书校验失败。请检查系统时间、代理证书或网络拦截。";
+  }
+  if (/^upstream stream ended without a terminal signal/i.test(detail)) {
+    return "上游输出流提前结束，内容可能不完整。请重试；若持续失败，请切换模型。";
+  }
+
+  return detail;
 }
 
 function translateRuntimeWarningChrome(value: string): string | null {
@@ -4909,8 +4947,25 @@ function compactEnglishSuffixToZh(numRaw: string, suffix: string): string {
 }
 
 function translateRuntimeError(value: string): string | null {
-  let match =
-    /^stream disconnected before completion: error sending request for url \((.+)\)$/i.exec(value);
+  if (/^Runtime error$/i.test(value)) return "运行错误";
+
+  let match = /^Provider unreachable:\s*(.*)$/i.exec(value);
+  if (match) {
+    const detail = translateProviderTransportDetail(match[1] ?? "");
+    return detail ? `提供商无法连接：${detail}` : "提供商无法连接。请检查网络或代理后重试。";
+  }
+
+  match = /^Cannot connect to API:\s*(.+)$/i.exec(value);
+  if (match) {
+    return `无法连接 API：${translateProviderTransportDetail(match[1] ?? "")}`;
+  }
+
+  const directTransportDetail = translateProviderTransportDetail(value);
+  if (directTransportDetail !== value) return directTransportDetail;
+
+  match = /^stream disconnected before completion: error sending request for url \((.+)\)$/i.exec(
+    value,
+  );
   if (match) {
     return `流式连接在完成前断开：无法向请求地址发送请求（${match[1]}）`;
   }
