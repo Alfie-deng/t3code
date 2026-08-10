@@ -680,6 +680,11 @@ async function buildIos(): Promise<string> {
     cwd: MOBILE_ROOT,
     env: MOBILE_BUILD_ENV,
   });
+  // t3code: Xcode 27 compatibility — prebuild regenerates ios/ with stale pod
+  // deployment targets; re-apply the fix (raise to 18.0 + pod install) first.
+  await runCommand("bash", [NodePath.join(REPO_ROOT, "scripts/fix-ios-prebuild.sh")], {
+    cwd: MOBILE_ROOT,
+  });
   await runCommand(
     "xcodebuild",
     [

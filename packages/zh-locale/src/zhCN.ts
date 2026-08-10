@@ -22,6 +22,9 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Add project": "添加项目",
   All: "全部",
   Retry: "重试",
+  "Retry cancel": "重试取消",
+  "Loading branches…": "正在加载分支…",
+  "No branches available": "没有可用的分支",
   Read: "已读",
   File: "文件",
   Panel: "面板",
@@ -124,6 +127,13 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Open user menu": "打开用户菜单",
   "Manage account": "管理账户",
   "Sign out": "退出登录",
+  "Signed in": "已登录",
+  "T3 Code works locally without signing in. Cloud features are optional.":
+    "T3 Code 无需登录即可在本地工作，云端功能为可选。",
+  "Brings back the original grouped thread list. The default list is flat, in creation order: active work renders as cards; settled threads collapse to compact rows.":
+    "恢复原始的分组对话列表。默认列表为平铺按创建时间排序：活跃工作以卡片显示，已完结的对话折叠为紧凑行。",
+  Configuration: "配置",
+  Legacy: "旧版",
   "Account panel": "账户面板",
   "Secured by": "安全服务由",
   Passkeys: "通行密钥",
@@ -134,9 +144,55 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Pull request action failed": "拉取请求操作失败",
   "Blocker already cleared": "阻塞已清除",
   "Base branch unavailable": "基准分支不可用",
+  "Tracked, staged, and untracked worktree changes": "已跟踪、已暂存和未跟踪的工作树更改",
   "Branch is behind upstream": "分支落后于上游",
   "Branch created and checked out.": "已创建并切换到该分支。",
   "Branch name confirmed.": "分支名称已确认。",
+  ahead: "领先",
+  behind: "落后",
+  "behind upstream": "落后上游",
+  "Branches & worktrees": "分支和工作树",
+  "Checking status": "正在检查状态",
+  "Choose how to continue.": "选择如何继续。",
+  Clean: "无更改",
+  "Commit message": "提交消息",
+  "Commit, files, branches": "提交、文件、分支",
+  "Confirm action": "确认操作",
+  "Default branch": "默认分支",
+  "Excluded from this commit": "已从本次提交中排除",
+  "Existing branches": "现有分支",
+  Exited: "已退出",
+  "Git unavailable": "Git 不可用",
+  "Inspect turn diffs, worktree changes, and base branch diff":
+    "查看回合差异、工作树更改和基础分支差异",
+  "Loading branch status…": "正在加载分支状态…",
+  "Loading branches...": "正在加载分支...",
+  "Local branch": "本地分支",
+  "more files": "更多文件",
+  "New branch": "新分支",
+  "No changed files are available to commit.": "没有可提交的已更改文件。",
+  "No local branches found.": "未找到本地分支。",
+  "No open PR": "没有打开的 PR",
+  "No project scripts": "没有项目脚本",
+  "Not a git repository": "不是 Git 仓库",
+  "Not a repo": "不是仓库",
+  "Not started": "未启动",
+  open: "已打开",
+  "Pull latest": "拉取最新",
+  Ready: "就绪",
+  "Run action on default branch?": "在默认分支上运行操作？",
+  selected: "已选择",
+  "Start another shell for this thread": "为此对话启动另一个 shell",
+  "Switch branch, create branch, or move to a worktree": "切换分支、创建分支或移动到工作树",
+  "Task running": "任务运行中",
+  "The pull request could not be opened.": "无法打开拉取请求。",
+  "This action is unavailable.": "此操作不可用。",
+  "This branch does not have an open pull request.": "此分支没有打开的拉取请求。",
+  "This project has no saved scripts yet": "该项目还没有已保存的脚本",
+  "This workspace is not a git repository.": "此工作区不是 Git 仓库。",
+  "Turn diffs and worktree changes": "查看差异和工作树更改",
+  "Unable to open PR": "无法打开 PR",
+  "Warning: this is the default branch.": "警告：这是默认分支。",
   "Changes saved, but not reapplied.": "更改已保存，但未能重新应用。",
   "Cannot switch branches.": "无法切换分支。",
   "AppSnap failed": "AppSnap 失败",
@@ -161,6 +217,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Could not delete action": "无法删除操作",
   "Could not delete thread": "无法删除对话",
   "Could not delete worktree": "无法删除工作树",
+  "Dirty worktree": "工作树有未提交更改",
   "Could not download plan": "无法下载计划",
   "Could not export plan": "无法导出计划",
   "Could not export thread": "无法导出对话",
@@ -284,6 +341,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Turns: "轮次",
   "Choose diff source": "选择差异来源",
   "Diff source": "差异来源",
+  "Diff not ready": "差异未就绪",
   "Diff view options": "差异视图选项",
   "Copy diff": "复制差异",
   "Copied diff": "已复制差异",
@@ -513,6 +571,13 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "No runs yet.": "还没有运行记录。",
   "No unread runs.": "没有未读运行结果。",
   Notifications: "通知",
+  "Notifications enabled": "通知已开启",
+  "Notifications disabled": "通知已关闭",
+  "Disable notifications": "关闭通知",
+  "Live Activities enabled": "实时活动已开启",
+  "Live Activities unavailable": "实时活动不可用",
+  "Environment caches": "环境缓存",
+  "Default grouping": "默认分组",
   Off: "关",
   On: "开",
   Open: "打开",
@@ -562,6 +627,11 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Show less": "收起",
   "Show more": "显示更多",
   Loading: "加载中…",
+  "Opening terminal…": "正在打开终端…",
+  "Opening thread…": "正在打开对话…",
+  "Opening files...": "正在打开文件…",
+  "Opening file...": "正在打开文件…",
+  "Loading archive...": "正在加载归档…",
   Thinking: "正在思考",
   "Starting session": "正在启动会话",
   "Working for": "正在运行",
@@ -583,6 +653,8 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Stop: "停止",
   Studio: "工作室",
   "Submit answers": "提交答案",
+  "User input needed": "需要用户输入",
+  "Or type a custom answer": "或输入自定义答案",
   System: "跟随系统",
   Tasks: "任务",
   Temporary: "临时",
@@ -857,6 +929,9 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Always allow this session": "本次会话始终允许",
   "Don't ask again this session": "本次会话不再询问",
   Decline: "拒绝",
+  "Approval needed": "需要批准",
+  "Allow once": "允许一次",
+  "Allow session": "本次会话允许",
   "Reject and let the agent continue": "拒绝并让智能体继续",
   "Stop the current turn": "停止当前轮次",
   "Terminal input needed": "终端需要输入",
@@ -2562,6 +2637,7 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "PENDING APPROVAL": "等待权限确认",
   "Plan Ready": "计划已就绪",
   "Needs Approval": "需要批准",
+  Settled: "已完结",
   Working: "工作中",
   Connecting: "连接中",
   Error: "错误",
@@ -2618,6 +2694,10 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Open DevTools": "打开开发者工具",
   "Open in system browser": "在系统浏览器中打开",
   "Clear cache": "清除缓存",
+  "Clear Cache": "清除缓存",
+  "Clear caches": "清除缓存",
+  "Clear All Caches": "清除全部缓存",
+  "Clear cache for": "清除缓存（",
   "Clear cookies": "清除 Cookie",
   "Hard reload": "强制重新加载",
   More: "更多",
@@ -2769,6 +2849,12 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Sort threads": "对话排序",
   "Visible threads": "可见对话",
   "No threads yet": "还没有对话",
+  "Create a task to start a new coding session.": "创建任务以开始新的编码会话。",
+  "Add an environment to load projects and start coding sessions.":
+    "添加环境以加载项目并开始编码会话。",
+  "Checking saved environments on this device.": "正在检查此设备上已保存的环境。",
+  "No threads matching": "没有匹配的对话：",
+  "No environments connected": "未连接任何环境",
   "Show more": "显示更多",
   "Show less": "显示更少",
   "New project": "新建项目",
@@ -2935,6 +3021,9 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Background policy details": "后台策略详情",
   "Checked unavailable": "已检查但不可用",
   "Choose project icon": "选择项目图标",
+  "Choose project": "选择项目",
+  "Choose a project for what you shared": "为分享的内容选择项目",
+  "Choose a project for the image you shared": "为分享的图片选择项目",
   "Close floating preview": "关闭浮动预览",
   "Days of inactivity before auto-settle": "无活动后自动收起的天数",
   "Discard draft": "放弃草稿",
@@ -3359,6 +3448,9 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Group by repository": "按仓库分组",
   "Group by repository path": "按仓库路径分组",
   "Keep separate": "保持分开",
+  "Matching repositories appear as one project.": "匹配的仓库会合并显示为一个项目。",
+  "Keep monorepo paths separate.": "保持 monorepo 路径相互独立。",
+  "Show every workspace as its own project.": "将每个工作区作为独立项目显示。",
   "ChatGPT Plus Subscription": "ChatGPT Plus 订阅",
   "Click “Add environment” to pair another environment.": "点击“添加环境”以配对另一个环境。",
   Monitoring: "监控中",
@@ -3462,6 +3554,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Available · Checking relay status…": "可用 · 正在检查中继状态…",
   "Available · Relay offline": "可用 · 中继离线",
   "Available · Relay online": "可用 · 中继在线",
+  Offline: "离线",
   "Available · Relay status unavailable": "可用 · 中继状态不可用",
   "Awaiting Input": "等待输入",
   "Backend child": "后端子进程",
@@ -3835,6 +3928,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Annotation attached to draft": "标注已附加到草稿",
   "Anyone on the web": "网页上的任何人",
   "Ask anything...": "输入任何问题…",
+  "Ask the repo agent, or run a command…": "向仓库智能体提问，或运行命令…",
   "Browser storage is unavailable, so this stash is kept in memory only for this session.":
     "浏览器存储不可用，此暂存内容只会保留在本次会话的内存中。",
   "Browser storage rejected the delete, so this prompt could reappear after a reload.":
@@ -4110,12 +4204,196 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "terminal font family": "终端字体",
   "Stable follows full releases. Nightly follows the nightly desktop channel and can switch back to stable immediately.":
     "稳定版跟随正式发布。夜间版跟随桌面夜间版渠道，并且可以立即切回稳定版。",
+
+  // ── Mobile thread-list chrome ────────────────────────────────────────
+  "Filter and sort threads": "筛选并排序对话",
+  "Clear search": "清除搜索",
+  "Show threads from every environment": "显示所有环境中的对话",
+  "Show threads from every project": "显示所有项目中的对话",
+  "Loading threads…": "正在加载对话…",
+  "No threads in": "中没有对话",
+  "Opens environment settings": "打开环境设置",
+  "Opens the thread": "打开对话",
+  "Opens the queued task for editing": "打开待处理任务进行编辑",
+  "Expands the project": "展开项目",
+  "Collapses the project": "收起项目",
+  "Create new thread in": "新建对话于",
+  threads: "个对话",
+  "Swipe left for archive and delete actions": "左滑查看归档和删除操作",
+  "Delete thread?": "删除对话？",
+  "will be permanently deleted, including its terminal history.": "将被永久删除，包括其终端历史。",
+  "Delete pending task?": "删除待处理任务？",
+  "has not been sent yet and will be removed from the outbox.": "尚未发送，将从发件箱中移除。",
+  "Could not unarchive thread": "无法取消归档对话",
+  "Could not settle thread": "无法完结对话",
+  "Could not un-settle thread": "无法取消完结对话",
+  "Could not snooze thread": "无法暂缓对话",
+  "Could not wake thread": "无法唤醒对话",
+  "Could not pin thread": "无法置顶对话",
+  "Could not unpin thread": "无法取消置顶对话",
+  "Could not move thread": "无法移动对话",
+  "Could not delete pending task": "无法删除待处理任务",
+  "The pending task could not be removed.": "无法移除待处理任务。",
+  "The thread could not be": "对话无法被",
+  "archived.": "归档。",
+  "unarchived.": "取消归档。",
+  "deleted.": "删除。",
+  "settled.": "完结。",
+  "un-settled.": "取消完结。",
+  "This environment's server does not support settling yet. Update the server to use Settle.":
+    "此环境的服务端尚不支持完结功能。请更新服务端后再使用完结。",
+  "This thread still needs attention. Resolve or interrupt it first, then try again.":
+    "该对话仍需处理。请先解决或中断它，然后重试。",
+  "This thread is working. Interrupt it first, then try again.":
+    "该对话正在工作中。请先中断它，然后重试。",
+  "This environment's server does not support snoozing yet. Update the server to use Snooze.":
+    "此环境的服务端尚不支持暂缓功能。请更新服务端后再使用暂缓。",
+  "This thread is waiting on you. Respond to the pending request before snoozing it.":
+    "该对话正在等待你处理。请先回应待处理请求，再暂缓它。",
+  "This thread is still starting a turn. Try again once it's running.":
+    "该对话仍在本回合启动中。请等它运行后再试。",
+  "The thread could not be snoozed.": "无法暂缓该对话。",
+  "This environment's server does not support snoozing yet. Update the server to wake this thread.":
+    "此环境的服务端尚不支持暂缓功能。请更新服务端后再唤醒该对话。",
+  "The thread could not be woken.": "无法唤醒该对话。",
+  "This environment's server does not support pinning yet. Update the server to use Pin.":
+    "此环境的服务端尚不支持置顶功能。请更新服务端后再使用置顶。",
+  "The thread could not be pinned.": "无法置顶该对话。",
+  "The thread could not be unpinned.": "无法取消置顶该对话。",
+  "This environment's server does not support pinned reordering yet. Update the server to reorder pins.":
+    "此环境的服务端尚不支持置顶排序功能。请更新服务端后再调整置顶顺序。",
+  "The pinned thread could not be moved.": "无法移动该置顶对话。",
+  Settle: "完结",
+  "Un-settle": "取消完结",
+  Wake: "唤醒",
+  Pin: "置顶",
+  Unpin: "取消置顶",
+  Snoozed: "暂缓",
+  "Snooze until": "暂缓至",
+  "Choose when to snooze": "选择何时暂缓",
+  "That snooze time has passed. Choose another time.": "该暂缓时间已过，请重新选择。",
+  "Collapses the snoozed threads.": "收起暂缓对话。",
+  "Expands the snoozed threads.": "展开暂缓对话。",
+  "1 snoozed thread": "1 个暂缓对话",
+  "snoozed threads": "个暂缓对话",
+  "Collapses the settled threads.": "收起已完结对话。",
+  "Expands the settled threads.": "展开已完结对话。",
+  "1 settled thread": "1 个已完结对话",
+  "settled threads": "个已完结对话",
+  "settled hidden": "个已完结对话已隐藏",
+  "Opens the thread. Swipe left to": "打开对话。左滑可",
+  "Opens the thread. Swipe left for": "打开对话。左滑可",
+  " and snooze actions.": "和暂缓操作。",
+};
+
+const MOBILE_APPEND_UI_TEXT: Readonly<Record<string, string>> = {
+  "Switch model": "切换模型",
+  "Switch to plan mode": "切换到计划模式",
+  "Switch to default mode": "切换到默认模式",
+  "Loading messages...": "正在加载消息…",
+  "Syncing messages...": "正在同步消息…",
+  Commands: "命令",
+  "Searching files…": "正在搜索文件…",
+  "No skills found.": "未找到技能。",
+  "No matching commands.": "没有匹配的命令。",
+  "No results.": "没有结果。",
+  Edits: "编辑",
+  "Full access": "完全访问",
+  Full: "完全",
+  Runtime: "运行时",
+  "Hide legacy models": "隐藏旧版模型",
+  "Add Comment": "添加评论",
+  "No selection": "未选择",
+  "Select a diff line or range first.": "请先选择差异行或范围。",
+  "File comment": "文件评论",
+  "Leave a comment...": "留下评论…",
+  "Partial diff": "部分差异",
+  "Review unavailable": "审查不可用",
+  "No review diffs": "没有可审查的差异",
+  "This thread has no ready turn diffs and the worktree diff is empty.":
+    "此对话没有可用的回合差异，且工作树差异为空。",
+  "Loading diff…": "正在加载差异…",
+  "No changes": "没有更改",
+  "This diff is empty.": "此差异为空。",
+  "Select diff": "选择差异",
+  "Back to chat": "返回对话",
+  "Hide changed files": "隐藏更改的文件",
+  "Sort by archived date": "按归档日期排序",
+  "Could not load every archive": "无法加载所有归档",
+  "Filter and sort archived threads": "筛选并排序已归档对话",
+  "Refresh archived threads": "刷新已归档对话",
+  "Open git controls": "打开 Git 控制",
+  "Go to threads list": "前往对话列表",
+  "No conversation yet": "尚无对话",
+  "Ask the agent to inspect the repo, run a command, or continue the active thread.":
+    "让智能体检查仓库、运行命令，或继续当前对话。",
+  "Could not load conversation": "无法加载对话",
+  "Messages not cached": "消息未缓存",
+  "This thread was deleted or is no longer available.": "此对话已被删除或不再可用。",
+  "Reconnect this environment to load the conversation.": "重新连接此环境以加载对话。",
+  "This thread is not available in the current mobile snapshot.": "当前移动快照中无法使用此对话。",
+  "Try another search or environment.": "尝试其他搜索或环境。",
+  "Threads you archive will appear here.": "您归档的对话将显示在这里。",
+  "Try again": "重试",
+  "Start or reconnect an environment before adding a project.":
+    "添加项目前，请先启动或重新连接环境。",
+  "Project already exists": "项目已存在",
+  "Lookup repository": "查找仓库",
+  "Browse folders": "浏览文件夹",
+  Clone: "克隆",
+  "No environments connected yet.": "还没有连接任何环境。",
+  Tap: "点击",
+  "to add one.": "即可添加一个。",
+  "Invalid QR code": "无效的二维码",
+  "Scan QR Code": "扫描二维码",
+  "Close scanner": "关闭扫描器",
+  "Scan QR code": "扫描二维码",
+  "Camera permission is required to scan a QR code.": "扫描二维码需要相机权限。",
+  "Allow camera access to scan an environment pairing QR code.":
+    "允许访问相机以扫描环境配对二维码。",
+  "Scanned QR code was not recognized.": "未能识别扫描的二维码。",
+  Host: "主机",
+  "Retry now": "立即重试",
+  " Trace ID: ": " 追踪 ID：",
+  "The app will keep retrying automatically.": "应用将持续自动重试。",
+  "Sign in to your T3 account to set up T3 Connect.": "登录你的 T3 账户以设置 T3 Connect。",
+  "Native terminal unavailable. Using text fallback.": "原生终端不可用，正在使用文本回退。",
+  "Open terminal to start a shell.": "打开终端以启动 Shell。",
+  "type and press return": "输入并按回车",
+  "Native Ghostty surface": "原生 Ghostty 界面",
+  "Terminal unavailable": "终端不可用",
+  "this workspace": "此工作区",
+  "Dismiss keyboard": "收起键盘",
+  "Show keyboard": "显示键盘",
+  "Decrease terminal text size": "减小终端文字大小",
+  "Increase terminal text size": "增大终端文字大小",
+  "Files unavailable": "文件不可用",
+  "This thread does not have an active workspace path.": "此对话没有活跃的工作区路径。",
+  "This file path is invalid.": "此文件路径无效。",
+  "No files found": "未找到文件",
+  "Try a different search.": "尝试其他搜索。",
+  "The workspace file index is empty.": "工作区文件索引为空。",
+  "Maximize files": "最大化文件",
+  "Hide file navigator": "隐藏文件导航",
+  "Open in Safari": "在 Safari 中打开",
+  "Plain text": "纯文本",
+  Text: "文本",
+  "Code & Diffs": "代码与差异",
+  Increase: "增大",
+  Decrease: "减小",
+  Environment: "环境",
+  "Partial file": "部分文件",
+  "Preview limited to the first 1 MB of a truncated file.": "预览限于被截断文件的前 1 MB。",
+  "This terminal route needs an active thread and workspace.": "此终端路由需要活跃的对话和工作区。",
+  "This thread does not have a workspace root yet, so there is nowhere to open a shell.":
+    "此对话还没有工作区根目录，因此无处打开 Shell。",
 };
 
 const UI_TEXT_ALL: Readonly<Record<string, string>> = {
   ...UI_TEXT,
   ...T3_UI_TEXT,
   ...EXTRA_UI_TEXT,
+  ...MOBILE_APPEND_UI_TEXT,
 };
 
 const TOOL_CALL_VERBS_ZH: Record<string, string> = {
@@ -6149,6 +6427,63 @@ export function translateExact(value: string): string {
   if (deleteThreadsInFolderMatch) {
     return `将删除此文件夹中的 ${deleteThreadsInFolderMatch[1]} 个对话，并移除该项目。`;
   }
+  const mobileReconnectingMatch = /^Reconnecting to (.+?)\.\.\.$/.exec(value);
+  if (mobileReconnectingMatch) return `正在重新连接到 ${mobileReconnectingMatch[1]}…`;
+  const mobileReconnectingNoDotsMatch = /^Reconnecting to (.+?)$/.exec(value);
+  if (mobileReconnectingNoDotsMatch) return `正在重新连接到 ${mobileReconnectingNoDotsMatch[1]}`;
+  const mobileReconnectingCountMatch = /^Reconnecting (\d+) environments$/.exec(value);
+  if (mobileReconnectingCountMatch) return `正在重新连接 ${mobileReconnectingCountMatch[1]} 个环境`;
+  if (value === "Syncing threads...") return "正在同步对话…";
+  if (value === "Loading threads...") return "正在加载对话…";
+  if (value === "Not connected") return "未连接";
+  const mobileRetryConnectMatch = /^Failed to connect\. Retrying (.+?)\.\.\.$/.exec(value);
+  if (mobileRetryConnectMatch) return `连接失败，正在重试 ${mobileRetryConnectMatch[1]}…`;
+  const mobileConnectErrorMatch = /^Failed to connect to (.+): (.+)$/.exec(value);
+  if (mobileConnectErrorMatch) {
+    return `无法连接到 ${mobileConnectErrorMatch[1]}：${mobileConnectErrorMatch[2]}`;
+  }
+  const mobileConnectMatch = /^Failed to connect to (.+)$/.exec(value);
+  if (mobileConnectMatch) return `无法连接到 ${mobileConnectMatch[1]}`;
+  const mobileNotConnectedMatch = /^(.+) is not connected$/.exec(value);
+  if (mobileNotConnectedMatch) return `${mobileNotConnectedMatch[1]} 未连接`;
+  const mobileConnectingMatch = /^Connecting to (.+?)\.\.\.$/.exec(value);
+  if (mobileConnectingMatch) return `正在连接 ${mobileConnectingMatch[1]}…`;
+  const mobileUnavailableMatch = /^(.+) is unavailable$/.exec(value);
+  if (mobileUnavailableMatch) return `${mobileUnavailableMatch[1]} 不可用`;
+  const mobileDisconnectedMatch = /^(.+) is disconnected$/.exec(value);
+  if (mobileDisconnectedMatch) return `${mobileDisconnectedMatch[1]} 已断开连接`;
+  const mobileCachedDataMatch =
+    /^Cached data remains available\. The (.+) will load when your connection returns\.$/.exec(
+      value,
+    );
+  if (mobileCachedDataMatch)
+    return `已保留缓存数据。连接恢复后，${mobileCachedDataMatch[1]} 将加载。`;
+  const mobileEnvironmentReadyMatch =
+    /^The (.+) will load as soon as the environment is ready\.$/.exec(value);
+  if (mobileEnvironmentReadyMatch) return `${mobileEnvironmentReadyMatch[1]} 将在环境就绪后加载。`;
+  const mobileReconnectToLoadMatch = /^Reconnect the environment to load the (.+)\.$/.exec(value);
+  if (mobileReconnectToLoadMatch) return `重新连接环境以加载 ${mobileReconnectToLoadMatch[1]}。`;
+  const startAnotherShellMatch = /^Start another shell in (.+)$/i.exec(value);
+  if (startAnotherShellMatch)
+    return `在 ${translateExact(startAnotherShellMatch[1] ?? "")} 中启动另一个 shell`;
+  const queuedSendMatch = /^(\d+) queued messages? will send automatically\.$/.exec(value);
+  if (queuedSendMatch) return `${queuedSendMatch[1]} 条排队消息将自动发送。`;
+  const reviewLineMatch = /^Line (\d+)$/.exec(value);
+  if (reviewLineMatch) return `第 ${reviewLineMatch[1]} 行`;
+  const reviewLinesRangeMatch = /^Lines (\d+)-(\d+)$/.exec(value);
+  if (reviewLinesRangeMatch) return `第 ${reviewLinesRangeMatch[1]}-${reviewLinesRangeMatch[2]} 行`;
+  const reviewLinesSelectedMatch = /^(\d+) lines? selected$/.exec(value);
+  if (reviewLinesSelectedMatch) return `已选择 ${reviewLinesSelectedMatch[1]} 行`;
+  const fileCountMatch = /^(\d+) files?$/.exec(value);
+  if (fileCountMatch) return `${fileCountMatch[1]} 个文件`;
+  const commentCountMatch = /^(\d+) comments?$/.exec(value);
+  if (commentCountMatch) return `${commentCountMatch[1]} 条评论`;
+  const unarchiveThreadMatch = /^Unarchive (.+)$/.exec(value);
+  if (unarchiveThreadMatch) return `取消归档 ${unarchiveThreadMatch[1]}`;
+  const selectedSuffixMatch = /^(.+) \(selected\)$/.exec(value);
+  if (selectedSuffixMatch) return `${selectedSuffixMatch[1]}（已选中）`;
+  const closeSubmenuMatch = /^Close (.+)$/.exec(value);
+  if (closeSubmenuMatch) return `关闭 ${closeSubmenuMatch[1]}`;
 
   const exact = UI_TEXT_ALL[value];
   if (exact) return exact;
