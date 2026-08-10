@@ -187,6 +187,11 @@
 - `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/zh-locale/src/zhCN.ts`：用量页用户文案统一使用 `Token`，将“原始令牌成本 / 已处理令牌 / 每日已处理令牌”改为“原始 Token 成本 / 已消耗 Token / 每日消耗的 Token”。
 - 提供商明细中的 `100.0% 的成本` 改为“成本占比 100.0%”，Token 模式对应显示“Token 占比 …”，明确百分比是成本或 Token 在当前统计范围内的占比。
 
+## 2026-08-10 新建会话英雄区位置
+
+- `apps/web/src/components/ChatView.tsx`：新建会话的标题与输入框整体使用 Synara 同款 `-translate-y-16`，相对当前居中位置上移 `64px`；仅作用于空白草稿英雄区，已有对话的底部输入框不变。
+- 参考源码：`/Users/alfie/Developer/Synara-ZH/apps/web/src/components/ChatView.tsx` 的空白落地容器同样使用 `className="flex w-full -translate-y-16 flex-col justify-center"`。
+
 ## 2026-08-10 线程摘要与输入框状态条
 
 - `packages/zh-locale/src/zhCN.ts`、`apps/web/src/localization/zhCN.test.ts`：工具流折叠摘要从 `+N 个之前的工具调用` 收敛为 `+N 个工具调用`；底层 `previous tool calls` 识别规则保留，展开/折叠能力不变。

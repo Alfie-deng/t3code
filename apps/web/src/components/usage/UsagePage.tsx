@@ -136,7 +136,7 @@ export function UsagePage() {
                   series are always reading the same units. */}
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs tracking-wide text-muted-foreground uppercase">
+                  <span className="text-xs tracking-wide text-muted-foreground">
                     {metric === "cost" ? "原始 Token 成本" : "已消耗 Token"}
                   </span>
                   <span className="text-4xl font-semibold text-foreground tabular-nums">
