@@ -152,18 +152,19 @@ export function SettingsClientStorageRouteScreen() {
                 weight="regular"
               />
               <Text className="flex-1 text-lg tabular-nums text-danger-foreground">
-                {summary ? `Clear ${formatBytes(summary.payloadBytes)}` : t("Clear caches")}
+                {summary ? t(`Clear ${formatBytes(summary.payloadBytes)}`) : t("Clear caches")}
               </Text>
               {isClearing ? <ActivityIndicator color={dangerForegroundColor} /> : null}
             </Pressable>
           </SettingsSection>
           <Text className="px-2 text-sm leading-normal text-foreground-muted">
-            Clearing caches never removes environment connections, credentials, account data, or
-            appearance preferences.
+            {t(
+              "Clearing caches never removes environment connections, credentials, account data, or appearance preferences.",
+            )}
           </Text>
           {AsyncResult.isFailure(summaryResult) || AsyncResult.isFailure(clearResult) ? (
             <Text selectable className="px-2 text-sm text-danger-foreground">
-              Client storage is temporarily unavailable. Try again after restarting the app.
+              {t("Client storage is temporarily unavailable. Try again after restarting the app.")}
             </Text>
           ) : null}
         </View>
@@ -206,7 +207,7 @@ function CacheEnvironmentRow(props: {
         className="rounded-full px-3 py-2 disabled:opacity-40"
       >
         <Text className="font-t3-medium tabular-nums text-danger-foreground" numberOfLines={1}>
-          Clear {formatBytes(props.environment.payloadBytes)}
+          {t(`Clear ${formatBytes(props.environment.payloadBytes)}`)}
         </Text>
       </Pressable>
     </View>

@@ -2696,6 +2696,10 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Clear cache": "清除缓存",
   "Clear Cache": "清除缓存",
   "Clear caches": "清除缓存",
+  "Clearing caches never removes environment connections, credentials, account data, or appearance preferences.":
+    "清除缓存绝不会删除环境连接、凭据、账户数据或外观偏好。",
+  "Client storage is temporarily unavailable. Try again after restarting the app.":
+    "客户端存储暂时不可用，请重启应用后重试。",
   "Clear All Caches": "清除全部缓存",
   "Clear cache for": "清除缓存（",
   "Clear cookies": "清除 Cookie",
@@ -5594,6 +5598,8 @@ export function translateExact(value: string): string {
   if (providerUiMatch) return `为 ${providerUiMatch[1]} 选择自定义强调色`;
   providerUiMatch = /^Clear accent color for (.+)$/i.exec(value);
   if (providerUiMatch) return `清除 ${providerUiMatch[1]} 的强调色`;
+  const clearSizeMatch = /^Clear (.+)$/.exec(value);
+  if (clearSizeMatch) return `清除 ${clearSizeMatch[1]}`;
   providerUiMatch = /^Select (#[0-9a-fA-F]{6}) color$/i.exec(value);
   if (providerUiMatch) return `选择 ${providerUiMatch[1]} 颜色`;
   providerUiMatch = /^Path to the (.+) agent binary\.$/i.exec(value);
