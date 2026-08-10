@@ -64,6 +64,7 @@ import {
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePrimarySettings, useUpdatePrimarySettings } from "../../hooks/useSettings";
 import { useThreadActions } from "../../hooks/useThreadActions";
+import { translateZhCnUiText } from "../../localization/zhCN";
 import { useDesktopUpdateState } from "../../state/desktopUpdate";
 import {
   getCustomModelOptionsByInstance,
@@ -749,7 +750,7 @@ function BackgroundActivityAdvancedDialog({
               <div className="min-w-0 space-y-1">
                 <div className="text-sm font-medium">Git fetch interval</div>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Refresh remote branch status in the background.
+                  {translateZhCnUiText("Refresh remote branch status in the background.")}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -2327,7 +2328,7 @@ export function ArchivedThreadsPanel() {
       if (!api) return;
       const clicked = await api.contextMenu.show(
         [
-          { id: "unarchive", label: "Unarchive" },
+          { id: "unarchive", label: translateZhCnUiText("Unarchive") },
           { id: "delete", label: "Delete", destructive: true },
         ],
         position,
@@ -2444,7 +2445,7 @@ export function ArchivedThreadsPanel() {
                 description={
                   <>
                     Archived {formatRelativeTimeLabel(thread.archivedAt ?? thread.createdAt)}
-                    {" \u00b7 Created "}
+                    {` \u00b7 ${translateZhCnUiText("Created")} `}
                     {formatRelativeTimeLabel(thread.createdAt)}
                   </>
                 }
@@ -2478,7 +2479,7 @@ export function ArchivedThreadsPanel() {
                     }}
                   >
                     <ArchiveX className="size-3.5" />
-                    <span>Unarchive</span>
+                    <span>{translateZhCnUiText("Unarchive")}</span>
                   </Button>
                 }
               />

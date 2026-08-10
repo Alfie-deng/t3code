@@ -509,6 +509,7 @@ export interface ChatComposerProps {
   activeThread: Thread | undefined;
   isServerThread: boolean;
   isLocalDraftThread: boolean;
+  isDraftHeroState: boolean;
   forceExpandedOnMobile: boolean;
   projectSelectionRequired: boolean;
 
@@ -3050,6 +3051,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                 }
                 skills={selectedProviderStatus?.skills ?? []}
                 compact={PERSONAL_UI.compactComposer}
+                draftHero={props.isDraftHeroState}
                 {...(showMobilePendingAnswerActions ? { className: "max-sm:pb-11" } : {})}
                 onRemoveTerminalContext={removeComposerTerminalContextFromDraft}
                 onChange={onPromptChange}

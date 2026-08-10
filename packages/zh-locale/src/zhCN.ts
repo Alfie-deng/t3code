@@ -2555,6 +2555,8 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
     "刷新提供商可用性、版本、认证状态和模型元数据。",
   "Refresh provider status": "刷新提供商状态",
   "Refresh remote branch status in the background.": "在后台刷新远程分支状态。",
+  "Refresh remote branch status in the background. Set this to 0 seconds if Git credentials or security keys should only be prompted by explicit Git actions.":
+    "在后台刷新远程分支状态。将此值设为 0 秒后，仅在明确执行 Git 操作时提示输入 Git 凭据或安全密钥。",
   "Reset all": "全部重置",
   "Shared policy": "共享策略",
   "Latest turn": "最近回合",
@@ -4236,6 +4238,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Delete pending task?": "删除待处理任务？",
   "has not been sent yet and will be removed from the outbox.": "尚未发送，将从发件箱中移除。",
   "Could not unarchive thread": "无法取消归档对话",
+  Created: "创建于",
   "Could not settle thread": "无法完结对话",
   "Could not un-settle thread": "无法取消完结对话",
   "Could not snooze thread": "无法暂缓对话",

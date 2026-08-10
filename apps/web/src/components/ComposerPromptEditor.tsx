@@ -885,6 +885,7 @@ interface ComposerPromptEditorProps {
   placeholder: string;
   className?: string;
   compact?: boolean;
+  draftHero?: boolean;
   onRemoveTerminalContext: (contextId: string) => void;
   onChange: (
     nextValue: string,
@@ -1535,6 +1536,7 @@ function ComposerPromptEditorInner({
   placeholder,
   className,
   compact,
+  draftHero,
   onRemoveTerminalContext,
   onChange,
   onCommandKeyDown,
@@ -1757,9 +1759,14 @@ function ComposerPromptEditorInner({
                 // The size comes from .composer-editor-surface so Settings -> Appearance
                 // can drive it; keep everything else here.
                 "block w-full overflow-y-auto whitespace-pre-wrap wrap-break-word bg-transparent leading-relaxed text-foreground focus:outline-none",
-                compact ? "max-h-[9.375rem] min-h-[2lh]" : "max-h-50 min-h-17.5",
+                draftHero
+                  ? "max-h-[9.375rem] min-h-[2.5lh]"
+                  : compact
+                    ? "max-h-[9.375rem] min-h-[2lh]"
+                    : "max-h-50 min-h-17.5",
                 className,
               )}
+              style={draftHero ? { minHeight: "calc(2.5lh + 1.75rem)" } : undefined}
               data-testid="composer-editor"
               aria-placeholder={placeholder}
               placeholder={<span />}
@@ -1799,6 +1806,7 @@ export function ComposerPromptEditor({
   placeholder,
   className,
   compact,
+  draftHero,
   onRemoveTerminalContext,
   onChange,
   onCommandKeyDown,
@@ -1837,6 +1845,7 @@ export function ComposerPromptEditor({
         disabled={disabled}
         placeholder={placeholder}
         {...(compact ? { compact } : {})}
+        {...(draftHero ? { draftHero } : {})}
         onRemoveTerminalContext={onRemoveTerminalContext}
         onChange={onChange}
         onPaste={onPaste}

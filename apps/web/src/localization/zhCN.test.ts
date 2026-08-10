@@ -108,6 +108,15 @@ describe("T3 Code 简体中文工作流文案", () => {
     );
     expect(translateZhCnUiText("33 models available.")).toBe("33 个可用模型。");
     expect(translateZhCnUiText("GitHub availability")).toBe("GitHub 可用性");
+    expect(translateZhCnUiText("Unarchive")).toBe("取消归档");
+    expect(translateZhCnUiText("Created")).toBe("创建于");
+    expect(
+      translateZhCnUiText(
+        "Refresh remote branch status in the background. Set this to 0 seconds if Git credentials or security keys should only be prompted by explicit Git actions.",
+      ),
+    ).toBe(
+      "在后台刷新远程分支状态。将此值设为 0 秒后，仅在明确执行 Git 操作时提示输入 Git 凭据或安全密钥。",
+    );
     expect(translateZhCnUiText("1 upstream provider connected through OpenCode.")).toBe(
       "已通过 OpenCode 连接 1 个上游提供商。",
     );
