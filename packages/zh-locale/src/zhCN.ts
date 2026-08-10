@@ -1370,6 +1370,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "View release history": "查看发布历史",
   "Shown automatically only when recovery actions are relevant.": "仅在恢复操作相关时自动显示。",
   Environment: "环境",
+  "Environment:": "环境：",
   "Panel sections": "面板分区",
   "Initialize Git": "初始化 Git",
   "Local Servers": "本地服务器",
@@ -1926,8 +1927,8 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Tool call": "工具调用",
   Grep: "搜索",
   Glob: "文件匹配",
-  Bash: "命令",
-  Shell: "命令",
+  Bash: "运行命令",
+  Shell: "运行命令",
   StrReplace: "替换",
   Write: "写入",
   MultiEdit: "批量编辑",
@@ -1982,7 +1983,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   "Reasoning update": "推理更新",
   "Reasoning trace": "推理轨迹",
   "Reasoning summary": "推理摘要",
-  "Command execution": "命令执行",
+  "Command execution": "运行命令",
   "Tool call complete": "工具调用完成",
   "Tool call completed": "工具调用完成",
   "Ran command started": "正在运行命令",
@@ -5304,6 +5305,11 @@ export function translateExact(value: string): string {
     const normalizedExact = UI_TEXT_ALL[normalizedWhitespaceValue];
     if (normalizedExact) return normalizedExact;
   }
+  let projectRenameMatch = /^Update the title for (.+)\.$/.exec(value);
+  if (projectRenameMatch) return `更新 ${projectRenameMatch[1]} 的标题。`;
+  if (value === "Update the project title.") return "更新项目标题。";
+  const environmentDetailMatch = /^Environment:\s*(.+)$/.exec(value);
+  if (environmentDetailMatch) return `环境：${environmentDetailMatch[1]}`;
   const providerAdapterError = translateProviderAdapterError(value);
   if (providerAdapterError) return providerAdapterError;
   let providerUiMatch = /^Choose custom accent color for (.+)$/i.exec(value);

@@ -59,6 +59,15 @@ describe("T3 Code 简体中文工作流文案", () => {
   });
 
   it("translates settings menus, diagnostics, and thread actions", () => {
+    expect(translateZhCnUiText("Update the title for /Users/alfie/Codex/Agent工作台.")).toBe(
+      "更新 /Users/alfie/Codex/Agent工作台 的标题。",
+    );
+    expect(translateZhCnUiText("Update the project title.")).toBe("更新项目标题。");
+    expect(translateZhCnUiText("Environment:")).toBe("环境：");
+    expect(translateZhCnUiText("Environment: Alfie Macbook")).toBe("环境：Alfie Macbook");
+    expect(translateZhCnUiText("Bash")).toBe("运行命令");
+    expect(translateZhCnUiText("Shell")).toBe("运行命令");
+    expect(translateZhCnUiText("Command execution")).toBe("运行命令");
     expect(translateZhCnUiText("Balanced")).toBe("均衡");
     expect(translateZhCnUiText("4m ago")).toBe("4分钟前");
     expect(translateZhCnUiText("Reset Claude provider settings to default")).toBe(

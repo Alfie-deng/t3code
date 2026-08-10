@@ -73,6 +73,7 @@
 - 已有对话的普通输入框显示简短占位文字“提出后续修改”，不再显示冗长的操作指南；首页新建线程输入框显示“随心构建你的想法”。
 - 首页输入框按 Synara 的紧凑规格收敛：编辑区最小高度采用两行行高（`2lh`），底部工具栏使用更紧的垂直间距；可输入内容的最大高度缩短约四分之一。审批、用户输入和计划反馈等必要提示继续显示。
 - 封面项目标题采用 Synara 的“想在〔项目名〕构建什么？”文案与排版：`26px`，桌面端 `30px`，字重和行高保持一致。
+- 封面项目名仍保留项目选择器和键盘焦点能力，但去掉项目名下方的虚线装饰。
 - 右侧智能体空状态正文与面板快捷键提示也纳入汉化验收，避免只翻标题、不翻说明。
 - 发送和停止按钮的外圆在原尺寸基础上各缩小 `2px`，并整体向右移动 `2px`；颜色与交互保持 T3 原样。内部箭头直接复用 `apps/web/public/synara-icons/arrow-up.svg`，按 `18px`、`bg-current` 的 CSS mask 呈现；停止方块最终为 `10px`、`1px` 圆角。
 
@@ -86,6 +87,8 @@
 | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `apps/web/src/localization/zhCN.ts`                                                                                                           | 简体中文词典、动态状态/工具调用/错误/快捷键条件/线程操作翻译；保留技术前缀、路径、URL、代码和用户内容；支持 `T3-code__preview_open` 这类服务前缀加动作名的翻译。 | 字典分层、动态翻译入口、工具动作映射和 MutationObserver；不要用上游新字典覆盖整个文件。 |
 | `apps/web/src/localization/zhCN.test.ts`                                                                                                      | 验证 `Tool`、`T3-code__preview_open`、`preview_*`、工具调用数量和中文状态。                                                                                      | 新增英文 UI 时同步补测试，不要删除这些定制断言。                                        |
+| `packages/zh-locale/src/zhCN.ts`                                                                                                              | 补充项目重命名弹窗的动态文案（标题路径、环境前缀）；工作流独立工具标题 `Bash` / `Shell` / `Command execution` 统一显示为“运行命令”。                             | 共享词典仍是桌面与移动端共用单一真源；工作流状态中的“已运行命令”不重复改成病句。        |
+| `apps/desktop/src/desktopDialogZh.ts`、`apps/desktop/src/electron/ElectronMenu.ts`                                                            | 原生项目菜单补齐“分组到…”和“移除”，并保留“重命名”“复制路径”等中文菜单项。                                                                                        | 原生菜单必须走白名单翻译，不能依赖 Web DOM MutationObserver。                           |
 | `apps/web/src/components/chat/MessagesTimeline.tsx`                                                                                           | 工作流分组、`previous tool calls`、工具调用数量、展开/收起和时间线标签进入中文翻译层。                                                                           | 翻译调用必须包住新增工作流行，不要只翻静态标题。                                        |
 | `apps/web/src/components/AgentsPanel.tsx`                                                                                                     | “还没有智能体”及子智能体/工作流说明、活动和 Token 用量说明汉化。                                                                                                 | 空状态正文不能只留下标题中文。                                                          |
 | `apps/web/src/components/chat/ProviderStatusBanner.tsx`                                                                                       | 提供商状态、CLI 可用性、认证失败、受限状态和关闭按钮标签汉化。                                                                                                   | raw 状态先保留，再交给 `translateZhCnUiText`；错误码和提供商名不乱翻。                  |
@@ -101,7 +104,7 @@
 | `apps/web/src/personalUi.ts`                              | 集中保存顶部入口隐藏、完全访问运行模式隐藏、紧凑输入框、隐藏冗余指南、新线程占位文字等个人开关。                                                                                                          | 新增个人偏好优先放这里，不要散落硬编码。                                                                               |
 | `apps/web/src/components/chat/ChatComposer.tsx`           | 已有对话占位“提出后续修改”；新线程占位“随心构建你的想法”；保留审批/计划/用户输入等必要提示；输入框按 Synara 的 `2lh` 高度和更紧工具栏布局；按 `hideRuntimeModeControl` 同时移除“完全访问”和其左侧分隔线。 | 不要把普通对话和新线程占位文字混成一个默认值；隐藏运行模式时也要隐藏它配套的分隔线。                                   |
 | `apps/web/src/components/ComposerPromptEditor.tsx`        | 增加 `compact` 模式，最小高度 `2lh`，最大高度缩短，保持编辑器行为不变。                                                                                                                                   | 保留 `compact` 参数和可访问文本编辑行为。                                                                              |
-| `apps/web/src/components/chat/DraftHeroHeadline.tsx`      | 封面采用“想在〔项目名〕构建什么？”；字号 `26px`，桌面端 `30px`，字重/行高按 Synara。                                                                                                                      | 文案和排版是个人定制，不要被上游默认标题覆盖。                                                                         |
+| `apps/web/src/components/chat/DraftHeroHeadline.tsx`      | 封面采用“想在〔项目名〕构建什么？”；字号 `26px`，桌面端 `30px`，字重/行高按 Synara；项目名保留选择器功能但移除虚线下划线。                                                                                | 文案、排版和项目选择器交互是个人定制，不要被上游默认标题或装饰线覆盖。                                                 |
 | `apps/web/src/components/chat/ComposerPrimaryActions.tsx` | 发送/停止按钮外圆各缩小 `2px` 并向右移动 `2px`，颜色与交互不动；箭头使用 Synara 原始资源的 CSS mask，按 `size-4.5` 渲染；停止键最终使用 `size-2.5 rounded-[1px]`。                                        | 上游同步时保留这组外圆尺寸/偏移定制；不要恢复原尺寸；保留 `data-synara-icon="arrow-up"` / `stop-square` 便于回归检查。 |
 | `apps/web/public/synara-icons/arrow-up.svg`               | 从 Synara 直接带入的 `arrow-up` 原资源。                                                                                                                                                                  | 上游同步时不得删除；若 Synara 更新图标，先视觉对比再替换。                                                             |
 
@@ -137,6 +140,14 @@
 - 冲突处理顺序：先保留行为（占位逻辑、顶部隐藏、工作流翻译、Synara 图标、原生菜单/对话框），再吸收上游结构和新功能，最后重跑定制测试、类型检查、构建、签名和真实窗口验收。
 - `.env` 只保留在本机，用于 Connections 页面所需的公共运行配置；不提交、不写入本文件、不复制进发布产物说明。
 - 每次上游更新必须重点回归：新线程/已有对话占位、发送/停止、工具调用流、Agents 空状态、命令面板、账户/移动客户端、Connections、原生菜单，以及顶部五个隐藏入口仍未回归出现。
+
+## 2026-08-10 增补回读
+
+- 项目菜单真实回读：`重命名`、`分组到…`、`复制路径`、`移除` 均为中文；项目菜单功能保留。
+- 项目重命名弹窗真实回读：`更新 /Users/alfie/Codex/Agent工作台 的标题。`、`项目标题`、`环境： Alfie Macbook`、`取消`、`保存`。
+- 封面真实截图：`/tmp/t3code-final-rename-home-20260810.jpeg`；项目名 `Agent工作台` 下方虚线已移除，点击切换项目能力仍保留。
+- 弹窗真实截图：`/tmp/t3code-final-rename-dialog-20260810.jpeg`；英文 `Environment:` 不再出现。
+- 当前覆盖安装：`/Applications/T3 Code.app`，版本 `0.0.32`；签名身份仍为 `Apple Development: jet.deng@me.com (PTY74USJAK)`，并带 `customizations/macos-electron.entitlements.plist`，无密码提示。
 
 ## 上游同步原则
 

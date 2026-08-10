@@ -120,7 +120,7 @@ describe("ElectronMenu", () => {
           popup: (options: Electron.PopupOptions) => {
             assert.deepEqual(
               template.filter((item) => item.type !== "separator").map((item) => item.label),
-              ["固定对话", "暂缓", "删除"],
+              ["固定对话", "暂缓", "重命名", "分组到…", "复制路径", "删除", "移除"],
             );
             const snoozeSubmenu = template.find((item) => item.label === "暂缓")?.submenu;
             if (!Array.isArray(snoozeSubmenu)) {
@@ -145,7 +145,11 @@ describe("ElectronMenu", () => {
             label: "Snooze",
             children: [{ id: "snooze:hour", label: "In 1 hour" }],
           },
+          { id: "rename", label: "Rename" },
+          { id: "group", label: "Group into..." },
+          { id: "copy-path", label: "Copy Path" },
           { id: "delete", label: "Delete", destructive: true },
+          { id: "remove", label: "Remove", destructive: true },
         ],
         position: Option.none(),
       });

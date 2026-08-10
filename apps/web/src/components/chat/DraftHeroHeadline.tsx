@@ -102,7 +102,7 @@ export function DraftHeroHeadline({
     <Menu>
       <MenuTrigger
         aria-label={translateZhCnUiText(hasResolvedProject ? "Change project" : "Choose a project")}
-        className="pointer-events-auto inline-block max-w-64 truncate border-foreground/60 border-b border-dotted align-bottom text-foreground transition-colors hover:border-foreground/80 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+        className="pointer-events-auto inline-block max-w-64 truncate align-bottom text-foreground transition-colors focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         title={activeProjectDisplayName ?? undefined}
       >
         {activeProjectDisplayName ?? translateZhCnUiText("Choose a project")}
@@ -142,7 +142,7 @@ export function DraftHeroHeadline({
     <button
       type="button"
       onClick={openAddProject}
-      className="pointer-events-auto inline cursor-pointer border-muted-foreground/35 border-b border-dotted text-muted-foreground/60 transition-colors hover:border-muted-foreground/60 hover:text-muted-foreground/80 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+      className="pointer-events-auto inline cursor-pointer text-muted-foreground/60 transition-colors hover:text-muted-foreground/80 focus-visible:rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
     >
       {activeProjectTitle ?? translateZhCnUiText("Add a project")}
     </button>

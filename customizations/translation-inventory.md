@@ -83,6 +83,14 @@
 
 本节关闭的是本轮已实际回读的最终包；以后上游同步仍必须按本文“文件逐项对照”和 P0 矩阵重新验收，不能因为这次通过就跳过。
 
+## 2026-08-10 增补盘点与回读
+
+- 项目菜单真实回读：`重命名`、`分组到…`、`复制路径`、`移除`；原生菜单功能保持不变。
+- 重命名弹窗真实回读：标题路径、`环境：` 前缀、项目标题、取消和保存均为中文；证据：`/tmp/t3code-final-rename-dialog-20260810.jpeg`。
+- 首页真实截图：`/tmp/t3code-final-rename-home-20260810.jpeg`；项目名仍可点击切换，但虚线下划线已移除。
+- 工作流术语：独立的 `Bash` / `Shell` / `Command execution` 显示为“运行命令”；“已运行命令”等完整状态不重复叠加。
+- 最终覆盖安装：`/Applications/T3 Code.app`，签名使用 `Apple Development: jet.deng@me.com (PTY74USJAK)`，并保留 Electron JIT/动态库所需 entitlements。
+
 ## P0 工作流验收矩阵
 
 | 阶段       | 中文必须覆盖                                                           | 证据                                                                            |
