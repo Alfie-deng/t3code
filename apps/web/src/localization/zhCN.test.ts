@@ -69,6 +69,8 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Bash")).toBe("运行命令");
     expect(translateZhCnUiText("Shell")).toBe("运行命令");
     expect(translateZhCnUiText("Command execution")).toBe("运行命令");
+    expect(translateZhCnUiText("Raw token cost")).toBe("原始 Token 成本");
+    expect(translateZhCnUiText("Processed tokens")).toBe("已消耗 Token");
     expect(translateZhCnUiText("Balanced")).toBe("均衡");
     expect(translateZhCnUiText("4m ago")).toBe("4分钟前");
     expect(translateZhCnUiText("Reset Claude provider settings to default")).toBe(

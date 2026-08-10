@@ -182,6 +182,11 @@
 - `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`：标题、提供商明细、统计卡片、模型/日期表格、图表坐标轴和悬浮提示全部复用同一格式化器；移除“个 Token”混搭文案，保留技术术语 `Token`。
 - `apps/web/src/usage/usageFormat.test.ts`：锁定 `8.78亿`、`2700万`、`273万`、`10.8万` 和 `8,765` 等边界与代表性输出。
 
+## 2026-08-10 用量术语统一
+
+- `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/zh-locale/src/zhCN.ts`：用量页用户文案统一使用 `Token`，将“原始令牌成本 / 已处理令牌 / 每日已处理令牌”改为“原始 Token 成本 / 已消耗 Token / 每日消耗的 Token”。
+- 提供商明细中的 `100.0% 的成本` 改为“成本占比 100.0%”，Token 模式对应显示“Token 占比 …”，明确百分比是成本或 Token 在当前统计范围内的占比。
+
 ## 2026-08-10 线程摘要与输入框状态条
 
 - `packages/zh-locale/src/zhCN.ts`、`apps/web/src/localization/zhCN.test.ts`：工具流折叠摘要从 `+N 个之前的工具调用` 收敛为 `+N 个工具调用`；底层 `previous tool calls` 识别规则保留，展开/折叠能力不变。

@@ -137,7 +137,7 @@ export function UsagePage() {
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1">
                   <span className="text-xs tracking-wide text-muted-foreground uppercase">
-                    {metric === "cost" ? "原始令牌成本" : "已处理令牌"}
+                    {metric === "cost" ? "原始 Token 成本" : "已消耗 Token"}
                   </span>
                   <span className="text-4xl font-semibold text-foreground tabular-nums">
                     {metric === "cost"
@@ -177,8 +177,8 @@ export function UsagePage() {
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {metric === "cost"
-                          ? `${formatPercent(share)} 的成本 · ${formatTokens(provider.totalTokens)} Token`
-                          : `${formatPercent(share)} 的 Token · ${formatUsd(provider.costUsd)}`}
+                          ? `成本占比 ${formatPercent(share)} · ${formatTokens(provider.totalTokens)} Token`
+                          : `Token 占比 ${formatPercent(share)} · ${formatUsd(provider.costUsd)}`}
                       </span>
                     </div>
                   );
@@ -188,7 +188,7 @@ export function UsagePage() {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h2 className="text-sm font-medium text-foreground">
-                    每日{metric === "tokens" ? "已处理令牌" : "成本"}
+                    每日{metric === "tokens" ? "消耗的 Token" : "成本"}
                   </h2>
                   <div className="flex items-center gap-4">
                     <div className="flex overflow-hidden rounded-md border border-border">
@@ -198,7 +198,7 @@ export function UsagePage() {
                           type="button"
                           onClick={() => setMetric(option)}
                           className={cn(
-                            "cursor-pointer px-2.5 py-1 text-[10px] tracking-wide uppercase",
+                            "cursor-pointer px-2.5 py-1 text-[10px] tracking-wide",
                             option === metric
                               ? "bg-muted text-foreground"
                               : "text-muted-foreground hover:text-foreground",
@@ -217,7 +217,7 @@ export function UsagePage() {
 
             <section className="grid grid-cols-2 gap-px border-y border-border bg-border md:grid-cols-5">
               <Metric
-                label="已处理令牌"
+                label="已消耗 Token"
                 value={formatTokens(merged.totalTokens)}
                 detail={`活跃日均 ${formatTokens(dailyAverage)} Token`}
               />
@@ -502,7 +502,7 @@ function UsageSkeleton() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <span className="text-xs tracking-wide text-muted-foreground uppercase">
-              原始令牌成本
+              原始 Token 成本
             </span>
             <div className="my-1.5 h-8 w-36 rounded-sm bg-muted" />
             <div className="h-3 w-28 rounded-sm bg-muted" />
@@ -540,7 +540,7 @@ function UsageSkeleton() {
       </section>
 
       <section className="grid grid-cols-2 gap-px border-y border-border bg-border md:grid-cols-5">
-        {["已处理令牌", "已缓存输入", "未缓存输入", "输出", "缓存节省"].map((label) => (
+        {["已消耗 Token", "已缓存输入", "未缓存输入", "输出", "缓存节省"].map((label) => (
           <div key={label} className="flex flex-col gap-0.5 bg-background px-4 py-3">
             <span className="text-xs text-muted-foreground">{label}</span>
             <div className="my-1 h-5 w-16 rounded-sm bg-muted" />

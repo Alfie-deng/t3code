@@ -277,7 +277,7 @@ export function UsageProviderChart({ days, daily, metric }: UsageProviderChartPr
             viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
             preserveAspectRatio="none"
             role="img"
-            aria-label={`每日${metric === "tokens" ? "已处理令牌" : "成本"}（按提供商）`}
+            aria-label={`每日${metric === "tokens" ? "消耗的 Token" : "成本"}（按提供商）`}
           >
             {ticks.map((tick) => {
               const y = toY(tick);
