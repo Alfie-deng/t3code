@@ -6,11 +6,11 @@
 
 ## 当前基线
 
-- 盘点日期：2026-08-09
+- 盘点日期：2026-08-10
 - 私人 fork：`https://github.com/Alfie-deng/t3code`
 - 本地路径：`/Users/alfie/Developer/t3code`
 - 上游：`https://github.com/pingdotgg/t3code`
-- 当前基线：`ba9c9ae81dce4e554b4dd52abfd28d0c01b5c651`
+- 当前基线：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`
 - 当前安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`
 - 构建目标：macOS Apple Silicon，覆盖安装 `/Applications/T3 Code.app`
 
@@ -154,7 +154,7 @@
 | `apps/web/src/components/settings/AddProviderInstanceDialog.tsx`、`AddProviderInstanceWizardSteps.tsx`、`DiagnosticsSettings.tsx`、`KeybindingsSettings.tsx`                       | 添加提供商、向导步骤、诊断、快捷键条件/状态等设置入口汉化。                                                                |
 | `apps/web/src/components/settings/ProviderAccentColorPicker.tsx`、`ProviderInstanceCard.tsx`、`ProviderModelsSection.tsx`、`ProviderSettingsPanel.tsx`、`SettingsFontPreviews.tsx` | 提供商卡片、账户/版本/模型数量/连接状态、颜色选择无障碍标题、字体预览等碎片文案汉化。                                      |
 | `apps/web/src/components/color-selector.tsx`                                                                                                                                       | 颜色选择器的可访问名称汉化。                                                                                               |
-| `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`apps/web/src/usage/usageFormat.ts`                                                                       | 用量页日期范围、成本/Token、统计卡片、图表说明、缓存节省和无障碍标签汉化；数值格式保持原语义。                             |
+| `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/shared/src/usageFormat.ts`                                                                      | 用量页日期范围、成本/Token、统计卡片、图表说明、缓存节省和无障碍标签汉化；数值格式保持原语义。                             |
 | `apps/web/src/components/sidebar/SidebarChrome.tsx`                                                                                                                                | 隐藏顶部品牌入口，保留侧边栏、搜索、设置、用量和项目能力。                                                                 |
 
 #### Electron 原生层与预览标注编辑器
@@ -198,9 +198,9 @@
 
 ## 2026-08-10 用量单位统一
 
-- `apps/web/src/usage/usageFormat.ts`：用量数字统一走中文单位格式化器：`≥1亿` 显示“亿”，`1万–1亿` 显示“万”，低于 `1万` 使用千位分隔整数；最多保留两位小数并去掉尾随零。
+- `packages/shared/src/usageFormat.ts`：用量数字统一走中文单位格式化器：`≥1亿` 显示“亿”，`1万–1亿` 显示“万”，低于 `1万` 使用千位分隔整数；最多保留两位小数并去掉尾随零。
 - `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`：标题、提供商明细、统计卡片、模型/日期表格、图表坐标轴和悬浮提示全部复用同一格式化器；移除“个 Token”混搭文案，保留技术术语 `Token`。
-- `apps/web/src/usage/usageFormat.test.ts`：锁定 `8.78亿`、`2700万`、`273万`、`10.8万` 和 `8,765` 等边界与代表性输出。
+- `packages/shared/src/usageFormat.test.ts`：锁定 `8.78亿`、`2700万`、`273万`、`10.8万` 和 `8,765` 等边界与代表性输出。
 
 ## 2026-08-10 用量术语统一
 
@@ -216,6 +216,14 @@
 
 - `packages/zh-locale/src/zhCN.ts`、`apps/web/src/localization/zhCN.test.ts`：工具流折叠摘要从 `+N 个之前的工具调用` 收敛为 `+N 个工具调用`；底层 `previous tool calls` 识别规则保留，展开/折叠能力不变。
 - `apps/web/src/personalUi.ts`、`apps/web/src/components/ChatView.tsx`：隐藏输入框下方的“本地检出”和当前分支名状态条；检出、切换工作区、分支选择和相关状态逻辑保留，只移除这条个人不需要的可见栏。
+
+## 2026-08-10 上游同步
+
+- 已执行 `git fetch upstream main`，并将 `upstream/main` 的 28 个提交合并到私人分支；合并提交：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`。
+- 保留上游的工作区/设置面包屑、主题确认框、移动端宽 Markdown 修复、Usage 数据去重、服务器 SVG 安全处理、项目上下文路由和移动端 Usage 页面等新能力。
+- 上游把 Usage 格式化与合并逻辑迁移到 `packages/shared/src/`；中文单位、Token 术语、成本/Token 占比、桌面与移动端用量文案已在新结构上重新压回。
+- 上游重做线程顶部结构后，重新保留 `PERSONAL_UI` 的顶部入口隐藏和线程标题窄点击区；封面中文文案、无虚线、搜索栏快捷键隐藏、输入框占位、工作流汉化和 nightly 个人图标均未被整文件覆盖。
+- 合并后的证据：web/mobile/desktop/scripts/shared 类型检查 exit 0；定制格式化检查通过；web 50 项、desktop 5 项、mobile 3 项定向测试通过。
 
 ## 上游同步原则
 
