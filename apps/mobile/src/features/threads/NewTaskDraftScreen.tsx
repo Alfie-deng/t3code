@@ -1,4 +1,5 @@
 import { NativeStackScreenOptions } from "../../native/StackHeader";
+import { t } from "../../localization/zhCN";
 import { StackActions, useNavigation, usePreventRemove } from "@react-navigation/native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alert, InteractionManager, Platform, View, useColorScheme } from "react-native";
@@ -57,9 +58,9 @@ function formatWorkspaceLabel(input: {
 }): string {
   const branchName = input.selectedBranchName ?? input.currentBranchName;
   if (input.workspaceMode === "worktree") {
-    return branchName ? `New worktree · ${branchName}` : "New worktree";
+    return branchName ? `${t("New worktree")} · ${branchName}` : t("New worktree");
   }
-  return branchName ? `Current · ${branchName}` : "Current checkout";
+  return branchName ? `${t("Current")} · ${branchName}` : t(t("Current checkout"));
 }
 
 export function NewTaskDraftScreen(props: {
@@ -346,8 +347,10 @@ export function NewTaskDraftScreen(props: {
       if (isIncomingShareUnavailable && alertedUnavailableIncomingShareIdRef.current !== shareId) {
         alertedUnavailableIncomingShareIdRef.current = shareId;
         Alert.alert(
-          "Shared content unavailable",
-          "The shared content is no longer in the inbox. You can continue editing this task draft.",
+          t("Shared content unavailable"),
+          t(
+            "The shared content is no longer in the inbox. You can continue editing this task draft.",
+          ),
         );
       }
       return;
@@ -406,7 +409,7 @@ export function NewTaskDraftScreen(props: {
         );
       }
       if (warnings.length > 0) {
-        Alert.alert("Some shared content was skipped", warnings.join("\n"));
+        Alert.alert(t("Some shared content was skipped"), warnings.join("\n"));
       }
       shareImportDraftBackupRef.current.delete(importKey);
     })()
@@ -416,7 +419,7 @@ export function NewTaskDraftScreen(props: {
         }
         Alert.alert(
           "Could not import shared content",
-          error instanceof Error ? error.message : "The shared content could not be saved.",
+          error instanceof Error ? error.message : t("The shared content could not be saved."),
           [
             {
               text: "Cancel import",
@@ -455,7 +458,7 @@ export function NewTaskDraftScreen(props: {
                       "Could not cancel import",
                       cancelError instanceof Error
                         ? cancelError.message
-                        : "The shared content could not be restored safely.",
+                        : t("The shared content could not be restored safely."),
                       [
                         {
                           text: "Retry import",
@@ -466,7 +469,7 @@ export function NewTaskDraftScreen(props: {
                           },
                         },
                         {
-                          text: "Retry cancel",
+                          text: t("Retry cancel"),
                           onPress: () => void cancelImport(),
                         },
                       ],
@@ -478,7 +481,7 @@ export function NewTaskDraftScreen(props: {
               },
             },
             {
-              text: "Retry",
+              text: t("Retry"),
               onPress: () => setShareImportAttempt((attempt) => attempt + 1),
             },
           ],
@@ -572,7 +575,7 @@ export function NewTaskDraftScreen(props: {
         ? [
             {
               id: "workspace:branch:none",
-              title: flow.branchesLoading ? "Loading branches…" : "No branches available",
+              title: flow.branchesLoading ? t("Loading branches…") : t("No branches available"),
               attributes: { disabled: true },
             },
           ]
@@ -593,11 +596,11 @@ export function NewTaskDraftScreen(props: {
     return [
       {
         id: "workspace:mode",
-        title: "Mode",
-        subtitle: flow.workspaceMode === "local" ? "Current checkout" : "New worktree",
+        title: t("Mode"),
+        subtitle: flow.workspaceMode === "local" ? t("Current checkout") : t("New worktree"),
         subactions: (["local", "worktree"] as const).map((value) => ({
           id: `workspace:mode:${value}`,
-          title: value === "local" ? "Current checkout" : "New worktree",
+          title: value === "local" ? t("Current checkout") : t("New worktree"),
           state: flow.workspaceMode === value ? ("on" as const) : undefined,
         })),
       },

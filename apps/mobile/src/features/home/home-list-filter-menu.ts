@@ -1,5 +1,6 @@
 import type { EnvironmentId, SidebarThreadSortOrder } from "@t3tools/contracts";
 
+import { t } from "../../localization/zhCN";
 import type { HomeProjectSortOrder } from "./homeThreadList";
 import { PROJECT_SORT_OPTIONS, THREAD_SORT_OPTIONS } from "./home-list-options";
 
@@ -52,12 +53,12 @@ export function buildHomeListFilterMenu(props: {
 
   items.push({
     type: "submenu",
-    title: "Environment",
+    title: t("Environment"),
     items: [
       {
         type: "action",
-        title: "All environments",
-        subtitle: "Show threads from every environment",
+        title: t("All environments"),
+        subtitle: t("Show threads from every environment"),
         state: props.selectedEnvironmentId === null ? "on" : "off",
         onPress: () => props.onEnvironmentChange(null),
       },
@@ -76,12 +77,12 @@ export function buildHomeListFilterMenu(props: {
   if (props.projects.length > 0) {
     items.push({
       type: "submenu",
-      title: "Project",
+      title: t("Project"),
       items: [
         {
           type: "action",
-          title: "All projects",
-          subtitle: "Show threads from every project",
+          title: t("All projects"),
+          subtitle: t("Show threads from every project"),
           state: props.selectedProjectKey === null ? "on" : "off",
           onPress: () => props.onProjectChange(null),
         },
@@ -99,7 +100,7 @@ export function buildHomeListFilterMenu(props: {
     items.push(
       {
         type: "submenu",
-        title: "Sort projects",
+        title: t("Sort projects"),
         items: PROJECT_SORT_OPTIONS.map((option) => ({
           type: "action",
           title: option.label,
@@ -109,7 +110,7 @@ export function buildHomeListFilterMenu(props: {
       },
       {
         type: "submenu",
-        title: "Sort threads",
+        title: t("Sort threads"),
         items: THREAD_SORT_OPTIONS.map((option) => ({
           type: "action",
           title: option.label,
@@ -121,7 +122,7 @@ export function buildHomeListFilterMenu(props: {
   }
 
   return {
-    title: "Thread list options",
+    title: t("Thread list options"),
     items,
   };
 }

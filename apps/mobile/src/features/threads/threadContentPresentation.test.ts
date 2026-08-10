@@ -35,8 +35,8 @@ describe("thread content presentation", () => {
       }),
     ).toEqual({
       kind: "unavailable",
-      title: "Messages not cached",
-      detail: "Reconnect this environment to load the conversation.",
+      title: "消息未缓存",
+      detail: "重新连接此环境以加载对话。",
     });
   });
 
@@ -50,7 +50,7 @@ describe("thread content presentation", () => {
       }),
     ).toEqual({
       kind: "unavailable",
-      title: "Could not load conversation",
+      title: "无法加载对话",
       detail: "The thread stream failed.",
     });
   });

@@ -1,4 +1,5 @@
 import { SymbolView } from "../../components/AppSymbol";
+import { t } from "../../localization/zhCN";
 import { connectionStatusText } from "@t3tools/client-runtime/connection";
 import type { AtomCommandResult } from "@t3tools/client-runtime/state/runtime";
 import type { EnvironmentId } from "@t3tools/contracts";
@@ -90,7 +91,7 @@ export function ConnectionEnvironmentRow(props: {
               numberOfLines={props.expanded ? undefined : 1}
               selectable={props.expanded}
             >
-              {statusLabel}
+              {t(statusLabel)}
               {statusTraceId ? (
                 <>
                   {" Trace ID: "}

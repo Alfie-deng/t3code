@@ -5,10 +5,12 @@ import * as Arr from "effect/Array";
 import { pipe } from "effect/Function";
 import * as Order from "effect/Order";
 
+import { t } from "../../localization/zhCN";
+
 export type ReviewSectionKind = "turn" | "working-tree" | "branch-range";
 
 const DIRTY_WORKTREE_SECTION_ID = "git:working-tree";
-const DIRTY_WORKTREE_TITLE = "Dirty worktree";
+const DIRTY_WORKTREE_TITLE = t("Dirty worktree");
 const DIRTY_WORKTREE_SUBTITLE = "Tracked, staged, and untracked worktree changes";
 
 export interface ReviewSectionItem {
@@ -129,15 +131,15 @@ export type ReviewParsedDiff =
     };
 
 function checkpointTitle(checkpoint: OrchestrationCheckpointSummary): string {
-  return `Turn ${checkpoint.checkpointTurnCount}`;
+  return `${t("Turn")} ${checkpoint.checkpointTurnCount}`;
 }
 
 function checkpointSubtitle(checkpoint: OrchestrationCheckpointSummary): string {
   const fileCount = checkpoint.files.length;
   if (checkpoint.status !== "ready") {
-    return `Diff ${checkpoint.status}`;
+    return t("Diff not ready");
   }
-  return `${fileCount} file${fileCount === 1 ? "" : "s"} changed`;
+  return t(`${fileCount} files changed`);
 }
 
 function compareCheckpointTurnCountDescending(
@@ -157,12 +159,12 @@ const readyCheckpointOrder = Order.make<OrchestrationCheckpointSummary>(
 
 function gitSubtitle(section: ReviewDiffPreviewSource): string | null {
   if (section.kind === "working-tree") {
-    return DIRTY_WORKTREE_SUBTITLE;
+    return t(DIRTY_WORKTREE_SUBTITLE);
   }
   if (section.baseRef) {
     return `${section.baseRef} ... ${section.headRef ?? "HEAD"}`;
   }
-  return "Base branch unavailable";
+  return t("Base branch unavailable");
 }
 
 function stripGitPrefix(pathValue: string | undefined): string | null {
@@ -549,7 +551,7 @@ export function buildReviewSectionItems(input: {
   const gitItems = input.gitSections.map<ReviewSectionItem>((section) => ({
     id: `git:${section.kind}`,
     kind: section.kind,
-    title: section.title,
+    title: t(section.title),
     subtitle: gitSubtitle(section),
     diff: section.diff,
     isLoading: false,
@@ -562,7 +564,7 @@ export function buildReviewSectionItems(input: {
             id: DIRTY_WORKTREE_SECTION_ID,
             kind: "working-tree",
             title: DIRTY_WORKTREE_TITLE,
-            subtitle: DIRTY_WORKTREE_SUBTITLE,
+            subtitle: t(DIRTY_WORKTREE_SUBTITLE),
             diff: null,
             isLoading: true,
           } satisfies ReviewSectionItem,

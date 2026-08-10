@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 
 import { AppText as Text } from "../../../components/AppText";
+import { t } from "../../../localization/zhCN";
 
 export function SettingsSection(props: {
   readonly title: string;
@@ -11,7 +12,7 @@ export function SettingsSection(props: {
 }) {
   return (
     <View className="gap-2">
-      <Text className="px-2 text-sm font-t3-medium text-foreground-muted">{props.title}</Text>
+      <Text className="px-2 text-sm font-t3-medium text-foreground-muted">{t(props.title)}</Text>
       <View
         className={
           props.card

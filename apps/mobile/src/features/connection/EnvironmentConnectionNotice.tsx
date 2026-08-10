@@ -8,19 +8,20 @@ import { ActivityIndicator, Pressable, View } from "react-native";
 import { AppText as Text } from "../../components/AppText";
 import { copyTextWithHaptic } from "../../lib/copyTextWithHaptic";
 import { useThemeColor } from "../../lib/useThemeColor";
+import { t } from "../../localization/zhCN";
 
 function noticeTitle(phase: EnvironmentConnectionPhase, environmentLabel: string): string {
   switch (phase) {
     case "offline":
-      return "You are offline";
+      return t("You are offline");
     case "connecting":
-      return `Connecting to ${environmentLabel}...`;
+      return t(`Connecting to ${environmentLabel}...`);
     case "reconnecting":
-      return `Reconnecting to ${environmentLabel}...`;
+      return t(`Reconnecting to ${environmentLabel}...`);
     case "error":
-      return `${environmentLabel} is unavailable`;
+      return t(`${environmentLabel} is unavailable`);
     case "available":
-      return `${environmentLabel} is disconnected`;
+      return t(`${environmentLabel} is disconnected`);
     case "connected":
       return "";
   }
@@ -32,18 +33,20 @@ function noticeDetail(
   error: string | null,
 ): string {
   if (error) {
-    return `The app will keep retrying automatically. ${error}`;
+    return `${t("The app will keep retrying automatically.")} ${error}`;
   }
 
   switch (phase) {
     case "offline":
-      return `Cached data remains available. The ${resourceName} will load when your connection returns.`;
+      return t(
+        `Cached data remains available. The ${resourceName} will load when your connection returns.`,
+      );
     case "connecting":
     case "reconnecting":
-      return `The ${resourceName} will load as soon as the environment is ready.`;
+      return t(`The ${resourceName} will load as soon as the environment is ready.`);
     case "available":
     case "error":
-      return `Reconnect the environment to load the ${resourceName}.`;
+      return t(`Reconnect the environment to load the ${resourceName}.`);
     case "connected":
       return "";
   }
@@ -80,7 +83,7 @@ export function EnvironmentConnectionNotice(props: {
           {noticeDetail(props.connection.phase, props.resourceName, props.connection.error)}
           {props.connection.traceId ? (
             <>
-              {" Trace ID: "}
+              {t(" Trace ID: ")}
               <Text
                 accessibilityHint="Copies the trace ID"
                 accessibilityRole="button"
@@ -103,7 +106,7 @@ export function EnvironmentConnectionNotice(props: {
             className="mt-1 rounded-full bg-subtle px-4 py-2.5 active:opacity-70"
             onPress={props.onRetry}
           >
-            <Text className="text-sm font-t3-bold text-foreground">Retry now</Text>
+            <Text className="text-sm font-t3-bold text-foreground">{t("Retry now")}</Text>
           </Pressable>
         ) : null}
       </View>

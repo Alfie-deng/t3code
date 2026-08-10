@@ -7,6 +7,7 @@ import { Pressable, ScrollView, useColorScheme, View, type ViewStyle } from "rea
 
 import { AppText as Text } from "../../components/AppText";
 import { PierreEntryIcon } from "../../components/PierreEntryIcon";
+import { t } from "../../localization/zhCN";
 export type ComposerCommandItem =
   | {
       readonly id: string;
@@ -101,11 +102,11 @@ function itemIcon(item: ComposerCommandItem) {
 function groupLabel(triggerKind: ComposerTriggerKind | null): string | null {
   switch (triggerKind) {
     case "slash-command":
-      return "Commands";
+      return t("Commands");
     case "skill":
-      return "Skills";
+      return t("Skills");
     case "path":
-      return "Files";
+      return t("Files");
     default:
       return null;
   }
@@ -113,17 +114,17 @@ function groupLabel(triggerKind: ComposerTriggerKind | null): string | null {
 
 function emptyText(triggerKind: ComposerTriggerKind | null, isLoading: boolean): string {
   if (isLoading) {
-    return triggerKind === "path" ? "Searching files…" : "Loading…";
+    return triggerKind === "path" ? t("Searching files…") : t("Loading…");
   }
   switch (triggerKind) {
     case "path":
-      return "No matching files or folders.";
+      return t("No matching files or folders.");
     case "skill":
-      return "No skills found.";
+      return t("No skills found.");
     case "slash-command":
-      return "No matching commands.";
+      return t("No matching commands.");
     default:
-      return "No results.";
+      return t("No results.");
   }
 }
 

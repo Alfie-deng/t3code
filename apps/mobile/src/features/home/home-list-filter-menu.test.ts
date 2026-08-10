@@ -21,14 +21,12 @@ describe("buildHomeListFilterMenu", () => {
       onThreadSortOrderChange: vi.fn(),
     });
 
-    const projectMenu = menu.items.find(
-      (item) => item.type === "submenu" && item.title === "Project",
-    );
-    expect(menu.items.some((item) => item.title === "Settings")).toBe(false);
+    const projectMenu = menu.items.find((item) => item.type === "submenu" && item.title === "项目");
+    expect(menu.items.some((item) => item.title === "设置")).toBe(false);
     expect(projectMenu).toMatchObject({
       type: "submenu",
       items: [
-        { title: "All projects", state: "off" },
+        { title: "所有项目", state: "off" },
         { title: "Codething", state: "on" },
         { title: "Website", state: "off" },
       ],

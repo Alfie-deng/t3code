@@ -5,6 +5,7 @@ import { Pressable, View } from "react-native";
 import { SymbolView } from "../../../components/AppSymbol";
 
 import { AppText as Text } from "../../../components/AppText";
+import { t } from "../../../localization/zhCN";
 import { useThemeColor } from "../../../lib/useThemeColor";
 import type { SettingsLegalDocumentTarget, SettingsSheetTarget } from "./settings-sheet-targets";
 
@@ -32,7 +33,7 @@ export function SettingsRow(props: {
     >
       <SymbolView name={props.icon} size={22} tintColor={icon} type="monochrome" weight="regular" />
       <Text className="shrink-0 text-lg text-foreground" numberOfLines={1}>
-        {props.label}
+        {t(props.label)}
       </Text>
       <View className="min-w-0 flex-1 items-end">
         {props.value ? (
@@ -41,7 +42,7 @@ export function SettingsRow(props: {
             ellipsizeMode="middle"
             numberOfLines={1}
           >
-            {props.value}
+            {t(props.value)}
           </Text>
         ) : null}
       </View>
@@ -59,7 +60,7 @@ export function SettingsRow(props: {
   if (target) {
     return (
       <Pressable
-        accessibilityLabel={props.label}
+        accessibilityLabel={t(props.label)}
         accessibilityRole="button"
         disabled={props.disabled}
         onPress={() =>
@@ -77,7 +78,7 @@ export function SettingsRow(props: {
   if (fullScreenTarget) {
     return (
       <Pressable
-        accessibilityLabel={props.label}
+        accessibilityLabel={t(props.label)}
         accessibilityRole="button"
         disabled={props.disabled}
         onPress={() => navigation.navigate(fullScreenTarget)}

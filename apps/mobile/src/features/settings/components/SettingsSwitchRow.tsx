@@ -3,6 +3,7 @@ import { Switch, View } from "react-native";
 
 import { SymbolView } from "../../../components/AppSymbol";
 import { AppText as Text } from "../../../components/AppText";
+import { t } from "../../../localization/zhCN";
 import { useThemeColor } from "../../../lib/useThemeColor";
 
 type SymbolName = ComponentProps<typeof SymbolView>["name"];
@@ -27,7 +28,7 @@ export function SettingsSwitchRow(props: {
       }
     >
       <SymbolView name={props.icon} size={22} tintColor={icon} type="monochrome" weight="regular" />
-      <Text className="flex-1 text-lg text-foreground">{props.label}</Text>
+      <Text className="flex-1 text-lg text-foreground">{t(props.label)}</Text>
       <Switch
         disabled={props.disabled}
         ios_backgroundColor={track}

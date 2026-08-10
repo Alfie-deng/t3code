@@ -1,6 +1,7 @@
 import { SymbolView } from "../../components/AppSymbol";
 import { Pressable, StyleSheet, View, useColorScheme } from "react-native";
 
+import { t } from "../../localization/zhCN";
 import { useThemeColor } from "../../lib/useThemeColor";
 
 export interface SidebarHeaderActionsProps {
@@ -48,7 +49,7 @@ export function SidebarHeaderActions(props: SidebarHeaderActionsProps) {
   return (
     <View className="flex-row items-center gap-0.5">
       <FallbackHeaderButton
-        accessibilityLabel="Open settings"
+        accessibilityLabel={t("Open settings")}
         grouped={props.grouped}
         icon="gearshape"
         onPress={props.onOpenSettings}

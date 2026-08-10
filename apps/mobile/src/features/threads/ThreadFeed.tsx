@@ -96,6 +96,7 @@ import {
 } from "./thread-work-log";
 import { useMarkdownCodeHighlight } from "./markdownCodeHighlightState";
 import { useAssetUrl } from "../../state/assets";
+import { t } from "../../localization/zhCN";
 import { resolveWorkspaceRelativeFilePath } from "../files/filePath";
 
 const MESSAGE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
@@ -341,7 +342,7 @@ function MarkdownCodeBlock(props: {
           {languageLabel}
         </NativeText>
         <CopyTextButton
-          accessibilityLabel="Copy code"
+          accessibilityLabel={t("Copy code")}
           text={content}
           tintColor={props.copyTintColor}
           buttonSize={32}
@@ -845,7 +846,7 @@ function renderFeedEntry(
         className="mb-3 min-h-11 flex-row items-center gap-2 border-b border-neutral-200/80 px-2 dark:border-white/[0.08]"
       >
         <Text className="font-t3-medium text-sm tabular-nums text-foreground-muted">
-          {entry.label}
+          {t(entry.label)}
         </Text>
         <SymbolView
           name={entry.expanded ? "chevron.down" : "chevron.right"}
@@ -928,7 +929,7 @@ function renderFeedEntry(
             </Text>
             {message.text.trim().length > 0 ? (
               <CopyTextButton
-                accessibilityLabel="Copy message"
+                accessibilityLabel={t("Copy message")}
                 text={message.text}
                 tintColor={iconSubtleColor}
                 buttonSize={28}
@@ -985,7 +986,7 @@ function renderFeedEntry(
         {showAssistantMeta ? (
           <View className="mt-1 flex-row items-center gap-1">
             <CopyTextButton
-              accessibilityLabel="Copy message"
+              accessibilityLabel={t("Copy message")}
               text={message.text}
               tintColor={iconSubtleColor}
               buttonSize={28}
@@ -1032,7 +1033,7 @@ const WorkingTimelineRow = memo(function WorkingTimelineRow(props: { readonly st
         <View className="h-1 w-1 rounded-full bg-neutral-400/60 dark:bg-neutral-500/60" />
       </View>
       <Text className="font-t3-medium text-xs tabular-nums text-neutral-600 dark:text-neutral-400">
-        Working for {durationLabel}
+        {t(`Working for ${durationLabel}`)}
       </Text>
     </View>
   );
@@ -1793,8 +1794,8 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
   if (props.contentPresentation.kind === "unavailable") {
     return (
       <ThreadFeedPlaceholder
-        title={props.contentPresentation.title}
-        detail={props.contentPresentation.detail}
+        title={t(props.contentPresentation.title)}
+        detail={t(props.contentPresentation.detail)}
         topInset={topContentInset}
         bottomInset={bottomContentInset}
         horizontalPadding={horizontalPadding}
@@ -1922,7 +1923,9 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
                     className="items-center py-2"
                   >
                     <Text className="text-xs text-foreground-secondary">
-                      {props.loadEarlier.loading ? "Loading earlier turns…" : "Load earlier turns"}
+                      {t(
+                        props.loadEarlier.loading ? "Loading earlier turns…" : "Load earlier turns",
+                      )}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -1939,8 +1942,10 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
         props.contentPresentation.kind === "ready" ? (
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <ThreadFeedPlaceholder
-              title="No conversation yet"
-              detail="Ask the agent to inspect the repo, run a command, or continue the active thread."
+              title={t("No conversation yet")}
+              detail={t(
+                "Ask the agent to inspect the repo, run a command, or continue the active thread.",
+              )}
               topInset={topContentInset}
               bottomInset={bottomContentInset}
               horizontalPadding={horizontalPadding}

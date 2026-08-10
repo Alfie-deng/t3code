@@ -2,6 +2,7 @@ import type { ApprovalRequestId } from "@t3tools/contracts";
 import { Pressable, View } from "react-native";
 
 import { AppText as Text, AppTextInput as TextInput } from "../../components/AppText";
+import { t } from "../../localization/zhCN";
 import { cn } from "../../lib/cn";
 import type { PendingUserInput, PendingUserInputDraftAnswer } from "../../lib/threadActivity";
 
@@ -30,7 +31,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
   return (
     <View className="gap-2.5 rounded-[20px] border border-neutral-200 bg-neutral-100 p-4 dark:border-white/6 dark:bg-neutral-900">
       <Text className="font-t3-bold text-2xs uppercase tracking-[1.1px] text-sky-700 dark:text-sky-300">
-        User input needed
+        {t("User input needed")}
       </Text>
       <Text className="font-t3-bold text-lg text-neutral-950 dark:text-neutral-50">
         Fill in the pending answers
@@ -85,7 +86,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
               onChangeText={(value) =>
                 props.onChangeCustomAnswer(props.pendingUserInput.requestId, question.id, value)
               }
-              placeholder="Or type a custom answer"
+              placeholder={t("Or type a custom answer")}
               className="min-h-[54px] rounded-2xl border border-neutral-200 bg-white px-3.5 py-3 font-sans text-base text-neutral-950 dark:border-white/8 dark:bg-neutral-950/70 dark:text-neutral-50"
             />
           </View>
@@ -101,7 +102,7 @@ export function PendingUserInputCard(props: PendingUserInputCardProps) {
         }
         onPress={() => void props.onSubmit()}
       >
-        <Text className="font-t3-extrabold text-sm text-white">Submit answers</Text>
+        <Text className="font-t3-extrabold text-sm text-white">{t("Submit answers")}</Text>
       </Pressable>
     </View>
   );

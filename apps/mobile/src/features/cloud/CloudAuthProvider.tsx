@@ -1,5 +1,6 @@
 import { ClerkProvider, useAuth } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
+import { zhCN } from "@clerk/localizations";
 import { ManagedRelay, setManagedRelaySession } from "@t3tools/client-runtime/relay";
 import {
   reportAtomCommandResult,
@@ -28,6 +29,23 @@ function resetManagedRelayTokenCache() {
     ),
   );
 }
+
+// Clerk's zhCN resource intentionally leaves a few security-page labels
+// undefined. Keep those account-center labels Chinese in the private build.
+const t3ClerkZhCN = {
+  ...zhCN,
+  userProfile: {
+    ...(zhCN.userProfile ?? {}),
+    start: {
+      ...(zhCN.userProfile?.start ?? {}),
+      passkeysSection: {
+        ...(zhCN.userProfile?.start?.passkeysSection ?? {}),
+        primaryButton: "添加通行密钥",
+        title: "通行密钥",
+      },
+    },
+  },
+};
 
 export function deactivateCloudRelayAccount(): void {
   setAgentAwarenessRelayTokenProvider(null);
@@ -189,7 +207,11 @@ export function CloudAuthProvider(props: { readonly children: ReactNode }) {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      tokenCache={tokenCache}
+      localization={t3ClerkZhCN}
+    >
       <CloudAuthBridge>{props.children}</CloudAuthBridge>
     </ClerkProvider>
   );

@@ -3,6 +3,7 @@ import { Platform, Pressable } from "react-native";
 import { useThemeColor } from "../../lib/useThemeColor";
 
 import { AppText as Text } from "../../components/AppText";
+import { t } from "../../localization/zhCN";
 import { cn } from "../../lib/cn";
 
 const CARD_SHADOW = Platform.select({
@@ -58,7 +59,7 @@ export function ConnectionSheetButton(props: {
 
   return (
     <Pressable
-      accessibilityLabel={props.label}
+      accessibilityLabel={t(props.label)}
       accessibilityRole="button"
       accessibilityState={{ disabled: props.disabled ?? false }}
       className={cn(
@@ -92,7 +93,7 @@ export function ConnectionSheetButton(props: {
               : "text-secondary-foreground",
         )}
       >
-        {props.label}
+        {t(props.label)}
       </Text>
     </Pressable>
   );

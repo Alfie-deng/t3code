@@ -125,8 +125,8 @@ describe("buildReviewSectionItems", () => {
       expect.objectContaining({
         id: "git:working-tree",
         kind: "working-tree",
-        title: "Dirty worktree",
-        subtitle: "Tracked, staged, and untracked worktree changes",
+        title: "工作树有未提交更改",
+        subtitle: "已跟踪、已暂存和未跟踪的工作树更改",
         diff: null,
         isLoading: true,
       }),

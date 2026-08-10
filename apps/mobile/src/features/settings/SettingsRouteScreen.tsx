@@ -6,6 +6,7 @@ import * as Updates from "expo-updates";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenOptions } from "../../native/StackHeader";
 import { SymbolView } from "../../components/AppSymbol";
+import { t } from "../../localization/zhCN";
 import * as Effect from "effect/Effect";
 import { AsyncResult } from "effect/unstable/reactivity";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
@@ -221,8 +222,8 @@ function ConfiguredSettingsRouteScreen() {
       if (!isAtomCommandInterrupted(result)) {
         const error = squashAtomCommandFailure(result);
         Alert.alert(
-          "Notifications unavailable",
-          error instanceof Error ? error.message : "Could not request notification permission.",
+          t("Notifications unavailable"),
+          error instanceof Error ? error.message : t("Could not request notification permission."),
         );
       }
       return;
@@ -233,13 +234,15 @@ function ConfiguredSettingsRouteScreen() {
       // registration succeeds, so tell the user the truth about which happened.
       if (getAgentAwarenessRegistrationStatus() === "registered") {
         Alert.alert(
-          "Notifications enabled",
-          "Live Activity notifications are enabled for this device.",
+          t("Notifications enabled"),
+          t("Live Activity notifications are enabled for this device."),
         );
       } else {
         Alert.alert(
-          "Couldn't finish enabling notifications",
-          "Notification access was granted, but this device could not be registered with T3 Connect. Notifications will start once registration succeeds.",
+          t("Couldn't finish enabling notifications"),
+          t(
+            "Notification access was granted, but this device could not be registered with T3 Connect. Notifications will start once registration succeeds.",
+          ),
         );
       }
       return;
@@ -247,34 +250,34 @@ function ConfiguredSettingsRouteScreen() {
     if (result.value.type === "unsupported") {
       setNotificationStatus("unsupported");
       Alert.alert(
-        "Notifications unavailable",
-        "Live Activity notifications are only available on iOS.",
+        t("Notifications unavailable"),
+        t("Live Activity notifications are only available on iOS."),
       );
       return;
     }
     setNotificationStatus("disabled");
     if (result.value.canAskAgain) {
-      Alert.alert("Notifications disabled", "Notifications were not enabled.");
+      Alert.alert(t(t("Notifications disabled")), t(t("Notifications were not enabled.")));
       return;
     }
     Alert.alert(
-      "Notifications disabled",
-      "Notifications were denied for this app. Open Settings to enable them.",
+      t("Notifications disabled"),
+      t("Notifications were denied for this app. Open Settings to enable them."),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => void Linking.openSettings() },
+        { text: t("Cancel"), style: "cancel" },
+        { text: t("Open Settings"), onPress: () => void Linking.openSettings() },
       ],
     );
   }, []);
 
   const promptSignIn = useCallback(() => {
     Alert.alert(
-      "Sign in to T3 Connect",
-      "Live Activity updates require T3 Connect so relay can deliver updates to this device.",
+      t("Sign in to T3 Connect"),
+      t("Live Activity updates require T3 Connect so relay can deliver updates to this device."),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("Cancel"), style: "cancel" },
         {
-          text: "Continue",
+          text: t("Continue"),
           onPress: () => navigation.navigate("SettingsSheet", { screen: "SettingsAuth" }),
         },
       ],
@@ -293,8 +296,8 @@ function ConfiguredSettingsRouteScreen() {
       setLiveActivityStatus("disabled");
       const error = squashAtomCommandFailure(tokenResult);
       Alert.alert(
-        "Live Activities unavailable",
-        error instanceof Error ? error.message : "Could not enable Live Activity updates.",
+        t("Live Activities unavailable"),
+        error instanceof Error ? error.message : t("Could not enable Live Activity updates."),
       );
       return;
     }
@@ -319,8 +322,8 @@ function ConfiguredSettingsRouteScreen() {
       if (!isAtomCommandInterrupted(updateResult)) {
         const error = squashAtomCommandFailure(updateResult);
         Alert.alert(
-          "Live Activities unavailable",
-          error instanceof Error ? error.message : "Could not enable Live Activity updates.",
+          t("Live Activities unavailable"),
+          error instanceof Error ? error.message : t("Could not enable Live Activity updates."),
         );
       }
       return;
@@ -334,15 +337,17 @@ function ConfiguredSettingsRouteScreen() {
     // Activities are live until the device is actually registered.
     if (getAgentAwarenessRegistrationStatus() === "registered") {
       Alert.alert(
-        "Live Activities enabled",
+        t("Live Activities enabled"),
         environmentCount > 0
-          ? `${environmentCount} environment${environmentCount === 1 ? "" : "s"} linked for Live Activity updates.`
-          : "Live Activity updates are enabled. Add an environment to start receiving updates.",
+          ? `${environmentCount} environment${environmentCount === 1 ? "t(" : ")st("} linked for Live Activity updates.`
+          : ")Live Activity updates are enabled. Add an environment to start receiving updates.",
       );
     } else {
       Alert.alert(
-        "Couldn't finish enabling Live Activities",
-        "This device could not be registered with T3 Connect, so Live Activities won't appear yet. They'll start once registration succeeds.",
+        t("Couldn't finish enabling Live Activities"),
+        t(
+          "This device could not be registered with T3 Connect, so Live Activities won't appear yet. They'll start once registration succeeds.",
+        ),
       );
     }
   }, [
@@ -363,11 +368,13 @@ function ConfiguredSettingsRouteScreen() {
       }
 
       Alert.alert(
-        "Disable notifications",
-        "Notification permission is controlled by iOS. Open Settings to disable notifications for T3 Code.",
+        t("Disable notifications"),
+        t(
+          "Notification permission is controlled by iOS. Open Settings to disable notifications for T3 Code.",
+        ),
         [
-          { text: "Cancel", style: "cancel" },
-          { text: "Open Settings", onPress: () => void Linking.openSettings() },
+          { text: t("Cancel"), style: "cancel" },
+          { text: t("Open Settings"), onPress: () => void Linking.openSettings() },
         ],
       );
     },
@@ -466,7 +473,7 @@ function ConfiguredSettingsRouteScreen() {
             />
           </SettingsSection>
           <Text className="px-2 text-sm text-foreground-muted">
-            T3 Code works locally without signing in. Cloud features are optional.
+            {t("T3 Code works locally without signing in. Cloud features are optional.")}
           </Text>
         </View>
 
@@ -557,8 +564,9 @@ function LegacySettingsSection() {
         />
       </SettingsSection>
       <Text className="px-2 text-sm text-foreground-muted">
-        Brings back the original grouped thread list. The default list is flat, in creation order:
-        active work renders as cards; settled threads collapse to compact rows.
+        {t(
+          "Brings back the original grouped thread list. The default list is flat, in creation order: active work renders as cards; settled threads collapse to compact rows.",
+        )}
       </Text>
     </View>
   );
@@ -594,7 +602,7 @@ function AppSettingsSection() {
     updateInFlight.current = true;
     try {
       await runAppUpdateCheck({
-        onFailure: (message) => Alert.alert("Update failed", message),
+        onFailure: (message) => Alert.alert(t(t("Update failed")), message),
         onStateChange: setUpdateState,
       });
     } finally {

@@ -1,6 +1,7 @@
 import { View } from "react-native";
 
 import { AppText as Text } from "./AppText";
+import { t } from "../localization/zhCN";
 import { cn } from "../lib/cn";
 
 export interface StatusTone {
@@ -30,7 +31,7 @@ export function StatusPill(
           props.textClassName,
         )}
       >
-        {props.label}
+        {t(props.label)}
       </Text>
     </View>
   );

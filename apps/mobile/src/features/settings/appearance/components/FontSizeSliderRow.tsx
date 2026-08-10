@@ -12,6 +12,7 @@ import Animated, {
 import type { ComponentProps } from "react";
 
 import { AppText as Text } from "../../../../components/AppText";
+import { t } from "../../../../localization/zhCN";
 import { useThemeColor } from "../../../../lib/useThemeColor";
 
 type SymbolName = ComponentProps<typeof SymbolView>["name"];
@@ -40,6 +41,8 @@ export function FontSizeSliderRow(props: {
   const iconMuted = String(useThemeColor("--color-icon-muted"));
   const trackColor = String(useThemeColor("--color-secondary-border"));
   const fillColor = String(useThemeColor("--color-primary"));
+
+  const translatedLabel = t(props.label);
 
   const latest = useRef(props);
   latest.current = props;
@@ -145,7 +148,7 @@ export function FontSizeSliderRow(props: {
           type="monochrome"
           weight="regular"
         />
-        <Text className="flex-1 text-lg text-foreground">{props.label}</Text>
+        <Text className="flex-1 text-lg text-foreground">{translatedLabel}</Text>
         <Text className="text-base font-t3-medium text-foreground-muted">{props.valueLabel}</Text>
       </View>
       <View className="flex-row items-center gap-3">
@@ -160,10 +163,10 @@ export function FontSizeSliderRow(props: {
           <View
             accessible
             accessibilityActions={[
-              { name: "increment", label: `Increase ${props.label}` },
-              { name: "decrement", label: `Decrease ${props.label}` },
+              { name: "increment", label: `${t("Increase")} ${translatedLabel}` },
+              { name: "decrement", label: `${t("Decrease")} ${translatedLabel}` },
             ]}
-            accessibilityLabel={props.label}
+            accessibilityLabel={translatedLabel}
             accessibilityRole="adjustable"
             accessibilityValue={{ min, max, now: value, text: props.valueLabel }}
             className="h-11 flex-1 justify-center"

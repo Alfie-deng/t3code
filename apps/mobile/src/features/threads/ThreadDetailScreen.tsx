@@ -41,6 +41,7 @@ import {
 } from "./ThreadComposer";
 import { ThreadFeed } from "./ThreadFeed";
 import type { ThreadContentPresentation } from "./threadContentPresentation";
+import { t } from "../../localization/zhCN";
 
 export interface ThreadDetailScreenProps {
   readonly selectedThread: OrchestrationThreadShell;
@@ -423,7 +424,7 @@ export const ThreadDetailScreen = memo(function ThreadDetailScreen(props: Thread
               editorRef={composerEditorRef}
               draftMessage={props.draftMessage}
               draftAttachments={props.draftAttachments}
-              placeholder="Ask the repo agent, or run a command…"
+              placeholder={t("Ask the repo agent, or run a command…")}
               contentMaxWidth={contentMaxWidth}
               connectionState={props.connectionStateLabel}
               connectionError={props.connectionError}

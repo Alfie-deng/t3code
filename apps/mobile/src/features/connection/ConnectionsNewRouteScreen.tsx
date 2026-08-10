@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Platform, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColor } from "../../lib/useThemeColor";
+import { t } from "../../localization/zhCN";
 
 import { AndroidScreenHeader } from "../../components/AndroidScreenHeader";
 import { AppText as Text, AppTextInput as TextInput } from "../../components/AppText";
@@ -77,8 +78,8 @@ export function ConnectionsNewRouteScreen({
     }
 
     Alert.alert(
-      "Camera access needed",
-      "Allow camera access to scan an environment pairing QR code.",
+      t("Camera access needed"),
+      t("Allow camera access to scan an environment pairing QR code."),
     );
   }, [cameraPermission?.granted, requestCameraPermission]);
 
@@ -104,8 +105,8 @@ export function ConnectionsNewRouteScreen({
         setShowScanner(false);
       } catch (error) {
         Alert.alert(
-          "Invalid QR code",
-          error instanceof Error ? error.message : "Scanned QR code was not recognized.",
+          t("Invalid QR code"),
+          error instanceof Error ? error.message : t("Scanned QR code was not recognized."),
         );
       } finally {
         setTimeout(() => {
@@ -139,16 +140,16 @@ export function ConnectionsNewRouteScreen({
         options={{
           // Android renders its own in-screen header below instead of the native bar.
           ...(Platform.OS === "android" ? { headerShown: false } : null),
-          title: showScanner ? "Scan QR Code" : "Add Environment",
+          title: showScanner ? t("Scan QR Code") : t("Add Environment"),
         }}
       />
       {Platform.OS === "android" ? (
         <AndroidScreenHeader
-          title={showScanner ? "Scan QR Code" : "Add Environment"}
+          title={showScanner ? t("Scan QR Code") : t("Add Environment")}
           onBack={() => navigation.goBack()}
           actions={[
             {
-              accessibilityLabel: showScanner ? "Close scanner" : "Scan QR code",
+              accessibilityLabel: showScanner ? t("Close scanner") : t("Scan QR code"),
               icon: showScanner ? "xmark" : "camera",
               onPress: () => {
                 if (showScanner) {
@@ -200,7 +201,7 @@ export function ConnectionsNewRouteScreen({
             ) : (
               <View className="items-center gap-3 rounded-[24px] border-continuous bg-card px-5 py-8">
                 <Text className="text-center text-sm leading-normal text-foreground-muted">
-                  Camera permission is required to scan a QR code.
+                  {t("Camera permission is required to scan a QR code.")}
                 </Text>
                 <ConnectionSheetButton
                   compact
@@ -217,7 +218,7 @@ export function ConnectionsNewRouteScreen({
             <View collapsable={false} className="gap-4 rounded-[24px] bg-card p-4">
               <View collapsable={false} className="gap-1.5">
                 <Text className="text-2xs font-t3-bold tracking-[0.8px] uppercase text-foreground-muted">
-                  Host
+                  {t("Host")}
                 </Text>
                 <TextInput
                   autoCapitalize="none"
@@ -232,7 +233,7 @@ export function ConnectionsNewRouteScreen({
 
               <View collapsable={false} className="gap-1.5">
                 <Text className="text-2xs font-t3-bold tracking-[0.8px] uppercase text-foreground-muted">
-                  Pairing code
+                  {t("Pairing code")}
                 </Text>
                 <TextInput
                   autoCapitalize="none"

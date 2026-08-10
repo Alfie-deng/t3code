@@ -32,6 +32,7 @@ import { applyProviderOptionSelection, providerOptionValueLabels } from "../../l
 import { useThemeColor } from "../../lib/useThemeColor";
 import { pendingModelAfterPress } from "./thread-settings-sheet-state";
 import type { ThreadSettingsSheetCloseReason } from "./use-thread-settings-sheet-presentation";
+import { t } from "../../localization/zhCN";
 
 /**
  * The everyday harnesses stay expanded; every other provider (OpenRouter
@@ -54,10 +55,10 @@ const RUNTIME_MODE_CHOICES: ReadonlyArray<{
   readonly label: string;
   readonly shortLabel: string;
 }> = [
-  { mode: "approval-required", label: "Approve actions", shortLabel: "Approve" },
-  { mode: "auto-accept-edits", label: "Auto-accept edits", shortLabel: "Edits" },
-  { mode: "auto", label: "Auto", shortLabel: "Auto" },
-  { mode: "full-access", label: "Full access", shortLabel: "Full" },
+  { mode: "approval-required", label: t("Approve actions"), shortLabel: t("Approve") },
+  { mode: "auto-accept-edits", label: t("Auto-accept edits"), shortLabel: t("Edits") },
+  { mode: "auto", label: t("Auto"), shortLabel: t("Auto") },
+  { mode: "full-access", label: t("Full access"), shortLabel: t("Full") },
 ];
 
 /**
@@ -75,7 +76,7 @@ export function threadSettingsSummaryLabel(input: {
     input.modelLabel,
     ...providerOptionValueLabels(input.optionDescriptors),
     ...(runtime ? [runtime.shortLabel] : []),
-    ...(input.interactionMode === "plan" ? ["Plan"] : []),
+    ...(input.interactionMode === "plan" ? [t("Plan")] : []),
   ].join(" · ");
 }
 
@@ -117,12 +118,12 @@ function ModelRow(props: {
       </Text>
       {props.option.isDefault ? (
         <View className="rounded-md bg-subtle-strong px-1.5 py-0.5">
-          <Text className="text-3xs font-t3-bold text-foreground-muted">Default</Text>
+          <Text className="text-3xs font-t3-bold text-foreground-muted">{t("Default")}</Text>
         </View>
       ) : null}
       {props.option.isLegacy ? (
         <View className="rounded-md bg-subtle px-1.5 py-0.5">
-          <Text className="text-3xs font-t3-bold text-foreground-muted">Legacy</Text>
+          <Text className="text-3xs font-t3-bold text-foreground-muted">{t("Legacy")}</Text>
         </View>
       ) : null}
       <View className="flex-1" />
@@ -446,7 +447,7 @@ export function ThreadSettingsSheet(props: {
   const submenuContent =
     submenu?.kind === "runtime"
       ? {
-          title: "Runtime",
+          title: t("Runtime"),
           rows: RUNTIME_MODE_CHOICES.map((choice) => ({
             id: choice.mode,
             label: choice.label,
@@ -486,7 +487,7 @@ export function ThreadSettingsSheet(props: {
     >
       <View className="flex-1 justify-end">
         <Pressable
-          accessibilityLabel="Close thread settings"
+          accessibilityLabel={t("Close thread settings")}
           className="absolute inset-0 bg-backdrop"
           onPress={() => props.onClose("dismiss")}
         />
@@ -498,7 +499,7 @@ export function ThreadSettingsSheet(props: {
               backdrop above a tall sheet is a sliver, and VoiceOver can't
               reach it at all. */}
           <Pressable
-            accessibilityLabel="Close thread settings"
+            accessibilityLabel={t("Close thread settings")}
             accessibilityRole="button"
             onPress={() => props.onClose("dismiss")}
             className="items-center pb-1 pt-2.5"
@@ -518,7 +519,7 @@ export function ThreadSettingsSheet(props: {
                 className="rounded-full border border-border bg-subtle px-3 py-1.5 active:opacity-70"
               >
                 <Text className="text-2xs font-t3-medium text-foreground-muted">
-                  {showLegacy ? "Hide legacy models" : "Show legacy models"}
+                  {t(showLegacy ? "Hide legacy models" : "Show legacy models")}
                 </Text>
               </Pressable>
             </View>
@@ -615,7 +616,7 @@ export function ThreadSettingsSheet(props: {
               );
             })}
             <DisclosureRow
-              label="Runtime"
+              label={t("Runtime")}
               value={
                 RUNTIME_MODE_CHOICES.find((choice) => choice.mode === props.runtimeMode)?.label
               }
@@ -627,7 +628,7 @@ export function ThreadSettingsSheet(props: {
               className="mx-4 mt-2 h-12 items-center justify-center rounded-full bg-primary active:opacity-80"
             >
               <Text className="text-sm font-t3-bold text-primary-foreground">
-                {pendingModel ? "Save" : "Done"}
+                {t(pendingModel ? "Save" : "Done")}
               </Text>
             </Pressable>
           </View>
@@ -638,13 +639,13 @@ export function ThreadSettingsSheet(props: {
         {submenuContent ? (
           <View className="absolute inset-0 justify-end">
             <Pressable
-              accessibilityLabel={`Close ${submenuContent.title}`}
+              accessibilityLabel={t(`Close ${submenuContent.title}`)}
               className="absolute inset-0 bg-backdrop"
               onPress={() => setSubmenu(null)}
             />
             <View className="overflow-hidden rounded-t-[24px] border border-b-0 border-border bg-sheet">
               <Pressable
-                accessibilityLabel={`Close ${submenuContent.title}`}
+                accessibilityLabel={t(`Close ${submenuContent.title}`)}
                 accessibilityRole="button"
                 onPress={() => setSubmenu(null)}
                 className="items-center pb-1 pt-2.5"

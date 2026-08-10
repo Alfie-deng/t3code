@@ -6,6 +6,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, View } from "react-nat
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppText as Text } from "../../components/AppText";
+import { t } from "../../localization/zhCN";
 import { useThemeColor } from "../../lib/useThemeColor";
 import {
   clearClientCacheAtom,
@@ -40,12 +41,14 @@ export function SettingsClientStorageRouteScreen() {
       savedConnectionsById[environment.environmentId]?.environmentLabel ??
       environment.environmentId;
     Alert.alert(
-      `Clear cache for ${label}?`,
-      "This removes offline threads, server metadata, and cached branches for this environment. The saved connection and credentials stay intact.",
+      `${t("Clear cache for")}${label}）`,
+      t(
+        "This removes offline threads, server metadata, and cached branches for this environment. The saved connection and credentials stay intact.",
+      ),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("Cancel"), style: "cancel" },
         {
-          text: "Clear Cache",
+          text: t("Clear Cache"),
           style: "destructive",
           onPress: () =>
             clearCache({ type: "environment", environmentId: environment.environmentId }),
@@ -56,12 +59,14 @@ export function SettingsClientStorageRouteScreen() {
 
   const confirmClearAll = () => {
     Alert.alert(
-      "Clear all client caches?",
-      "This removes offline data for every environment. Connections, credentials, account data, and app preferences stay intact.",
+      t("Clear all client caches?"),
+      t(
+        "This removes offline data for every environment. Connections, credentials, account data, and app preferences stay intact.",
+      ),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("Cancel"), style: "cancel" },
         {
-          text: "Clear All Caches",
+          text: t("Clear All Caches"),
           style: "destructive",
           onPress: () => clearCache({ type: "all" }),
         },
@@ -147,7 +152,7 @@ export function SettingsClientStorageRouteScreen() {
                 weight="regular"
               />
               <Text className="flex-1 text-lg tabular-nums text-danger-foreground">
-                {summary ? `Clear ${formatBytes(summary.payloadBytes)}` : "Clear caches"}
+                {summary ? `Clear ${formatBytes(summary.payloadBytes)}` : t("Clear caches")}
               </Text>
               {isClearing ? <ActivityIndicator color={dangerForegroundColor} /> : null}
             </Pressable>
@@ -194,7 +199,7 @@ function CacheEnvironmentRow(props: {
         {props.environmentLabel}
       </Text>
       <Pressable
-        accessibilityLabel={`Clear cache for ${props.environmentLabel}`}
+        accessibilityLabel={`${t("Clear cache for")}${props.environmentLabel}）`}
         accessibilityRole="button"
         disabled={props.disabled}
         onPress={props.onClear}

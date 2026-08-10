@@ -2,6 +2,8 @@ import type { StatusTone } from "../../components/StatusPill";
 import type { OrchestrationLatestTurn, OrchestrationSession } from "@t3tools/contracts";
 import { EnvironmentThreadShell } from "@t3tools/client-runtime/state/shell";
 
+import { t } from "../../localization/zhCN";
+
 export function threadSortValue(thread: EnvironmentThreadShell): number {
   const candidate = Date.parse(thread.updatedAt ?? thread.createdAt);
   return Number.isNaN(candidate) ? 0 : candidate;
@@ -52,7 +54,7 @@ export function resolveThreadStatus(
   if (thread.hasPendingApprovals) {
     return {
       kind: "pending-approval",
-      label: "Needs Approval",
+      label: t("Needs Approval"),
       pillClassName: "bg-amber-500/12 dark:bg-amber-500/16",
       textClassName: "text-amber-700 dark:text-amber-300",
       iconColor: "#ff9f0a",
@@ -64,7 +66,7 @@ export function resolveThreadStatus(
   if (thread.hasPendingUserInput) {
     return {
       kind: "awaiting-input",
-      label: "Awaiting Input",
+      label: t("Awaiting Input"),
       pillClassName: "bg-indigo-500/12 dark:bg-indigo-500/16",
       textClassName: "text-indigo-700 dark:text-indigo-300",
       iconColor: "#5e5ce6",
@@ -76,7 +78,7 @@ export function resolveThreadStatus(
   if (thread.session?.status === "running") {
     return {
       kind: "working",
-      label: "Working",
+      label: t("Working"),
       pillClassName: "bg-sky-500/12 dark:bg-sky-500/16",
       textClassName: "text-sky-700 dark:text-sky-300",
       iconColor: "#0a84ff",
@@ -88,7 +90,7 @@ export function resolveThreadStatus(
   if (thread.session?.status === "starting") {
     return {
       kind: "connecting",
-      label: "Connecting",
+      label: t("Connecting"),
       pillClassName: "bg-sky-500/12 dark:bg-sky-500/16",
       textClassName: "text-sky-700 dark:text-sky-300",
       iconColor: "#0a84ff",
@@ -100,7 +102,7 @@ export function resolveThreadStatus(
   if (thread.session?.status === "error" || thread.latestTurn?.state === "error") {
     return {
       kind: "error",
-      label: "Error",
+      label: t("Error"),
       pillClassName: "bg-rose-500/12 dark:bg-rose-500/16",
       textClassName: "text-rose-700 dark:text-rose-300",
       iconColor: "#ff453a",
@@ -116,7 +118,7 @@ export function resolveThreadStatus(
   if (hasPlanReadyPrompt) {
     return {
       kind: "plan-ready",
-      label: "Plan Ready",
+      label: t("Plan Ready"),
       pillClassName: "bg-violet-500/12 dark:bg-violet-500/16",
       textClassName: "text-violet-700 dark:text-violet-300",
       iconColor: "#bf5af2",

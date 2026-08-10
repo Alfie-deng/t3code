@@ -34,7 +34,7 @@ describe("workspace connection status", () => {
     const state = workspaceState({ networkStatus: "offline", hasReadyEnvironment: false });
 
     expect(shouldShowWorkspaceConnectionStatus(state)).toBe(true);
-    expect(workspaceConnectionStatusLabel(state)).toBe("You are offline");
+    expect(workspaceConnectionStatusLabel(state)).toBe("当前离线");
   });
 
   it("names the environment while reconnecting", () => {
@@ -55,7 +55,7 @@ describe("workspace connection status", () => {
     });
 
     expect(shouldShowWorkspaceConnectionStatus(state)).toBe(true);
-    expect(workspaceConnectionStatusLabel(state)).toBe("Reconnecting to Julius’s Mac mini");
+    expect(workspaceConnectionStatusLabel(state)).toBe("正在重新连接到 Julius’s Mac mini");
   });
 
   it("surfaces connection errors before the generic disconnected fallback", () => {
@@ -73,7 +73,7 @@ describe("workspace connection status", () => {
     const state = workspaceState({ hasPendingShellSnapshot: true });
 
     expect(shouldShowWorkspaceConnectionStatus(state)).toBe(true);
-    expect(workspaceConnectionStatusLabel(state)).toBe("Syncing threads...");
+    expect(workspaceConnectionStatusLabel(state)).toBe("正在同步对话…");
   });
 
   it("distinguishes initial shell loading from cached catch-up", () => {
@@ -83,7 +83,7 @@ describe("workspace connection status", () => {
     });
 
     expect(shouldShowWorkspaceConnectionStatus(state)).toBe(true);
-    expect(workspaceConnectionStatusLabel(state)).toBe("Loading threads...");
+    expect(workspaceConnectionStatusLabel(state)).toBe("正在加载对话…");
   });
 
   it("presents nothing while connected", () => {
@@ -107,13 +107,13 @@ describe("workspace connection status", () => {
       ],
     });
     expect(workspaceConnectionStatusPresentation(reconnecting)).toEqual({
-      label: "Reconnecting to Julius’s Mac mini",
+      label: "正在重新连接到 Julius’s Mac mini",
       showsProgress: true,
     });
 
     const offline = workspaceState({ networkStatus: "offline", hasReadyEnvironment: false });
     expect(workspaceConnectionStatusPresentation(offline)).toEqual({
-      label: "You are offline",
+      label: "当前离线",
       showsProgress: false,
     });
   });

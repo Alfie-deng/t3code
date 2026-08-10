@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 
 import { removeThreadOutboxMessage } from "../../state/thread-outbox";
+import { t } from "../../localization/zhCN";
 import type { PendingNewTask } from "../../state/use-pending-new-tasks";
 import { releaseEditingQueuedMessage } from "../../state/use-thread-outbox";
 
@@ -28,12 +29,12 @@ export function usePendingTaskListActions(): {
 
   const confirmDeletePendingTask = useCallback((pendingTask: PendingNewTask) => {
     Alert.alert(
-      "Delete pending task?",
-      `“${pendingTask.title}” has not been sent yet and will be removed from the outbox.`,
+      t("Delete pending task?"),
+      `“${pendingTask.title}” ${t("has not been sent yet and will be removed from the outbox.")}`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("Cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("Delete"),
           style: "destructive",
           onPress: () => {
             // Release the edit lock only after removal succeeds, and only if
@@ -43,8 +44,10 @@ export function usePendingTaskListActions(): {
               .then(() => releaseEditingQueuedMessage(pendingTask.message.messageId))
               .catch((error) => {
                 Alert.alert(
-                  "Could not delete pending task",
-                  error instanceof Error ? error.message : "The pending task could not be removed.",
+                  t("Could not delete pending task"),
+                  error instanceof Error
+                    ? error.message
+                    : t("The pending task could not be removed."),
                 );
               });
           },

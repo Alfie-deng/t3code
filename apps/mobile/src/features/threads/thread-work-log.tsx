@@ -3,6 +3,7 @@ import { type AppSymbolName, SymbolView } from "../../components/AppSymbol";
 import { LayoutAnimation, Pressable, ScrollView, useColorScheme, View } from "react-native";
 
 import { AppText as Text } from "../../components/AppText";
+import { t } from "../../localization/zhCN";
 import { scaledTypographyLineHeight } from "../../lib/appearancePreferences";
 import { cn } from "../../lib/cn";
 import type { ThreadFeedActivity } from "../../lib/threadActivity";
@@ -144,7 +145,7 @@ export function ThreadWorkLog(props: {
     <View className="-mx-1 mb-1 px-1 py-0">
       {!onlyToolRows ? (
         <Text className="px-0.5 pb-0.5 font-t3-medium text-2xs text-foreground-muted opacity-60">
-          work log
+          {t("work log")}
         </Text>
       ) : null}
 
@@ -153,7 +154,7 @@ export function ThreadWorkLog(props: {
           const expanded = props.expandedRows[row.id] ?? false;
           const canExpand = row.canExpand;
           const fullDetail = expanded ? row.getFullDetail() : null;
-          const displayText = row.detail ? `${row.summary} ${row.detail}` : row.summary;
+          const displayText = row.detail ? `${t(row.summary)} ${row.detail}` : t(row.summary);
           const iconIsDestructive = row.icon === "alert" || row.icon === "warning";
 
           return (
@@ -201,7 +202,7 @@ export function ThreadWorkLog(props: {
                         iconIsDestructive && "text-rose-600 dark:text-rose-400",
                       )}
                     >
-                      {row.summary}
+                      {t(row.summary)}
                     </Text>
                     {row.detail ? (
                       <Text className="text-foreground-muted opacity-60"> {row.detail}</Text>
@@ -211,7 +212,7 @@ export function ThreadWorkLog(props: {
                   <View className="shrink-0 flex-row items-center gap-px">
                     {props.copiedRowId === row.id ? (
                       <Text className="pr-1 font-t3-medium text-3xs text-emerald-600 dark:text-emerald-400">
-                        Copied
+                        {t("Copied")}
                       </Text>
                     ) : null}
                     <View className="h-4 w-4 items-center justify-center">
@@ -290,10 +291,10 @@ export function ThreadWorkGroupToggle(props: {
     : props.hiddenCount === 1
       ? "log entry"
       : "log entries";
-  const collapsedLabel = `Show ${props.hiddenCount} previous ${noun}`;
+  const collapsedLabel = `Show ${props.hiddenCount} previous ${t(noun)}`;
   const expandedLabel = props.onlyToolActivities
-    ? "Show fewer tool calls"
-    : "Show fewer log entries";
+    ? t("Show fewer tool calls")
+    : t("Show fewer log entries");
 
   return (
     <View className="-mx-1 mb-1 px-1 py-0">
@@ -324,7 +325,7 @@ export function ThreadWorkGroupToggle(props: {
           />
         </View>
         <Text className="font-t3-medium text-xs text-foreground opacity-80">
-          {props.expanded ? expandedLabel : `+${props.hiddenCount} previous ${noun}`}
+          {props.expanded ? expandedLabel : `+${props.hiddenCount} previous ${t(noun)}`}
         </Text>
       </Pressable>
     </View>

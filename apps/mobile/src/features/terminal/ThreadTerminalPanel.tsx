@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { Pressable, View } from "react-native";
 
 import { AppText as Text } from "../../components/AppText";
+import { t } from "../../localization/zhCN";
 import { terminalEnvironment } from "../../state/terminal";
 import { useAtomCommand } from "../../state/use-atom-command";
 import { useAttachedTerminalSession } from "../../state/use-terminal-session";
@@ -218,10 +219,10 @@ export const ThreadTerminalPanel = memo(function ThreadTerminalPanel(
       <View className="flex-row items-center justify-between border-b border-white/10 px-3 py-2">
         <View className="min-w-0 flex-1">
           <Text className="font-t3-bold text-sm text-neutral-100" numberOfLines={1}>
-            Terminal
+            {t("Terminal")}
           </Text>
           <Text className="text-2xs text-neutral-500" numberOfLines={1}>
-            {nativeTerminalAvailable ? "Native Ghostty surface" : "Text fallback active"}
+            {nativeTerminalAvailable ? t("Native Ghostty surface") : t("Text fallback active")}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
