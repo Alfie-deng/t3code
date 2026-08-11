@@ -1,5 +1,6 @@
 import { cn } from "~/lib/utils";
 import { type ContextWindowSnapshot, formatContextWindowTokens } from "~/lib/contextWindow";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { Popover, PopoverPopup, PopoverTrigger } from "../ui/popover";
 
 function formatPercentage(value: number | null): string | null {
@@ -130,7 +131,9 @@ export function ContextWindowMeter(props: {
           ) : null}
           {usage.compactsAutomatically ? (
             <div className="mt-1 text-pretty text-secondary-label text-[11px] font-medium">
-              {providerDisplayName ?? "It"} automatically compacts its context when needed.
+              {translateZhCnUiText(
+                `${providerDisplayName ?? "It"} automatically compacts its context when needed.`,
+              )}
             </div>
           ) : null}
         </div>
