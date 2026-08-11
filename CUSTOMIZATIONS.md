@@ -37,14 +37,14 @@
 
 ## 1. 当前盘点（2026-08-11）
 
-| 字段                                            | 值                                                                                                     |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 私人 tip                                        | `82f58cfad`（模型设置三词；合并提交 `95a4ff73e`）                                                      |
-| 上次合入上游                                    | `95a4ff73e`（合入上游 17 笔至 `9c7622dac`；含 v0.0.33、多提供商 PR 页、安卓手势条等）                  |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `9c7622dac`                                                                                            |
-| 官方 tip（已 fetch）                            | `f5fce7416`（相对已合入点多 1 笔：GitLab self-hosted PR 路由；**尚未**再合）                           |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（合上游 + 藏侧栏 PR；签名 Alfie Development）                     |
-| 手机安装版                                      | 真机 `com.jetdeng.t3code` production Release（本轮已重装：模型设置「思考强度 / 速度响应 / 操作权限」） |
+| 字段                                            | 值                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 私人 tip                                        | （提交后对齐）                                                                        |
+| 上次合入上游                                    | `95a4ff73e`（合入上游 17 笔至 `9c7622dac`；含 v0.0.33、多提供商 PR 页、安卓手势条等） |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `9c7622dac`                                                                           |
+| 官方 tip（已 fetch）                            | `f5fce7416`（相对已合入点多 1 笔：GitLab self-hosted PR 路由；**尚未**再合）          |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（合上游 + 藏侧栏 PR；签名 Alfie Development）    |
+| 手机安装版                                      | 真机 `com.jetdeng.t3code` production Release（含模型设置三词 + 主页项目组头行距收紧） |
 
 下次合完上游后：立刻改本表三行 tip / 上次合入 / merge-base，并勾验收清单。
 
@@ -183,6 +183,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | ----------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
 | 靛蓝强调色              | `apps/mobile/global.css`                                           | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items                         |
 | 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                | iOS `PingFangSC-Regular` / `Semibold`                                                                                            |
+| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                    | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                                         |
 | 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                   | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                                                 |
 | 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                   | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留                      |
 | 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                            | 只留 T3 Code 字标                                                                                                                |

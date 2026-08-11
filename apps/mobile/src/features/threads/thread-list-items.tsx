@@ -118,7 +118,9 @@ export const ThreadListGroupHeader = memo(function ThreadListGroupHeader(props: 
   // swallows focus). Row padding lives on the container (explicit styles —
   // dynamic padding classes on Pressable did not apply reliably) so both
   // children share one centerline; hitSlop restores the padded tap area.
-  const verticalHitSlop = { top: props.isFirst ? 8 : 24, bottom: 12 };
+  // Non-first compact tops used to be 24 — left a huge gap when projects are
+  // collapsed to header-only stacks (Alfie personal tighten).
+  const verticalHitSlop = { top: props.isFirst ? 6 : 10, bottom: 8 };
   return (
     <View
       className={compact ? "flex-row items-center bg-screen" : "flex-row items-center"}
@@ -128,8 +130,8 @@ export const ThreadListGroupHeader = memo(function ThreadListGroupHeader(props: 
         // Compact right padding centers the 20pt plus glyph on the thread
         // rows' trailing chevron column (18 + 13/2 ≈ 24.5 from the edge).
         paddingRight: compact ? 14 : 12,
-        paddingBottom: compact ? 12 : 8,
-        paddingTop: props.isFirst ? (compact ? 8 : 4) : compact ? 24 : 20,
+        paddingBottom: compact ? 6 : 4,
+        paddingTop: props.isFirst ? (compact ? 6 : 4) : compact ? 10 : 10,
       }}
     >
       <Pressable
