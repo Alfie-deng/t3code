@@ -60,4 +60,17 @@ describe("ThreadErrorBanner", () => {
     expect(markup).toContain("所选模型当前容量已满，请尝试其他模型。");
     expect(markup).not.toContain("Selected model is at capacity");
   });
+
+  it("translates retriable transport cancels in the banner", () => {
+    const markup = renderToStaticMarkup(
+      <ThreadErrorBanner
+        error="Error: RetriableError: [canceled] http/2 stream closed with error code CANCEL (0x8)"
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("错误：网络请求连接中断。");
+    expect(markup).not.toContain("RetriableError");
+    expect(markup).not.toContain("http/2 stream closed");
+  });
 });

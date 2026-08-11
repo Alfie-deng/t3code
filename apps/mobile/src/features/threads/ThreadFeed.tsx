@@ -102,7 +102,7 @@ import {
 } from "./thread-work-log";
 import { useMarkdownCodeHighlight } from "./markdownCodeHighlightState";
 import { useAssetUrl } from "../../state/assets";
-import { t } from "../../localization/zhCN";
+import { t, translateZhCnProviderErrorMessage } from "../../localization/zhCN";
 import { resolveWorkspaceRelativeFilePath } from "../files/filePath";
 
 const MESSAGE_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
@@ -991,16 +991,19 @@ function renderFeedEntry(
       return null;
     }
 
+    // Provider failure chrome sometimes lands as the whole assistant bubble.
+    const assistantText = translateZhCnProviderErrorMessage(message.text) ?? message.text;
+
     const enterAnimated = isFreshTimestamp(message.createdAt);
     return (
       <Animated.View
         className={cn(showAssistantMeta ? "mb-5 px-1" : "mb-2 px-1")}
         {...(enterAnimated ? { entering: FadeIn.duration(220) } : {})}
       >
-        {message.text.trim().length > 0 ? (
+        {assistantText.trim().length > 0 ? (
           hasNativeSelectableMarkdownText() ? (
             <SelectableMarkdownText
-              markdown={message.text}
+              markdown={assistantText}
               skills={props.skills}
               textStyle={styles.nativeTextStyle}
               onLinkPress={props.onMarkdownLinkPress}
@@ -1012,7 +1015,7 @@ function renderFeedEntry(
               styles={styles.styles}
               theme={styles.theme}
             >
-              {message.text}
+              {assistantText}
             </Markdown>
           )
         ) : null}

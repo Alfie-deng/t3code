@@ -1,1 +1,6 @@
-export { translateExact, translateZhCnUiText, translateZhCnWhenExpression } from "./zhCN.ts";
+export {
+  translateExact,
+  translateZhCnProviderErrorMessage,
+  translateZhCnUiText,
+  translateZhCnWhenExpression,
+} from "./zhCN.ts";

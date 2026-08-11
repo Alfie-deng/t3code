@@ -104,7 +104,7 @@ import {
 import { cn } from "~/lib/utils";
 import { type TimestampFormat } from "@t3tools/contracts/settings";
 import { formatChatTimestampTooltip, formatShortTimestamp } from "../../timestampFormat";
-import { translateZhCnUiText } from "~/localization/zhCN";
+import { translateZhCnProviderErrorMessage, translateZhCnUiText } from "~/localization/zhCN";
 import { PERSONAL_UI } from "~/personalUi";
 
 import {
@@ -1122,7 +1122,10 @@ function TurnFoldTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "turn-
 
 function AssistantTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "message" }> }) {
   const ctx = use(TimelineRowCtx);
-  const messageText = row.message.text || (row.message.streaming ? "" : "(empty response)");
+  const rawMessageText = row.message.text || (row.message.streaming ? "" : "(empty response)");
+  // Provider failure strings sometimes land as the whole assistant bubble. Translate
+  // only when the error dictionary recognizes the full text — never ordinary prose.
+  const messageText = translateZhCnProviderErrorMessage(rawMessageText) ?? rawMessageText;
 
   return (
     <>
@@ -2182,6 +2185,13 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
   const displayText = preview ? `${heading} - ${preview}` : heading;
   const expandedBody = buildToolCallExpandedBody(workEntry, workspaceRoot);
   const canExpand = expandedBody !== null;
+  const translatedExpandedBody = expandedBody
+    ? (translateZhCnProviderErrorMessage(expandedBody) ??
+      (workEntry.sourceActivityKind === "runtime.error" ||
+      workEntry.sourceActivityKind === "runtime.warning"
+        ? translateZhCnUiText(expandedBody)
+        : expandedBody))
+    : null;
   const showFailedIndicator = workEntryIndicatesToolFailure(workEntry);
   const showDestructiveRowStyle =
     showFailedIndicator &&
@@ -2305,14 +2315,14 @@ const PlainWorkEntryRow = memo(function PlainWorkEntryRow(props: {
           </div>
         </div>
       </div>
-      {expanded && canExpand && expandedBody ? (
+      {expanded && canExpand && translatedExpandedBody ? (
         <div
           className="mt-1 ms-7 cursor-default border-s border-border/45 ps-3 pt-0.5"
           onClick={stopRowToggle}
           onPointerDown={stopRowToggle}
         >
           <pre className="max-h-64 cursor-text overflow-auto whitespace-pre-wrap break-words font-mono text-secondary-label text-[11px] leading-relaxed select-text">
-            {expandedBody}
+            {translatedExpandedBody}
           </pre>
         </div>
       ) : null}

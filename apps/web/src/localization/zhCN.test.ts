@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { translateZhCnUiText, translateZhCnWhenExpression } from "./zhCN";
+import {
+  translateZhCnProviderErrorMessage,
+  translateZhCnUiText,
+  translateZhCnWhenExpression,
+} from "./zhCN";
 
 describe("T3 Code 简体中文工作流文案", () => {
   it("translates the observed running, tool, and completion states", () => {
@@ -157,6 +161,30 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(
       translateZhCnUiText("Selected model is at capacity. Please try a different model."),
     ).toBe("所选模型当前容量已满，请尝试其他模型。");
+    expect(
+      translateZhCnUiText(
+        "Error: RetriableError: [canceled] http/2 stream closed with error code CANCEL (0x8)",
+      ),
+    ).toBe("错误：网络请求连接中断。");
+    expect(
+      translateZhCnUiText(
+        "RetriableError: [canceled] http/2 stream closed with error code CANCEL (0x8)",
+      ),
+    ).toBe("错误：网络请求连接中断。");
+    expect(
+      translateZhCnUiText(
+        "RetriableError: [aborted] http/2 stream closed with error code CANCEL (0x8)",
+      ),
+    ).toBe("错误：可重试失败（已中止）：HTTP/2 连接流被取消关闭");
+    expect(translateZhCnUiText("http/2 stream closed with error code INTERNAL_ERROR (0x2)")).toBe(
+      "错误：HTTP/2 连接流已关闭（INTERNAL_ERROR 0x2）",
+    );
+    expect(
+      translateZhCnProviderErrorMessage(
+        "Error: RetriableError: [canceled] http/2 stream closed with error code CANCEL (0x8)",
+      ),
+    ).toBe("错误：网络请求连接中断。");
+    expect(translateZhCnProviderErrorMessage("Here is a normal assistant answer.")).toBeNull();
     expect(
       translateZhCnUiText(
         "Your input exceeds the context window of this model. Please adjust your input and try again.",

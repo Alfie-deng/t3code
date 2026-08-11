@@ -6,11 +6,17 @@
 
 import {
   translateExact,
+  translateZhCnProviderErrorMessage,
   translateZhCnUiText,
   translateZhCnWhenExpression,
 } from "@t3tools/zh-locale";
 
-export { translateExact, translateZhCnUiText, translateZhCnWhenExpression };
+export {
+  translateExact,
+  translateZhCnProviderErrorMessage,
+  translateZhCnUiText,
+  translateZhCnWhenExpression,
+};
 
 const LOCALIZABLE_ATTRIBUTES = [
   "aria-label",

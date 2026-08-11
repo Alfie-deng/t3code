@@ -4,7 +4,11 @@
 // (single source of truth, shared with the desktop/web build). This file layers
 // mobile-only strings on top and exposes render-time helpers for RN (no DOM here).
 
-import { translateExact, translateZhCnUiText } from "@t3tools/zh-locale";
+import {
+  translateExact,
+  translateZhCnProviderErrorMessage,
+  translateZhCnUiText,
+} from "@t3tools/zh-locale";
 
 // Mobile-only UI strings that the shared desktop dictionary does not cover.
 // Keep this list small; anything already in @t3tools/zh-locale belongs there.
@@ -136,4 +140,4 @@ export function t(value: string): string {
   return translated === value ? translateExact(value) : translated;
 }
 
-export { translateExact, translateZhCnUiText };
+export { translateExact, translateZhCnProviderErrorMessage, translateZhCnUiText };

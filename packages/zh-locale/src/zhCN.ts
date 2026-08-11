@@ -5124,29 +5124,81 @@ function translateRuntimeError(value: string): string | null {
     return match[1]!.toLowerCase() === "enabled" ? "已开启快速模式" : "已关闭快速模式";
   }
 
-  // Cursor/provider transport cancels (often mid-build or mid-turn interrupt).
-  match =
-    /^Error:\s*RetriableError:\s*\[canceled\]\s*http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.exec(
-      value,
-    );
-  if (match) {
+  // Cursor/provider transport cancels and siblings (often mid-build / mid-turn interrupt).
+  const retriableTranslated = translateRetriableTransportError(value);
+  if (retriableTranslated) return retriableTranslated;
+
+  return null;
+}
+
+function translateHttp2StreamClosedDetail(detail: string): string | null {
+  const cancelMatch = /^http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.exec(
+    detail.trim(),
+  );
+  if (cancelMatch) return "HTTP/2 连接流被取消关闭";
+
+  const codeMatch =
+    /^http\/2 stream closed with error code ([A-Z_]+)\s*\((0x[0-9a-fA-F]+)\)$/i.exec(detail.trim());
+  if (codeMatch) {
+    return `HTTP/2 连接流已关闭（${codeMatch[1]} ${codeMatch[2]}）`;
+  }
+
+  if (/^http\/2 stream closed\b/i.test(detail.trim())) {
+    return "HTTP/2 连接流已关闭";
+  }
+
+  return null;
+}
+
+function translateRetriableTag(tag: string): string {
+  const normalized = tag.trim().toLowerCase();
+  if (normalized === "canceled" || normalized === "cancelled") return "已取消";
+  if (normalized === "aborted") return "已中止";
+  if (normalized === "timeout" || normalized === "timed_out" || normalized === "timedout") {
+    return "超时";
+  }
+  if (normalized === "unavailable") return "暂不可用";
+  return tag.trim();
+}
+
+function translateRetriableTransportError(value: string): string | null {
+  const trimmed = value.trim();
+
+  // Exact common Cursor cancel — keep the short user-facing line.
+  if (
+    /^(?:Error:\s*)?RetriableError:\s*\[(?:canceled|cancelled)\]\s*http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.test(
+      trimmed,
+    ) ||
+    /^http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.test(trimmed)
+  ) {
     return "错误：网络请求连接中断。";
   }
-  match =
-    /^RetriableError:\s*\[canceled\]\s*http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.exec(
-      value,
-    );
+
+  let match = /^(?:Error:\s*)?RetriableError:\s*\[([^\]]+)\]\s*(.+)$/i.exec(trimmed);
   if (match) {
-    return "错误：网络请求连接中断。";
+    const tagZh = translateRetriableTag(match[1] ?? "");
+    const detailRaw = (match[2] ?? "").trim();
+    const detailZh =
+      translateHttp2StreamClosedDetail(detailRaw) ?? translateProviderTransportDetail(detailRaw);
+    if (detailZh && detailZh !== detailRaw) {
+      return `错误：可重试失败（${tagZh}）：${detailZh}`;
+    }
+    return `错误：可重试失败（${tagZh}）：${detailRaw}`;
   }
-  match = /^RetriableError:\s*\[canceled\]\s*(.+)$/i.exec(value);
+
+  match = /^(?:Error:\s*)?RetriableError:\s*(.+)$/i.exec(trimmed);
   if (match) {
-    return "错误：网络请求连接中断。";
+    const detailRaw = (match[1] ?? "").trim();
+    const detailZh =
+      translateHttp2StreamClosedDetail(detailRaw) ?? translateProviderTransportDetail(detailRaw);
+    if (detailZh && detailZh !== detailRaw) {
+      return `错误：可重试失败：${detailZh}`;
+    }
+    return `错误：可重试失败：${detailRaw}`;
   }
-  match = /^http\/2 stream closed with error code CANCEL\s*\(0x8\)$/i.exec(value);
-  if (match) {
-    return "错误：网络请求连接中断。";
-  }
+
+  const http2Only = translateHttp2StreamClosedDetail(trimmed);
+  if (http2Only) return `错误：${http2Only}`;
 
   return null;
 }
@@ -6728,6 +6780,18 @@ export function translateExact(value: string): string {
 /** Translate a UI string for surfaces MutationObserver cannot reach (native menus). */
 export function translateZhCnUiText(value: string): string {
   return translateExact(value);
+}
+
+/**
+ * Translate provider/runtime error chrome when the whole string is a known error.
+ * Returns null for ordinary assistant prose so chat markdown stays untouched.
+ */
+export function translateZhCnProviderErrorMessage(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  // Keep multi-paragraph / fenced assistant answers out of the error path.
+  if (/\n\s*\n/.test(trimmed) || /```/.test(trimmed)) return null;
+  return translateRuntimeError(trimmed);
 }
 
 const KEYBINDING_WHEN_LABEL_ZH: Readonly<Record<string, { positive: string; negative: string }>> = {
