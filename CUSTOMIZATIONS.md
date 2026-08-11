@@ -87,7 +87,7 @@
 状态：**已启用；仅隐藏入口，不删除能力。**
 
 - 实现：`apps/web/src/personalUi.ts`
-- 已隐藏：顶部品牌 `T3 Code`、项目操作 `添加操作`、编辑器入口 `打开`、Git 快捷入口 `初始化 Git`、终端抽屉按钮。
+- 已恢复显示顶部品牌 `T3 Code`（其中 `Code` 保留英文，不被汉化观察器改成“代码”）；项目操作 `添加操作`、编辑器入口 `打开`、Git 快捷入口 `初始化 Git`、终端抽屉按钮仍隐藏。
 - 输入框底部的 `完全访问` 运行模式选择器及其左侧分隔线也隐藏；运行模式状态和底层发送逻辑保留，不再占用个人输入框空间。
 - 右侧面板按钮、快捷键、命令面板和设置页中的对应能力继续保留；这是界面减法，不是功能删除。
 
@@ -161,15 +161,15 @@
 
 #### 账户、设置、用量和普通页面
 
-| 文件                                                                                                                                                                               | 本地定制内容                                                                                                               |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `apps/web/src/main.tsx`、`apps/web/package.json`、`pnpm-lock.yaml`                                                                                                                 | 接入 `@clerk/localizations` 的 `zhCN`，覆盖登录、账户、个人资料、安全、Passkey 和移动客户端页面，并覆盖本地 Passkey 术语。 |
-| `apps/web/src/components/clerk/MobileClientsUserProfilePage.tsx`、`MobileClientsUserProfilePage.logic.ts`、对应 `.test.ts`                                                         | 移动客户端卡片、推送通知、实时活动、更新时间、加载/空状态/错误/刷新按钮直接输出简体中文并使用中文日期格式。                |
-| `apps/web/src/components/settings/AddProviderInstanceDialog.tsx`、`AddProviderInstanceWizardSteps.tsx`、`DiagnosticsSettings.tsx`、`KeybindingsSettings.tsx`                       | 添加提供商、向导步骤、诊断、快捷键条件/状态等设置入口汉化。                                                                |
-| `apps/web/src/components/settings/ProviderAccentColorPicker.tsx`、`ProviderInstanceCard.tsx`、`ProviderModelsSection.tsx`、`ProviderSettingsPanel.tsx`、`SettingsFontPreviews.tsx` | 提供商卡片、账户/版本/模型数量/连接状态、颜色选择无障碍标题、字体预览等碎片文案汉化。                                      |
-| `apps/web/src/components/color-selector.tsx`                                                                                                                                       | 颜色选择器的可访问名称汉化。                                                                                               |
-| `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/shared/src/usageFormat.ts`                                                                      | 用量页日期范围、成本/Token、统计卡片、图表说明、缓存节省和无障碍标签汉化；数值格式保持原语义。                             |
-| `apps/web/src/components/sidebar/SidebarChrome.tsx`                                                                                                                                | 隐藏顶部品牌入口，保留侧边栏、搜索、设置、用量和项目能力。                                                                 |
+| 文件                                                                                                                                                                               | 本地定制内容                                                                                                                   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/web/src/main.tsx`、`apps/web/package.json`、`pnpm-lock.yaml`                                                                                                                 | 接入 `@clerk/localizations` 的 `zhCN`，覆盖登录、账户、个人资料、安全、Passkey 和移动客户端页面，并覆盖本地 Passkey 术语。     |
+| `apps/web/src/components/clerk/MobileClientsUserProfilePage.tsx`、`MobileClientsUserProfilePage.logic.ts`、对应 `.test.ts`                                                         | 移动客户端卡片、推送通知、实时活动、更新时间、加载/空状态/错误/刷新按钮直接输出简体中文并使用中文日期格式。                    |
+| `apps/web/src/components/settings/AddProviderInstanceDialog.tsx`、`AddProviderInstanceWizardSteps.tsx`、`DiagnosticsSettings.tsx`、`KeybindingsSettings.tsx`                       | 添加提供商、向导步骤、诊断、快捷键条件/状态等设置入口汉化。                                                                    |
+| `apps/web/src/components/settings/ProviderAccentColorPicker.tsx`、`ProviderInstanceCard.tsx`、`ProviderModelsSection.tsx`、`ProviderSettingsPanel.tsx`、`SettingsFontPreviews.tsx` | 提供商卡片、账户/版本/模型数量/连接状态、颜色选择无障碍标题、字体预览等碎片文案汉化。                                          |
+| `apps/web/src/components/color-selector.tsx`                                                                                                                                       | 颜色选择器的可访问名称汉化。                                                                                                   |
+| `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/shared/src/usageFormat.ts`                                                                      | 用量页日期范围、成本/Token、统计卡片、图表说明、缓存节省和无障碍标签汉化；数值格式保持原语义。                                 |
+| `apps/web/src/components/sidebar/SidebarChrome.tsx`                                                                                                                                | 恢复顶部 `T3 Code` 品牌入口；品牌内 `Code` 使用 `data-translation-skip` 保留英文，侧边栏、搜索、设置、用量和项目能力继续保留。 |
 
 #### Electron 原生层与预览标注编辑器
 

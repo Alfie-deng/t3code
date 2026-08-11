@@ -5,7 +5,7 @@
  * underlying capabilities remain available through keybindings and panels.
  */
 export const PERSONAL_UI = {
-  hideTopBarBrand: true,
+  hideTopBarBrand: false,
   hideTopBarProjectActions: true,
   hideTopBarOpenInEditor: true,
   hideTopBarGitActions: true,
