@@ -171,4 +171,44 @@ describe("mobile model options", () => {
     // Offline: nothing to validate against, selection passes through.
     expect(resolveDefaultableModelSelection(null, legacy)).toBe(legacy);
   });
+
+  it("hides and reorders models using desktop modelListPreferences", () => {
+    const config = {
+      providers: [
+        {
+          instanceId: "cursor",
+          driver: "cursor",
+          displayName: "Cursor",
+          enabled: true,
+          installed: true,
+          auth: { status: "authenticated" },
+          models: [
+            { slug: "composer-2", name: "Composer 2", isCustom: false, capabilities: null },
+            { slug: "claude-opus-5", name: "Opus 5", isCustom: false, capabilities: null },
+            { slug: "my-custom", name: "my-custom", isCustom: true, capabilities: null },
+          ],
+        },
+      ],
+      modelListPreferences: {
+        favorites: [{ provider: ProviderInstanceId.make("cursor"), model: "my-custom" }],
+        providerModelPreferences: {
+          [ProviderInstanceId.make("cursor")]: {
+            hiddenModels: ["claude-opus-5", "my-custom"],
+            modelOrder: ["my-custom", "composer-2"],
+          },
+        },
+      },
+    } as unknown as ServerConfig;
+
+    expect(groupByProvider(buildModelOptions(config, null))).toMatchObject([
+      {
+        providerKey: "cursor",
+        models: [
+          // Custom stays visible despite being in hiddenModels; favorites sort first.
+          { key: "cursor:my-custom", isCustom: true },
+          { key: "cursor:composer-2", isCustom: false },
+        ],
+      },
+    ]);
+  });
 });

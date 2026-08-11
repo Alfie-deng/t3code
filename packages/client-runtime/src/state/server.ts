@@ -293,6 +293,15 @@ export function applyServerConfigProjection(
         latestEvent: event,
         source: "live",
       }));
+    case "modelListPreferencesUpdated":
+      return Option.map(current, (projection) => ({
+        config: {
+          ...projection.config,
+          modelListPreferences: event.payload.modelListPreferences,
+        },
+        latestEvent: event,
+        source: "live",
+      }));
   }
 }
 

@@ -5,6 +5,7 @@ import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Path from "effect/Path";
 import * as Queue from "effect/Queue";
 import * as Ref from "effect/Ref";
 import * as Schema from "effect/Schema";
@@ -63,6 +64,7 @@ import { HttpRouter, HttpServerRequest, HttpServerRespondable } from "effect/uns
 import { RpcSerialization, RpcServer } from "effect/unstable/rpc";
 
 import * as CheckpointDiffQuery from "./checkpointing/CheckpointDiffQuery.ts";
+import * as ClientModelListPreferences from "./clientModelListPreferences.ts";
 import * as ServerConfig from "./config.ts";
 import * as Keybindings from "./keybindings.ts";
 import * as ExternalLauncher from "./process/externalLauncher.ts";
@@ -996,6 +998,11 @@ const makeWsRpcLayer = (
         );
         const environment = yield* serverEnvironment.getDescriptor;
         const auth = yield* serverAuth.getDescriptor();
+        const path = yield* Path.Path;
+        const modelListPreferences =
+          yield* ClientModelListPreferences.readClientModelListPreferences(
+            ClientModelListPreferences.clientSettingsPathForStateDir(config.stateDir, path.join),
+          );
 
         return {
           environment,
@@ -1019,6 +1026,7 @@ const makeWsRpcLayer = (
             otlpMetricsEnabled: config.otlpMetricsUrl !== undefined,
           },
           settings,
+          modelListPreferences,
           shellResumeCompletionMarker: true,
           threadResumeCompletionMarker: true,
           threadSnapshotPagination: true,
@@ -2103,6 +2111,20 @@ const makeWsRpcLayer = (
                   payload: { settings },
                 })),
               );
+              const path = yield* Path.Path;
+              const modelListPreferencesUpdates =
+                ClientModelListPreferences.watchClientModelListPreferences(
+                  ClientModelListPreferences.clientSettingsPathForStateDir(
+                    config.stateDir,
+                    path.join,
+                  ),
+                ).pipe(
+                  Stream.map((modelListPreferences) => ({
+                    version: 1 as const,
+                    type: "modelListPreferencesUpdated" as const,
+                    payload: { modelListPreferences },
+                  })),
+                );
 
               yield* providerRegistry
                 .refresh()
@@ -2110,7 +2132,10 @@ const makeWsRpcLayer = (
 
               const liveUpdates = Stream.merge(
                 keybindingsUpdates,
-                Stream.merge(providerStatuses, settingsUpdates),
+                Stream.merge(
+                  providerStatuses,
+                  Stream.merge(settingsUpdates, modelListPreferencesUpdates),
+                ),
               );
 
               return Stream.concat(

@@ -4327,6 +4327,7 @@ const MOBILE_APPEND_UI_TEXT: Readonly<Record<string, string>> = {
   Full: "完全",
   Runtime: "运行时",
   "Hide legacy models": "隐藏其他模型",
+  "Show legacy models": "显示其他模型",
   "Add Comment": "添加评论",
   "No selection": "未选择",
   "Select a diff line or range first.": "请先选择差异行或范围。",

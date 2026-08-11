@@ -205,6 +205,33 @@ export type ClientSettings = typeof ClientSettingsSchema.Type;
 
 export const DEFAULT_CLIENT_SETTINGS: ClientSettings = Schema.decodeSync(ClientSettingsSchema)({});
 
+/**
+ * Read-only projection of desktop ClientSettings model-list fields.
+ * Remote clients (mobile) consume this to mirror desktop hidden/order/
+ * favorites without a write path back into ClientSettings.
+ */
+export const ClientModelListPreferences = Schema.Struct({
+  favorites: Schema.Array(
+    Schema.Struct({
+      provider: ProviderInstanceId,
+      model: TrimmedNonEmptyString,
+    }),
+  ),
+  providerModelPreferences: Schema.Record(
+    ProviderInstanceId,
+    Schema.Struct({
+      hiddenModels: Schema.Array(Schema.String),
+      modelOrder: Schema.Array(Schema.String),
+    }),
+  ),
+});
+export type ClientModelListPreferences = typeof ClientModelListPreferences.Type;
+
+export const EMPTY_CLIENT_MODEL_LIST_PREFERENCES: ClientModelListPreferences = {
+  favorites: [],
+  providerModelPreferences: {},
+};
+
 // ── Server Settings (server-authoritative) ────────────────────
 
 // Moved to environment.ts so orchestration contracts can use it without an

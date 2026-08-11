@@ -1,12 +1,15 @@
 import type {
+  ClientModelListPreferences,
   ModelCapabilities,
   ModelSelection,
+  ProviderInstanceId,
   ServerConfig as T3ServerConfig,
 } from "@t3tools/contracts";
 import {
   buildProviderOptionSelectionsFromDescriptors,
   getProviderOptionDescriptors,
 } from "@t3tools/shared/model";
+import { sortModelsForProviderInstance } from "@t3tools/shared/modelOrdering";
 
 export type ModelOption = {
   readonly key: string;
@@ -17,6 +20,7 @@ export type ModelOption = {
   readonly providerDriver: string;
   readonly isDefault: boolean;
   readonly isLegacy: boolean;
+  readonly isCustom: boolean;
   readonly capabilities: ModelCapabilities | null;
   readonly selection: ModelSelection;
 };
@@ -104,6 +108,64 @@ export function resolveDefaultableModelSelection(
   return model?.isLegacy === true ? null : usable;
 }
 
+function favoriteSlugsForInstance(
+  preferences: ClientModelListPreferences | undefined,
+  instanceId: ProviderInstanceId,
+): ReadonlyArray<string> {
+  if (!preferences) return [];
+  return preferences.favorites
+    .filter((favorite) => favorite.provider === instanceId)
+    .map((favorite) => favorite.model);
+}
+
+/**
+ * Applies desktop ClientSettings model-list preferences (hidden / order /
+ * favorites). Custom models stay visible even when listed as hidden — same
+ * rule as the desktop picker.
+ */
+export function applyModelListPreferences(
+  options: ReadonlyArray<ModelOption>,
+  preferences: ClientModelListPreferences | undefined,
+): ReadonlyArray<ModelOption> {
+  if (!preferences) {
+    return options;
+  }
+
+  const byProvider = new Map<string, ModelOption[]>();
+  for (const option of options) {
+    const existing = byProvider.get(option.providerKey);
+    if (existing) {
+      existing.push(option);
+    } else {
+      byProvider.set(option.providerKey, [option]);
+    }
+  }
+
+  const result: ModelOption[] = [];
+  for (const [instanceId, models] of byProvider) {
+    const instancePrefs = preferences.providerModelPreferences[
+      instanceId as ProviderInstanceId
+    ] ?? {
+      hiddenModels: [],
+      modelOrder: [],
+    };
+    const hiddenModels = new Set(instancePrefs.hiddenModels);
+    const visible = models.filter(
+      (model) => model.isCustom || !hiddenModels.has(model.selection.model),
+    );
+    const sorted = sortModelsForProviderInstance(
+      visible.map((option) => ({ option, slug: option.selection.model })),
+      {
+        modelOrder: instancePrefs.modelOrder,
+        favoriteModels: favoriteSlugsForInstance(preferences, instanceId as ProviderInstanceId),
+        groupFavorites: true,
+      },
+    );
+    result.push(...sorted.map((item) => item.option));
+  }
+  return result;
+}
+
 export function buildModelOptions(
   config: T3ServerConfig | null | undefined,
   fallbackModelSelection: ModelSelection | null,
@@ -127,6 +189,7 @@ export function buildModelOptions(
         providerDriver: provider.driver,
         isDefault: model.isDefault === true,
         isLegacy: model.isLegacy === true,
+        isCustom: model.isCustom === true,
         capabilities: model.capabilities,
         selection: normalizeSelectionOptions(
           {
@@ -158,13 +221,14 @@ export function buildModelOptions(
         providerDriver: fallbackModelSelection.instanceId,
         isDefault: false,
         isLegacy: false,
+        isCustom: false,
         capabilities: null,
         selection: fallbackModelSelection,
       });
     }
   }
 
-  return [...options.values()];
+  return applyModelListPreferences([...options.values()], config?.modelListPreferences);
 }
 
 export function groupByProvider(options: ReadonlyArray<ModelOption>): ReadonlyArray<ProviderGroup> {

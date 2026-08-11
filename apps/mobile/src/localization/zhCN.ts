@@ -28,7 +28,7 @@ const MOBILE_UI_TEXT: Readonly<Record<string, string>> = {
   "Start from origin": "从原点开始",
   "Start a task": "开始任务",
   "Show more threads": "显示更多对话",
-  "Show legacy models": "显示旧版模型",
+  "Show legacy models": "显示其他模型",
   "Show file navigator": "显示文件导航",
   "Show fewer threads": "显示更少对话",
   "Show changed files": "显示更改的文件",

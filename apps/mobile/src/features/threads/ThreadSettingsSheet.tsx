@@ -74,7 +74,7 @@ export function threadSettingsSummaryLabel(input: {
   const runtime = RUNTIME_MODE_CHOICES.find((choice) => choice.mode === input.runtimeMode);
   return [
     input.modelLabel,
-    ...providerOptionValueLabels(input.optionDescriptors),
+    ...providerOptionValueLabels(input.optionDescriptors).map((label) => t(label)),
     ...(runtime ? [runtime.shortLabel] : []),
     ...(input.interactionMode === "plan" ? [t("Plan")] : []),
   ].join(" · ");
@@ -123,7 +123,7 @@ function ModelRow(props: {
       ) : null}
       {props.option.isLegacy ? (
         <View className="rounded-md bg-subtle px-1.5 py-0.5">
-          <Text className="text-3xs font-t3-bold text-foreground-muted">{t("Legacy")}</Text>
+          <Text className="text-3xs font-t3-bold text-foreground-muted">{t("Legacy models")}</Text>
         </View>
       ) : null}
       <View className="flex-1" />
@@ -153,7 +153,7 @@ function ProviderHeader(props: {
       accessibilityRole={props.collapsible ? "button" : "header"}
       accessibilityState={props.collapsible ? { expanded: !props.collapsed } : undefined}
       accessibilityLabel={
-        props.collapsible ? `${props.label}, ${props.modelCount} models` : props.label
+        props.collapsible ? `${props.label}, ${t(`${props.modelCount} models`)}` : props.label
       }
       disabled={!props.collapsible}
       onPress={props.onToggle}
@@ -461,10 +461,10 @@ export function ThreadSettingsSheet(props: {
         }
       : activeDescriptor?.type === "select"
         ? {
-            title: activeDescriptor.label,
+            title: t(activeDescriptor.label),
             rows: selectableChoices(activeDescriptor).map((choice) => ({
               id: choice.id,
-              label: choice.label,
+              label: t(choice.label),
               selected: choice.id === getProviderOptionCurrentValue(activeDescriptor),
               onPress: () => {
                 void Haptics.selectionAsync();
@@ -586,12 +586,13 @@ export function ThreadSettingsSheet(props: {
               const live = displayedDescriptors.find(
                 (descriptor) => descriptor.label === entry.label,
               );
+              const currentValueLabel = live ? getProviderOptionCurrentLabel(live) : undefined;
               if ((live?.type ?? entry.type) === "select") {
                 return (
                   <DisclosureRow
                     key={entry.label}
-                    label={entry.label}
-                    value={live ? getProviderOptionCurrentLabel(live) : undefined}
+                    label={t(entry.label)}
+                    value={currentValueLabel ? t(currentValueLabel) : undefined}
                     disabled={!live}
                     onPress={() => {
                       if (live) {
@@ -604,7 +605,7 @@ export function ThreadSettingsSheet(props: {
               return (
                 <SwitchRow
                   key={entry.label}
-                  label={entry.label}
+                  label={t(entry.label)}
                   value={live?.type === "boolean" ? (live.currentValue ?? false) : false}
                   disabled={!live}
                   onValueChange={(value) => {
