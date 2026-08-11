@@ -6,12 +6,12 @@
 
 ## 当前基线
 
-- 盘点日期：2026-08-10
+- 盘点日期：2026-08-11
 - 私人 fork：`https://github.com/Alfie-deng/t3code`
 - 本地路径：`/Users/alfie/Developer/t3code`
 - 上游：`https://github.com/pingdotgg/t3code`
 - 当前基线：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`
-- 当前安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`
+- 当前安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`（2026-08-11 覆盖安装，含 Memmy 记忆桥）
 - 构建目标：macOS Apple Silicon，覆盖安装 `/Applications/T3 Code.app`
 
 ## 定制总览
@@ -57,6 +57,19 @@
 1. 能独立提交就独立提交，便于上游同步和回滚。
 2. 任何会改变用户可见默认值或工作流行为的定制，都必须写出真实验收项。
 3. 不把密钥、Token、Cookie、代理订阅或账号凭据写进本文件、仓库或构建日志。
+
+### 4. Memmy 记忆桥（后台注入 + 自动写入）
+
+状态：**必须保留。**
+
+为 t3 会话接入本地 Memmy 记忆服务（与 Synara 同款桥，2026-08-11 移植）：
+
+- `apps/server/src/orchestration/memmyContextInjection.ts`：桥核心，source=`t3`，env 前缀 `T3_MEMMY_*`（默认开，`T3_MEMMY_MEMORY_ENABLED=0` 关闭）。turn 开始调 `/api/v1/sessions/open` + `/turns/start` 召回，turn 结束调 `/turns/{id}/complete` 写入。
+- `apps/server/src/orchestration/Layers/ProviderCommandReactor.ts`：turn 开始时把召回结果 `<memmy_memory_context>` 前缀进发给 provider 的 input（**后台注入，UI 不显示**，用户消息原文不变）。
+- `apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts`：`turn.completed` 写回答案、`turn.aborted` 清 pending，避免下轮挂死。
+- 测试：`apps/server/src/orchestration/memmyContextInjection.test.ts` + `ProviderCommandReactor.test.ts` 新增的注入断言。
+- 验收：新开真实会话发消息后，`~/.memmy/memory-service/memory.sqlite` 出现新 `t3` source 会话；界面无 `<memmy_memory_context>` 显性文字。
+- 注意：Synara 的桥默认**注入 + 写入都开**；opencode 的 `injectContext: false` 只关了注入保留主动工具。t3 目前与 Synara 同策略（Alfie 已确认：只要不显性打出来就不要关）。
 
 ### 3.1 Nightly 应用图标常态化
 
@@ -260,6 +273,94 @@ git merge upstream/main
 - 如果签名需要密码、身份不可用、只能退回 ad-hoc，立即停止，不报告为完成。
 - 构建生成的 DMG/ZIP 只作为临时产物，验收后删除；长期只保留 `/Applications/T3 Code.app` 和源码证据。
 - 构建签名、Bundle、安装路径和真实窗口状态分别验证，不能拿其中一项冒充另外三项。
+
+### 完整构建 → 覆盖安装 → 重启 runbook（2026-08-11 实战固化）
+
+> 绕过的坑都在下面标注。整个流程约 10–15 分钟，分三步：装依赖 → 构建 artifact → 签名安装重启。
+
+**第 0 步：前置确认**
+
+```sh
+cd ~/developer/t3code
+# 1) 依赖必须完整（含 electron 二进制）。node_modules 若被删/缺 electron，先补：
+pnpm install --prefer-offline
+# 若 pnpm install 卡在 electron 下载（GitHub CDN 慢/断），改用镜像补装 electron：
+#   cd node_modules/.pnpm/electron@<ver>/node_modules/electron
+#   curl -sL -o /tmp/electron.zip "https://npmmirror.com/mirrors/electron/<ver>/electron-v<ver>-darwin-arm64.zip"
+#   rm -rf dist && mkdir dist && unzip -q /tmp/electron.zip -d dist/ && echo "Electron.app/Contents/MacOS/Electron" > path.txt
+# 2) 确认签名身份可用：
+security find-identity -v -p codesigning   # 应有 Apple Development: jet.deng@me.com (PTY74USJAK)
+# 3) .env 必须存在（Connections 页需要 Clerk 公钥），缺则从 .env.example 补
+```
+
+**第 1 步：构建 web/server/desktop**
+
+```sh
+pnpm run build:desktop
+# 产物：apps/server/dist/bin.mjs、apps/desktop/dist-electron/main.cjs 等
+# 验证 memmy 等定制已进产物：
+strings apps/server/dist/bin.mjs | grep -o "memmy-t3-bridge" | head -1
+```
+
+**第 2 步：构建 artifact（产出 .app）**
+
+```sh
+# --skip-build 复用上一步产物；--target dir 直接产 .app（不是 dmg/zip）
+node scripts/build-desktop-artifact.ts --skip-build --platform mac --target dir --arch arm64 --keep-stage
+# 一定要 --keep-stage！否则 staging 临时目录构建完就被清理，.app 找不回来（默认 Scoped 清理）
+# 产物在最新 staging 目录：
+APP=$(ls -dt /var/folders/th/*/T/t3code-desktop-mac-stage-* | head -1)/app/dist/mac-arm64/"T3 Code (Alpha).app"
+echo "$APP"
+```
+
+**第 3 步：签名（用本人证书 + 自定义 entitlements，绕过脚本的 passkey 限制）**
+
+```sh
+# 脚本 --signed 路径需要 provisioning profile（T3CODE_MACOS_PROVISIONING_PROFILE），本机没有，
+# 所以 artifact 先 unsigned 构建，再用 codesign 手动签名（效果一致，回执见 2026-08-10）
+codesign --force --deep --sign "ADCEE876C506C947B0D27F5DF46DF94052FB38DA" \
+  --options runtime \
+  --entitlements customizations/macos-electron.entitlements.plist "$APP"
+# 验证（必须全过）：
+codesign --verify --deep --strict "$APP"                 # → valid on disk
+codesign -dv --verbose=4 "$APP" | grep "Authority="       # → Apple Development: jet.deng@me.com
+```
+
+**第 4 步：覆盖安装 + 重启**
+
+> ⚠️ 本步会杀掉正在运行的 T3 Code（也就是可能正在跑当前 agent 会话的宿主），做完要手动重启、开新会话继续。**不要**用「脚本先杀进程再 cp」——杀进程会连宿主 shell 一起杀掉，脚本后半段根本执行不到（2026-08-11 实测踩过）。
+
+```sh
+# 1) 备份旧版
+mv "/Applications/T3 Code.app" "/Applications/T3 Code.bak.app"
+# 2) 从 staging 源直接 cp（不要经过桌面/Finder：拷贝会注入 resource fork，导致 codesign 校验报
+#    "resource fork ... not allowed"，tar --no-xattrs 也躲不掉，只有直接从 staging cp 才干净）
+cp -R "$APP" "/Applications/T3 Code.app"
+# 3) 校验安装版
+codesign --verify --deep --strict "/Applications/T3 Code.app"   # → valid on disk
+strings "/Applications/T3 Code.app/Contents/Resources/app.asar" | grep -o "memmy-t3-bridge" | head -1
+# 4) 重启
+open "/Applications/T3 Code.app"
+# 5) 等稳定后删除旧版备份
+rm -rf "/Applications/T3 Code.bak.app"
+```
+
+**第 5 步：端到端验收**
+
+- server 进程确认加载新 asar：`ps aux | grep "T3 Code.app/Contents/MacOS" | grep bin.mjs`
+- 新开一轮真实会话发消息，Memmy 数据库出现新 `t3` source 会话：
+  `sqlite3 ~/.memmy/memory-service/memory.sqlite "SELECT id,opened_at FROM sessions WHERE source='t3' ORDER BY opened_at DESC LIMIT 3;"`
+- 界面确认无 `<memmy_memory_context>` 显性文字（后台注入，UI 干净）。
+
+**坑位汇总**
+
+| 坑                                 | 表现                                      | 解法                                                |
+| ---------------------------------- | ----------------------------------------- | --------------------------------------------------- |
+| pnpm install 卡 electron           | CPU 0、无网络、日志停 postinstall         | 用 npmmirror 镜像手动下 zip 解到 dist + 写 path.txt |
+| 不 `--keep-stage`                  | 构建完 .app 消失                          | artifact 构建必须带 `--keep-stage`                  |
+| `--signed` 缺 provisioning profile | MissingMacPasskeyProvisioningProfileError | 改 unsigned 构建 + codesign 手动签名                |
+| 经过桌面/Finder 拷贝               | codesign 报 resource fork not allowed     | 直接从 staging 目录 `cp -R`                         |
+| 脚本先杀进程再覆盖                 | 杀进程连宿主会话一起挂，脚本中断          | 先备份→cp→校验→`open` 分步手动做，最后删备份        |
 
 ## 完成定义
 
