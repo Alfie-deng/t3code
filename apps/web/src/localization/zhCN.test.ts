@@ -124,6 +124,19 @@ describe("T3 Code 简体中文工作流文案", () => {
     );
     expect(
       translateZhCnUiText(
+        "Your input exceeds the context window of this model. Please adjust your input and try again.",
+      ),
+    ).toBe("你的输入超出了该模型的上下文窗口。请调整输入后重试。");
+    expect(
+      translateZhCnUiText(
+        '{"message":"Your input exceeds the context window of this model. Please adjust your input and try again.","type":"invalid_request_error","param":null,"code":"context_length_exceeded"}',
+      ),
+    ).toBe(
+      "你的输入超出了该模型的上下文窗口。请调整输入后重试。（类型：invalid_request_error，代码：context_length_exceeded）",
+    );
+    expect(translateZhCnUiText("Dismiss error")).toBe("关闭错误");
+    expect(
+      translateZhCnUiText(
         "Refresh remote branch status in the background. Set this to 0 seconds if Git credentials or security keys should only be prompted by explicit Git actions.",
       ),
     ).toBe(

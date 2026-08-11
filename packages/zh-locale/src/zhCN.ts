@@ -4826,6 +4826,81 @@ function translateProviderTransportDetail(value: string): string {
   return detail;
 }
 
+function translateContextLengthError(value: string): string | null {
+  if (
+    /^Your input exceeds the context window of this model\. Please adjust your input and try again\.?$/i.test(
+      value,
+    )
+  ) {
+    return "你的输入超出了该模型的上下文窗口。请调整输入后重试。";
+  }
+
+  let match =
+    /^Your input exceeds the context window of this model\.\s*(Please (?:adjust|reduce|shorten) .+?)\.?$/i.exec(
+      value,
+    );
+  if (match) {
+    const followUp = match[1]!.toLowerCase();
+    return `你的输入超出了该模型的上下文窗口。${
+      /^please adjust your input and try again$/i.test(followUp)
+        ? "请调整输入后重试。"
+        : "请缩短输入内容后重试。"
+    }`;
+  }
+
+  match =
+    /^This model(?:'s| has a) maximum context length (?:is|of) ([\d,]+) tokens?\.?\s*(?:However, )?(?:your messages|your input) (?:resulted in|contains|contained) ([\d,]+) tokens?\.?\s*(.+)?$/i.exec(
+      value,
+    );
+  if (match) {
+    const tail = match[3]?.trim();
+    const suffix =
+      tail && /^Please reduce the length of (?:the )?messages?\.?$/i.test(tail)
+        ? "请缩短消息内容。"
+        : "请缩短输入内容后重试。";
+    return `此模型的最大上下文长度为 ${match[1]} Token，但你的输入共 ${match[2]} Token。${suffix}`;
+  }
+
+  match = /^maximum context length is ([\d,]+) tokens?\.?.*$/i.exec(value);
+  if (match) return `最大上下文长度为 ${match[1]} Token。请缩短输入内容后重试。`;
+
+  return null;
+}
+
+function translateStructuredErrorPayload(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("{") || !trimmed.endsWith("}")) return null;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed) as unknown;
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+
+  const root = parsed as Record<string, unknown>;
+  const nestedError = root.error;
+  const payload =
+    nestedError && typeof nestedError === "object" && !Array.isArray(nestedError)
+      ? (nestedError as Record<string, unknown>)
+      : root;
+  const message = typeof payload.message === "string" ? payload.message.trim() : "";
+  if (!message) return null;
+
+  const translatedMessage = translateContextLengthError(message) ?? UI_TEXT_ALL[message] ?? message;
+  const details: string[] = [];
+  if (typeof payload.type === "string" && payload.type.trim()) {
+    details.push(`类型：${payload.type.trim()}`);
+  }
+  if (typeof payload.code === "string" || typeof payload.code === "number") {
+    details.push(`代码：${String(payload.code)}`);
+  }
+
+  if (translatedMessage === message) return null;
+  return details.length > 0 ? `${translatedMessage}（${details.join("，")}）` : translatedMessage;
+}
+
 function translateRuntimeWarningChrome(value: string): string | null {
   let match = /^Runtime warning (.+)$/.exec(value);
   if (match) return `运行警告：${translateRuntimeMessageBody(match[1] ?? "")}`;
@@ -4955,6 +5030,12 @@ function compactEnglishSuffixToZh(numRaw: string, suffix: string): string {
 
 function translateRuntimeError(value: string): string | null {
   if (/^Runtime error$/i.test(value)) return "运行错误";
+
+  const structuredError = translateStructuredErrorPayload(value);
+  if (structuredError) return structuredError;
+
+  const contextLengthError = translateContextLengthError(value);
+  if (contextLengthError) return contextLengthError;
 
   let match = /^Provider unreachable:\s*(.*)$/i.exec(value);
   if (match) {

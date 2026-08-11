@@ -126,6 +126,7 @@
 状态：**已启用；错误信息统一从共享词典输出，避免看到半截英文和开发者调试提示。**
 
 - `packages/zh-locale/src/zhCN.ts`：集中覆盖 `Runtime error`、提供商不可达、连接意外关闭、上游重置连接、证书校验失败、上游输出流提前结束和自动重试等运行时错误。
+- 2026-08-11：补齐通用错误卡的结构化 JSON 报错，统一翻译上下文窗口超限正文和 `Dismiss error` 关闭标签；`invalid_request_error`、`context_length_exceeded` 等诊断代码保留。
 - 已观察到的 `Provider unreachable` 变体统一转成“提供商无法连接：……”并保留必要的错误语义；`verbose: true` 等开发者调试提示不再直接展示给用户。
 - 动态错误仍保留 URL、错误码、请求 ID、会话 ID 和可执行命令等技术证据；未知尾部不吞掉，只在前面补上中文错误类别。
 - 桌面 Web 的 MutationObserver 和移动端 `t()` 共用这份词典；以后新增运行时错误，先补这里和 `apps/web/src/localization/zhCN.test.ts`，不要在单个组件里零散硬编码。
