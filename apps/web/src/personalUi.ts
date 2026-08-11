@@ -10,6 +10,7 @@ export const PERSONAL_UI = {
   hideTopBarOpenInEditor: true,
   hideTopBarGitActions: true,
   hideTopBarTerminalToggle: true,
+  hideSidebarPullRequests: true, // 藏侧栏左下「Pull Requests」；/pull-requests 与线程内 PR 仍可用
   hideRuntimeModeControl: true,
   hideComposerContextStrip: true,
   compactComposer: true,

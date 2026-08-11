@@ -5,8 +5,8 @@ import { Toggle } from "../ui/toggle";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
 interface PanelLayoutControlsProps {
+  showTerminalControl?: boolean;
   terminalAvailable: boolean;
-  showTerminalToggle?: boolean;
   terminalOpen: boolean;
   terminalShortcutLabel: string | null;
   rightPanelAvailable: boolean;
@@ -19,8 +19,8 @@ interface PanelLayoutControlsProps {
 }
 
 export const PanelLayoutControls = memo(function PanelLayoutControls({
+  showTerminalControl = true,
   terminalAvailable,
-  showTerminalToggle = true,
   terminalOpen,
   terminalShortcutLabel,
   rightPanelAvailable,
@@ -35,7 +35,7 @@ export const PanelLayoutControls = memo(function PanelLayoutControls({
       className="flex h-full shrink-0 items-center gap-1 [-webkit-app-region:no-drag]"
       data-panel-layout-controls
     >
-      {showTerminalToggle ? (
+      {showTerminalControl ? (
         <Tooltip>
           <TooltipTrigger
             render={

@@ -147,6 +147,7 @@ hideTopBarProjectActions: true; // 藏「添加操作」
 hideTopBarOpenInEditor: true;
 hideTopBarGitActions: true;
 hideTopBarTerminalToggle: true;
+hideSidebarPullRequests: true; // 藏侧栏左下「Pull Requests」；路由与线程内 PR 仍可用
 hideRuntimeModeControl: true; // 藏「完全访问」及左侧分隔线
 hideComposerContextStrip: true; // 藏输入框下检出/分支状态条
 compactComposer: true;
@@ -168,6 +169,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                       |
 | 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                              |
 | 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                |
+| 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用       |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 
