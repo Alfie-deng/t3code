@@ -1,403 +1,328 @@
-# Alfie 的 T3 Code 个人定制清单
+# Alfie · T3 Code 个人定制真源
 
-本文件是这个私人发行版的维护入口。它记录相对 T3 Code 上游必须保留、可以被上游等价实现替代，以及每次同步后必须重新验收的改动。
+给下一位 Agent（或 Alfie）接手用。**同步上游、继续定制、覆盖安装前，先完整读本文件。**
 
-不要把这里当发布日志；上游功能历史看 `CHANGELOG.md`，逐项汉化盘点看 `customizations/translation-inventory.md`。本文件只回答一件事：**同步上游或继续做个人定制时，哪些本地决定不能悄悄丢失。**
+本文件只回答一件事：相对上游 `pingdotgg/t3code`，这个私人发行版**必须保留什么、不能怎么破坏、合完怎么验收**。
 
-## 当前基线
+- 上游功能历史 → `CHANGELOG.md`
+- 逐页汉化盘点 → `customizations/translation-inventory.md`
+- 密钥 / Token / Cookie → **禁止**写入本文件或仓库
 
-- 盘点日期：2026-08-11
-- 私人 fork：`https://github.com/Alfie-deng/t3code`
-- 本地路径：`/Users/alfie/Developer/t3code`
-- 上游：`https://github.com/pingdotgg/t3code`
-- 当前基线：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`
-- 当前桌面安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`（2026-08-11 晚间由 `_work/desktop-model-prefs` 覆盖；含 Memmy 记忆桥 + 模型列表只读投影）
-- 当前 iOS 安装版：真机 Bundle `com.jetdeng.t3code`，production Release（同日安装；含模型列表投影与「其他模型」文案）
-- 相关提交：`d4953b2fc`（模型列表只读投影等）
-- 构建目标：macOS Apple Silicon 覆盖 `/Applications/T3 Code.app`；iOS production 真机 `expo run:ios --configuration Release`
+---
 
-## 定制总览
+## 0. 接手 60 秒
 
-### 1. 简体中文汉化层
+| 项          | 值                                                             |
+| ----------- | -------------------------------------------------------------- |
+| 本地路径    | `/Users/alfie/developer/t3code`（`~/Developer/t3code` 同目录） |
+| 私人 fork   | `https://github.com/Alfie-deng/t3code`（remote：`origin`）     |
+| 上游        | `https://github.com/pingdotgg/t3code`（remote：`upstream`）    |
+| 工作分支    | `agent/zh-cn-personal-desktop`                                 |
+| 桌面安装    | `/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`       |
+| 手机安装    | 真机 Bundle `com.jetdeng.t3code`（个人 Team 覆盖生产包名）     |
+| 签名        | `Apple Development: jet.deng@me.com (PTY74USJAK)`              |
+| GitHub 命令 | 用 `~/bin/git`（见 `~/developer/AGENTS.md`）                   |
 
-状态：**必须保留；上游若以后提供原生本地化，逐项比较后再迁移。**
+**分支语义（别搞混）**
 
-- Web UI 与动态工作流：`apps/web/src/localization/zhCN.ts`
-- 单源字典与工具流翻译层：`packages/zh-locale/src/zhCN.ts`（`@t3tools/zh-locale`，DOM-free 纯 TS，web 与移动端共用同一份词典/正则/动词表，桌面改一处移动端自动同步；web 只保留 MutationObserver 安装器，移动端用 `apps/mobile/src/localization/zhCN.ts` 的 `t()` 在渲染期调用）
-- Clerk 登录与账户中心：`@clerk/localizations` 的 `zhCN` 资源通过 `apps/web/src/main.tsx` 注入；账户中心不再依赖 DOM 字符串替换。
-- 字典分层：Synara/T3 基础词典 + `EXTRA_UI_TEXT` 增量覆盖；上游新增文案优先加到增量层，避免改乱基线。移动端独有文案放在 `apps/mobile/src/localization/zhCN.ts` 的 `MOBILE_UI_TEXT`，公共条目一律进 `packages/zh-locale`。
-- Electron 原生菜单：`apps/desktop/src/applicationMenuZh.ts`
-- Electron 原生系统对话框：`apps/desktop/src/desktopDialogZh.ts`
-- 逐页、逐选项、逐工作流的盘点与验收：`customizations/translation-inventory.md`
-- 2026-08-10 截图反馈已集中修复并回读：归档页原生菜单 `Unarchive` → `取消归档`，归档卡片 `Created` → `创建于`，Git 获取间隔完整说明改为中文；源组件直接渲染，共享词典保留映射，最终安装版 AX 已核对三处。
-- 2026-08-11 截图反馈已修复：待处理用户输入最后一步的 `Submit` 通过共享词典显示为“提交”，保留按钮交互不变。
-- 2026-08-11 供应商状态卡已补齐动态汉化：ACP 模型发现超时、认证失败和供应商警告/错误关闭标签统一通过共享词典规则翻译，供应商名与 `ACP` 技术标识保留。
-- UI 文案翻译边界：用户消息、助手正文、代码、终端输出、路径、URL、模型名，以及复制/详情中的底层工具名和协议标识保留；可见的工具卡标题、动作名称、状态、权限、错误、提示和设置说明必须汉化。快捷键条件只翻译显示层，实际表达式继续保存原值。
-- 汉化运行时只监听 DOM 新增节点、文本和可见属性变化；禁止用固定周期全量扫描拖慢长工作流。
+| 名字              | 含义                                                              |
+| ----------------- | ----------------------------------------------------------------- |
+| `HEAD` / 私人 tip | 当前私人分支尖端（含全部本地定制）                                |
+| `上次合入上游`    | 最近一次 `merge upstream/main` 落在私人分支上的合并提交或当时 tip |
+| `upstream/main`   | 官方最新；只 fetch 不代表已合入                                   |
 
-### 2. 工作流优先级
+盘点时三者都要写清。只写一个 SHA 等于没写。
 
-以下链路属于 P0，不能因为普通设置页已经中文就宣布完成：
+---
 
-- 新建线程、发送、排队、等待、重试、取消和完成
-- 思考/运行状态、耗时、工具调用数量和工具调用标题
-- 读取文件、运行命令、搜索、创建/修改/删除文件、启动子智能体等动作
-- 权限请求、批准/拒绝、用户输入、阻塞与解除阻塞
-- 提供商连接、模型选择、运行模式、上下文窗口和错误恢复
-- 线程操作、项目操作、归档、删除、分支/工作树、Git 与预览面板
-- 登录账户、个人资料、安全设置、Passkey、已连接账户和移动客户端入口
+## 1. 当前盘点（2026-08-11）
 
-移动端工具流挂接点（复用同一套翻译，改动公共层即自动同步）：
+| 字段                                            | 值                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 私人 tip                                        | `73d3e95be`（`docs: 记录手机模型列表只读投影与安装基线`）                             |
+| 上次合入上游                                    | `e8a7c5ec8`（合并当时上游约 28 笔）；其后又叠了 Memmy、模型列表投影、手机若干 UI 钉等 |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `d440442db`                                                                           |
+| 官方 tip（已 fetch，**尚未合入私人分支**）      | `9c7622dac`（约超前私人分支 **17** 笔；含 v0.0.33 准备、PR 页、手机安卓手势条等）     |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.32`（含 Memmy + 模型列表投影）                       |
+| 手机安装版                                      | 真机 production Release（同日；含模型列表投影、「其他模型」、靛蓝强调色等）           |
 
-- 工具/工作日志标题：`apps/mobile/src/features/threads/thread-work-log.tsx` 渲染时 `t(row.summary)`（复制内容 `getCopyText()` 保持原文）
-- 线程状态标签：`apps/mobile/src/features/threads/threadPresentation.ts`（`Needs Approval`/`Awaiting Input`/`Working`/`Connecting`/`Error`/`Plan Ready` 已入共享词典）
+下次合完上游后：立刻改本表三行 tip / 上次合入 / merge-base，并勾验收清单。
 
-### 3. 后续个人定制
+---
 
-未来新增的个人模型、默认值、提供商筛选、工作流策略、快捷键、品牌或可靠性修复，必须单独记录在本文件对应章节，不能混进翻译字典里伪装成“汉化”。
+## 2. 硬规矩（违反即翻车）
 
-原则：
+1. **合并方式**：`git fetch upstream main` → 工作区干净 → `git merge upstream/main`。禁止 `git checkout upstream/main -- <file>` 整文件盖本地。
+2. **冲突顺序**：先保住下面「必须保留」行为 → 再吸收上游结构和新功能 → 再跑测试/构建 → 真窗口或真机验收后才覆盖安装。
+3. **桌面真源 vs 手机**：模型隐藏/排序/收藏以桌面 `~/.t3/userdata/client-settings.json` 为真源；手机**只读投影，禁止写回**。
+4. **界面减法 ≠ 删功能**：隐藏的入口必须仍能从快捷键、命令面板、设置或别的路径用到。
+5. **签名**：只用 Alfie 本机 Development 证 + `customizations/macos-electron.entitlements.plist`；不要默认 ad-hoc；不要在对话里要钥匙串密码。
+6. **产物**：不保留 dmg/zip；长期靠 `/Applications` + 源码。构建缓存可再生（`node_modules`、`dist`、`ios/Pods` 等），可清。
+7. **宿主会话**：若 Agent 正在 `/Applications/T3 Code.app` 里跑，覆盖安装会杀会话。先让人退出，或在外部终端/Cursor 做覆盖。
+8. **本仓没有** Synara 那种 `guards.json` 机械守卫。同步后靠本文件验收清单 + 测试，别假设有自动门禁。
 
-1. 能独立提交就独立提交，便于上游同步和回滚。
-2. 任何会改变用户可见默认值或工作流行为的定制，都必须写出真实验收项。
-3. 不把密钥、Token、Cookie、代理订阅或账号凭据写进本文件、仓库或构建日志。
+---
 
-### 4. Memmy 记忆桥（后台注入 + 自动写入）
+## 3. 必须保留 · 行为定制总表
 
-状态：**必须保留。**
+状态栏：`必须保留` = 合上游时不得丢；`已启用` = 当前生效。汉化「词典增量」细节以 `translation-inventory.md` 为准，这里只锁**行为与入口**。
 
-为 t3 会话接入本地 Memmy 记忆服务（与 Synara 同款桥，2026-08-11 移植）：
+### 3.1 简体中文层
 
-- `apps/server/src/orchestration/memmyContextInjection.ts`：桥核心，source=`t3`，env 前缀 `T3_MEMMY_*`（默认开，`T3_MEMMY_MEMORY_ENABLED=0` 关闭）。turn 开始调 `/api/v1/sessions/open` + `/turns/start` 召回，turn 结束调 `/turns/{id}/complete` 写入。
-- `apps/server/src/orchestration/Layers/ProviderCommandReactor.ts`：turn 开始时把召回结果 `<memmy_memory_context>` 前缀进发给 provider 的 input（**后台注入，UI 不显示**，用户消息原文不变）。
-- `apps/server/src/orchestration/Layers/ProviderRuntimeIngestion.ts`：`turn.completed` 写回答案、`turn.aborted` 清 pending，避免下轮挂死。
-- 测试：`apps/server/src/orchestration/memmyContextInjection.test.ts` + `ProviderCommandReactor.test.ts` 新增的注入断言。
-- 验收：新开真实会话发消息后，`~/.memmy/memory-service/memory.sqlite` 出现新 `t3` source 会话；界面无 `<memmy_memory_context>` 显性文字。
-- 注意：Synara 的桥默认**注入 + 写入都开**；opencode 的 `injectContext: false` 只关了注入保留主动工具。t3 目前与 Synara 同策略（Alfie 已确认：只要不显性打出来就不要关）。
+状态：**必须保留**
 
-### 4.5 手机模型列表只读投影桌面（隐藏 / 排序 / 收藏）
+| 层                     | 路径 / 说明                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------- |
+| 共享词典真源           | `packages/zh-locale`（`@t3tools/zh-locale`）— DOM-free；桌面 MutationObserver + 手机 `t()` 共用 |
+| Web 安装器             | `apps/web/src/localization/zhCN.ts`                                                             |
+| 手机独有文案           | `apps/mobile/src/localization/zhCN.ts` 的 `MOBILE_UI_TEXT`；能公共的一律进共享包                |
+| Clerk                  | `apps/web/src/main.tsx` 注入 `@clerk/localizations` 的 `zhCN`                                   |
+| Electron 菜单 / 对话框 | `apps/desktop/src/applicationMenuZh.ts`、`desktopDialogZh.ts` 及对应 Electron 接线              |
+| 盘点                   | `customizations/translation-inventory.md`                                                       |
 
-状态：**必须保留。桌面 ClientSettings 为真源；手机只读投影，禁止写回。**
+边界：用户消息、助手正文、代码、终端输出、路径、URL、模型名、底层工具协议名**不翻**；可见 UI / 工具卡标题 / 状态 / 权限 / 错误 / 设置说明**必须翻**。
 
-问题：桌面把不需要的模型藏在 `~/.t3/userdata/client-settings.json` 的 `providerModelPreferences` / `favorites` 里，但旧手机只看服务端 `providers[].models`，等于另一套全量清单。
+手机挂接点（公共词典改了这里自动受益）：
 
-实现：
+- `apps/mobile/src/features/threads/thread-work-log.tsx` → `t(row.summary)`（复制内容保持原文）
+- `apps/mobile/src/features/threads/threadPresentation.ts` → 状态标签
 
-- 契约：`packages/contracts` 增加只读 `ClientModelListPreferences`，挂在可选字段 `ServerConfig.modelListPreferences`；流事件 `modelListPreferencesUpdated`（不要塞进可写的 `ServerSettings`）。
-- 服务端：`apps/server/src/clientModelListPreferences.ts` 读取并监视同目录 `client-settings.json`，只投影 `favorites` + `providerModelPreferences`；`apps/server/src/ws.ts` 的 `loadServerConfig` / `subscribeServerConfig` 下发。
-- 客户端投影：`packages/client-runtime/src/state/server.ts` 处理 `modelListPreferencesUpdated`。
-- 手机：`apps/mobile/src/lib/modelOptions.ts` 用与桌面相同规则过滤隐藏项、应用排序/收藏（自定义模型即使被标隐藏也仍可见）；排序算法抽出到 `@t3tools/shared/modelOrdering`，web 改为转导出。
-- 文案：`Legacy models` / `Show legacy models` / `Hide legacy models` →「其他模型 / 显示其他模型 / 隐藏其他模型」（桌面词典 + 手机 `MOBILE_UI_TEXT`）。
-- 附属：新任务草稿输入框占位改为空字符串（去掉英文 `Describe a coding task in …`）；模型设置里选项标签走 `t()`。
+### 3.2 Memmy 记忆桥
+
+状态：**必须保留**（默认开；`T3_MEMMY_MEMORY_ENABLED=0` 可关）
+
+- 核心：`apps/server/src/orchestration/memmyContextInjection.ts`（source=`t3`，env 前缀 `T3_MEMMY_*`）
+- 注入：`ProviderCommandReactor` 在发给 provider 的 input 前缀 `<memmy_memory_context>`（**UI 不显示**）
+- 写回：`ProviderRuntimeIngestion` 在 turn 完成/中止时收尾
+- 测试：`memmyContextInjection.test.ts` + Reactor 断言
+- 验收：新开真实会话发消息后，`~/.memmy/memory-service/memory.sqlite` 出现 `source='t3'`；界面无记忆标签明文
+
+### 3.3 手机模型列表只读投影桌面
+
+状态：**必须保留。桌面 ClientSettings 真源；手机只读，禁止写回。**
+
+| 层       | 路径                                                                                                                                                                    |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 契约     | `packages/contracts`：`ClientModelListPreferences` → 可选 `ServerConfig.modelListPreferences` + 流事件 `modelListPreferencesUpdated`（勿塞进可写 `ServerSettings`）     |
+| 服务端   | `apps/server/src/clientModelListPreferences.ts` 读/监视 `~/.t3/userdata/client-settings.json` 的 `favorites` + `providerModelPreferences`；`apps/server/src/ws.ts` 下发 |
+| 客户端   | `packages/client-runtime/src/state/server.ts` 处理更新事件                                                                                                              |
+| 手机应用 | `apps/mobile/src/lib/modelOptions.ts`（隐藏/排序/收藏；自定义模型被标隐藏仍可见）                                                                                       |
+| 排序共享 | `packages/shared/src/modelOrdering.ts`；web `apps/web/src/modelOrdering.ts` 转导出                                                                                      |
+
+文案：`Legacy models` / Show|Hide legacy models →「其他模型 / 显示|隐藏其他模型」。
+
+附属（同批次，也要留）：
+
+- 新任务草稿输入框 `placeholder=""`（`NewTaskDraftScreen.tsx`，不要恢复英文 Describe…）
+- 模型设置选项标签走 `t()`
 
 验收：
 
-1. 桌面设置里隐藏若干模型后，手机模型选择器同步变短；手机不能改写桌面隐藏列表。
-2. 设置 → 提供商详情仍可看见「已隐藏」条目；选择器可见集合才是投影结果。
-3. 旧中转残留 slug（如 `opencodex/opencode-go/deepseek-v4-flash`）若仍是当前选型，会以幽灵项出现——应迁到官方 slug 或藏掉；这是选型脏数据，不是投影失败。
-4. 覆盖安装桌面必须带上本改动的 server asar（`modelListPreferences` 字符串可在 asar 中搜到）；手机需 production Release 重装。
+1. 桌面隐藏模型后，手机选择器变短；手机改不了桌面隐藏列表。
+2. 设置 → 提供商详情仍可能看到「已隐藏」；选择器可见集才是投影结果。
+3. 旧中转残留 slug（如 `opencodex/opencode-go/deepseek-v4-flash`）若仍是当前选型会以幽灵项出现——迁官方 slug 或藏掉；那是脏选型，不是投影失败。
+4. 桌面 asar 可搜到 `modelListPreferences`；手机需 production Release 重装。
 
-上游同步时：若上游自己加了 ClientSettings 远程同步，先比较写回方向；本定制明确禁止手机写回。
+### 3.4 Nightly / 星夜应用图标
 
-### 3.1 Nightly 应用图标常态化
+状态：**必须保留**
 
-状态：**已启用；应用图标固定使用 nightly 视觉，不随稳定版/后续图标导出恢复为黑色生产图标。**
+- 真源：`scripts/lib/brand-assets.ts` → `PERSONAL_DEFAULT_APP_ICON_PATHS`
+- 必留资产：`assets/nightly/nightly-ios-icon-solid.png`（不是临时产物）
+- 接线：`apps/mobile/app.config.ts`、`BrandMark.tsx`、`scripts/build-desktop-artifact.ts`、桌面 `electron-launcher` / `resources/icon.*`
+- 禁止：`icons:export` 后把 production 图标改回 `assets/prod/black-*`；禁止删 solid 图标
+- 范围：应用图标；网页 favicon / 启动画面渠道识别不要一锅端
 
-- 个人图标真源：`scripts/lib/brand-assets.ts` 的 `PERSONAL_DEFAULT_APP_ICON_PATHS`。
-- iOS/Android production 应用图标与移动端 `BrandMark` 使用 `assets/nightly/nightly-ios-icon-solid.png`；该文件不是临时构建产物，必须随仓库保留。
-- 桌面 macOS、Linux、Windows 打包的稳定版和 nightly 版统一使用 nightly 平台图标；桌面开发启动器和回退资源也保持 nightly 图标。
-- 相关入口：`apps/mobile/app.config.ts`、`apps/mobile/src/components/BrandMark.tsx`、`scripts/build-desktop-artifact.ts`、`apps/desktop/scripts/electron-launcher.mjs`、`apps/desktop/resources/icon.*`。
-- 以后运行 `icons:export` 时只能更新渠道生成资产；不能把 production 图标路径改回 `assets/prod/black-*`，也不能删除个人 solid 图标。
-- 本次只固定应用图标；网页 favicon 和启动画面仍按各自渠道配置，避免把渠道识别误改成应用图标替换。
+另：启动 splash `imageWidth: 110`（上游常见 220）— `apps/mobile/app.config.ts`，**必须保留**。
 
-### 4. Alfie 的顶部工作区精简
+### 3.5 桌面 UI 精简与排版（`PERSONAL_UI`）
 
-状态：**已启用；仅隐藏入口，不删除能力。**
+状态：**必须保留** · 开关集中在 `apps/web/src/personalUi.ts`
 
-- 实现：`apps/web/src/personalUi.ts`
-- 已恢复显示顶部品牌 `T3 Code`（其中 `Code` 保留英文，不被汉化观察器改成“代码”）；项目操作 `添加操作`、编辑器入口 `打开`、Git 快捷入口 `初始化 Git`、终端抽屉按钮仍隐藏。
-- 输入框底部的 `完全访问` 运行模式选择器及其左侧分隔线也隐藏；运行模式状态和底层发送逻辑保留，不再占用个人输入框空间。
-- 右侧面板按钮、快捷键、命令面板和设置页中的对应能力继续保留；这是界面减法，不是功能删除。
+当前标志：
 
-### 4.1 线程标题点击区与窗口拖动
-
-状态：**已启用；只收窄交互命中范围，不删除线程菜单。**
-
-- `apps/web/src/components/chat/ChatHeader.tsx`：线程标题菜单按钮不再使用 `flex-1` 撑满整个标题栏，只包住标题文字和下拉箭头；标题过长时仍截断显示。
-- Electron 顶部栏的空白区域继续沿用 `drag-region`，因此可以从标题两侧拖动窗口；点击标题文字或箭头仍打开原有对话操作菜单。
-- 上游同步时必须保留 `max-w-full min-w-0 flex-none` 这组约束；如果上游重做标题栏，先验证“标题可点开菜单”和“空白顶部区域可拖动窗口”两条交互，再合并。
-
-### 5. Alfie 的输入框与封面排版
-
-状态：**已启用；只改变个人界面密度，不改变发送和工作流行为。**
-
-- 已有对话的普通输入框显示简短占位文字“提出后续修改”，不再显示冗长的操作指南；首页新建线程输入框显示“随心构建你的想法”。两种状态的占位符统一使用较低不透明度，避免压过输入区本身。
-- 已有对话输入框按 Synara 的紧凑规格收敛：编辑区最小高度采用两行行高（`2lh`），底部工具栏使用更紧的垂直间距；可输入内容的最大高度缩短约四分之一。首页新建会话的外框在此基础上向下增加约四分之一，标题和外框上沿保持不动；审批、用户输入和计划反馈等必要提示继续显示。
-- 封面项目标题采用 Synara 的“想在〔项目名〕构建什么？”文案与排版：`26px`，桌面端 `30px`，字重和行高保持一致。
-- 封面项目名仍保留项目选择器和键盘焦点能力，但去掉项目名下方的虚线装饰。
-- 右侧智能体空状态正文与面板快捷键提示也纳入汉化验收，避免只翻标题、不翻说明。
-- 发送和停止按钮的外圆在原尺寸基础上各缩小 `2px`，并整体向右移动 `2px`；颜色与交互保持 T3 原样。内部箭头直接复用 `apps/web/public/synara-icons/arrow-up.svg`，按 `18px`、`bg-current` 的 CSS mask 呈现；停止方块最终为 `10px`、`1px` 圆角。
-
-### 5.1 线程正文字号
-
-状态：**已启用；线程内每个文字层级增加 `1px`，不改变后台全局字号设置。**
-
-- `apps/web/src/personalUi.ts`：`threadContentFontSizeStepPx: 1` 是本人的独立线程字号定制，不接入 Settings → Appearance 的全局 `fontSizeInterface`。
-- `apps/web/src/components/chat/MessagesTimeline.tsx`：给线程时间线建立 `data-thread-content` 范围，覆盖我的正文、助手正文、工具标题/预览、助手工具卡片、工作流状态、计划步骤和时间戳；空线程提示也在同一范围内。
-- `apps/web/src/index.css`：在该范围内同步放大 Tailwind 的 `text-xs/text-sm` 等层级、工具卡片的固定 `10/11/12/13px` 文本、Markdown 标题、行内代码、代码块和 diff 字号；侧边栏、顶部栏、输入框和后台全局字号不受影响。
-- 上游同步时保留 `data-thread-content` 与 `threadContentFontSizeStepPx`，不要把这项个人偏好改写成全局根字号。
-
-### 5.2 运行时错误集中汉化
-
-状态：**已启用；错误信息统一从共享词典输出，避免看到半截英文和开发者调试提示。**
-
-- `packages/zh-locale/src/zhCN.ts`：集中覆盖 `Runtime error`、提供商不可达、连接意外关闭、上游重置连接、证书校验失败、上游输出流提前结束和自动重试等运行时错误。
-- 2026-08-11：补齐通用错误卡的结构化 JSON 报错，统一翻译上下文窗口超限正文和 `Dismiss error` 关闭标签；`invalid_request_error`、`context_length_exceeded` 等诊断代码保留。
-- 已观察到的 `Provider unreachable` 变体统一转成“提供商无法连接：……”并保留必要的错误语义；`verbose: true` 等开发者调试提示不再直接展示给用户。
-- 动态错误仍保留 URL、错误码、请求 ID、会话 ID 和可执行命令等技术证据；未知尾部不吞掉，只在前面补上中文错误类别。
-- 桌面 Web 的 MutationObserver 和移动端 `t()` 共用这份词典；以后新增运行时错误，先补这里和 `apps/web/src/localization/zhCN.test.ts`，不要在单个组件里零散硬编码。
-
-### 6. 本次代码改动逐文件对照
-
-这份对照是给以后同步上游用的。看到同名文件冲突时，不能整文件选择上游版本；先保留下面列出的本地行为，再把上游的新功能合并进来。
-
-#### 汉化运行时与工作流
-
-| 文件                                                                                                                                          | 本地定制内容                                                                                                                                                     | 上游同步时必须保留                                                                      |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `apps/web/src/localization/zhCN.ts`                                                                                                           | 简体中文词典、动态状态/工具调用/错误/快捷键条件/线程操作翻译；保留技术前缀、路径、URL、代码和用户内容；支持 `T3-code__preview_open` 这类服务前缀加动作名的翻译。 | 字典分层、动态翻译入口、工具动作映射和 MutationObserver；不要用上游新字典覆盖整个文件。 |
-| `apps/web/src/localization/zhCN.test.ts`                                                                                                      | 验证 `Tool`、`T3-code__preview_open`、`preview_*`、工具调用数量和中文状态。                                                                                      | 新增英文 UI 时同步补测试，不要删除这些定制断言。                                        |
-| `packages/zh-locale/src/zhCN.ts`                                                                                                              | 补充项目重命名弹窗的动态文案（标题路径、环境前缀）；工作流独立工具标题 `Bash` / `Shell` / `Command execution` 统一显示为“运行命令”。                             | 共享词典仍是桌面与移动端共用单一真源；工作流状态中的“已运行命令”不重复改成病句。        |
-| `apps/desktop/src/desktopDialogZh.ts`、`apps/desktop/src/electron/ElectronMenu.ts`                                                            | 原生项目菜单补齐“分组到…”和“移除”，并保留“重命名”“复制路径”等中文菜单项。                                                                                        | 原生菜单必须走白名单翻译，不能依赖 Web DOM MutationObserver。                           |
-| `apps/web/src/components/chat/MessagesTimeline.tsx`                                                                                           | 工作流分组、`previous tool calls`、工具调用数量、展开/收起和时间线标签进入中文翻译层。                                                                           | 翻译调用必须包住新增工作流行，不要只翻静态标题。                                        |
-| `apps/web/src/components/AgentsPanel.tsx`                                                                                                     | “还没有智能体”及子智能体/工作流说明、活动和 Token 用量说明汉化。                                                                                                 | 空状态正文不能只留下标题中文。                                                          |
-| `apps/web/src/components/chat/ProviderStatusBanner.tsx`                                                                                       | 提供商状态、CLI 可用性、认证失败、受限状态和关闭按钮标签汉化。                                                                                                   | raw 状态先保留，再交给 `translateZhCnUiText`；错误码和提供商名不乱翻。                  |
-| `apps/web/src/components/chat/ProviderStatusBanner.test.tsx`                                                                                  | 锁定提供商状态中文输出。                                                                                                                                         | 上游变更状态枚举时同时更新本地测试和字典。                                              |
-| `apps/web/src/components/CommandPaletteContent.tsx`                                                                                           | 命令面板的关闭、导航、后退、选择等底部快捷键提示汉化。                                                                                                           | 快捷键本身不改，只改显示文字。                                                          |
-| `apps/web/src/components/CommandPaletteResults.tsx`                                                                                           | 命令/项目/对话/动作分组与“无匹配”空状态汉化。                                                                                                                    | 分组 label 进入翻译层，不要只改默认空状态。                                             |
-| `apps/web/src/components/chat/ChatHeader.tsx`、`apps/web/src/components/ChatView.tsx`、`apps/web/src/components/chat/PanelLayoutControls.tsx` | 顶部个人精简开关接入；终端入口可以隐藏但能力保留，右侧面板入口仍保留。                                                                                           | 保留 `PERSONAL_UI` 控制，不要把隐藏误合并成删除功能。                                   |
-
-#### 输入框、封面和 Synara 图标
-
-| 文件                                                      | 本地定制内容                                                                                                                                                                                                                                                            | 上游同步时必须保留                                                                                                                     |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/web/src/personalUi.ts`                              | 集中保存顶部入口隐藏、完全访问运行模式隐藏、紧凑输入框、隐藏冗余指南、隐藏输入框下方检出/分支状态条、新线程占位文字等个人开关。                                                                                                                                         | 新增个人偏好优先放这里，不要散落硬编码。                                                                                               |
-| `apps/web/src/components/chat/ChatComposer.tsx`           | 已有对话占位“提出后续修改”；仅在 `isDraftHeroState` 下使用新线程占位“随心构建你的想法”；保留审批/计划/用户输入等必要提示；普通输入框按 Synara 的 `2lh` 高度和更紧工具栏布局；首页草稿态单独传入增高标记；按 `hideRuntimeModeControl` 同时移除“完全访问”和其左侧分隔线。 | 不要把连接断开状态当成新线程判断；普通对话和新线程占位文字必须分流；隐藏运行模式时也要隐藏它配套的分隔线；草稿态增高不能污染已有对话。 |
-| `apps/web/src/components/ComposerPromptEditor.tsx`        | 增加 `compact` 模式，普通编辑器最小高度 `2lh`，最大高度缩短；首页草稿态使用 `calc(2.5lh + 1.75rem)`；所有占位符使用较低不透明度，保持编辑器行为不变。                                                                                                                   | 保留 `compact` 参数和可访问文本编辑行为；草稿态高度只作用于首页新建会话；占位符不要恢复成过重的默认颜色。                              |
-| `apps/web/src/components/chat/DraftHeroHeadline.tsx`      | 封面采用“想在〔项目名〕构建什么？”；字号 `26px`，桌面端 `30px`，字重/行高按 Synara；项目名保留选择器功能但移除虚线下划线。                                                                                                                                              | 文案、排版和项目选择器交互是个人定制，不要被上游默认标题或装饰线覆盖。                                                                 |
-| `apps/web/src/components/chat/ComposerPrimaryActions.tsx` | 发送/停止按钮外圆各缩小 `2px` 并向右移动 `2px`，颜色与交互不动；箭头使用 Synara 原始资源的 CSS mask，按 `size-4.5` 渲染；停止键最终使用 `size-2.5 rounded-[1px]`。                                                                                                      | 上游同步时保留这组外圆尺寸/偏移定制；不要恢复原尺寸；保留 `data-synara-icon="arrow-up"` / `stop-square` 便于回归检查。                 |
-| `apps/web/public/synara-icons/arrow-up.svg`               | 从 Synara 直接带入的 `arrow-up` 原资源。                                                                                                                                                                                                                                | 上游同步时不得删除；若 Synara 更新图标，先视觉对比再替换。                                                                             |
-
-#### 账户、设置、用量和普通页面
-
-| 文件                                                                                                                                                                               | 本地定制内容                                                                                                                   |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `apps/web/src/main.tsx`、`apps/web/package.json`、`pnpm-lock.yaml`                                                                                                                 | 接入 `@clerk/localizations` 的 `zhCN`，覆盖登录、账户、个人资料、安全、Passkey 和移动客户端页面，并覆盖本地 Passkey 术语。     |
-| `apps/web/src/components/clerk/MobileClientsUserProfilePage.tsx`、`MobileClientsUserProfilePage.logic.ts`、对应 `.test.ts`                                                         | 移动客户端卡片、推送通知、实时活动、更新时间、加载/空状态/错误/刷新按钮直接输出简体中文并使用中文日期格式。                    |
-| `apps/web/src/components/settings/AddProviderInstanceDialog.tsx`、`AddProviderInstanceWizardSteps.tsx`、`DiagnosticsSettings.tsx`、`KeybindingsSettings.tsx`                       | 添加提供商、向导步骤、诊断、快捷键条件/状态等设置入口汉化。                                                                    |
-| `apps/web/src/components/settings/ProviderAccentColorPicker.tsx`、`ProviderInstanceCard.tsx`、`ProviderModelsSection.tsx`、`ProviderSettingsPanel.tsx`、`SettingsFontPreviews.tsx` | 提供商卡片、账户/版本/模型数量/连接状态、颜色选择无障碍标题、字体预览等碎片文案汉化。                                          |
-| `apps/web/src/components/color-selector.tsx`                                                                                                                                       | 颜色选择器的可访问名称汉化。                                                                                                   |
-| `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/shared/src/usageFormat.ts`                                                                      | 用量页日期范围、成本/Token、统计卡片、图表说明、缓存节省和无障碍标签汉化；数值格式保持原语义。                                 |
-| `apps/web/src/components/sidebar/SidebarChrome.tsx`                                                                                                                                | 恢复顶部 `T3 Code` 品牌入口；品牌内 `Code` 使用 `data-translation-skip` 保留英文，侧边栏、搜索、设置、用量和项目能力继续保留。 |
-
-#### Electron 原生层与预览标注编辑器
-
-| 文件                                                                                                                                 | 本地定制内容                                                                                    | 上游同步时必须保留                                        |
-| ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `apps/desktop/src/applicationMenuZh.ts`                                                                                              | 新增应用、编辑、视图、窗口菜单的中文构造与缩放回调。                                            | 菜单角色/快捷键/回调保留，不能只保留中文 label 而丢功能。 |
-| `apps/desktop/src/window/DesktopApplicationMenu.ts`                                                                                  | 注入中文应用菜单、设置、更新、关闭、服务、隐藏/显示、帮助和缩放入口。                           | 与 `applicationMenuZh.ts` 成对同步。                      |
-| `apps/desktop/src/desktopDialogZh.ts`                                                                                                | 新增原生消息框、确认框、更新提示和错误文本翻译。                                                | 系统对话框不能依赖网页 DOM 翻译。                         |
-| `apps/desktop/src/electron/ElectronDialog.ts`、`ElectronMenu.ts`                                                                     | 原生对话框、右键菜单、线程菜单标签进入中文翻译层。                                              | 保留原始 action/id/role，只翻用户可见 label。             |
-| `apps/desktop/src/window/DesktopWindow.ts`                                                                                           | WSL 连接提示、右键菜单的复制/剪切/粘贴/全选/无建议等中文化。                                    | 原生行为和编辑权限不变。                                  |
-| `apps/desktop/src/preview/PickPreload.ts`                                                                                            | 预览标注编辑器的展开/收起、描述、字体、颜色、宽高、间距、选择/绘制/擦除、附加截图等全部中文化。 | 预览标注工具的事件、快捷键和提交逻辑不变。                |
-| `apps/desktop/src/electron/ElectronDialog.test.ts`、`ElectronMenu.test.ts`、`apps/desktop/src/window/DesktopApplicationMenu.test.ts` | 原生中文菜单/对话框回归测试。                                                                   | 上游新增原生入口时补进这些测试。                          |
-| `customizations/macos-electron.entitlements.plist`                                                                                   | 本人签名所需 hardened runtime 权限，不带上游团队专属 Associated Domains。                       | 不用上游签名配置覆盖；签名身份与权限必须单独验收。        |
-
-#### 个人维护边界
-
-- `CUSTOMIZATIONS.md` 是定制真源；`customizations/translation-inventory.md` 是逐页、逐工作流盘点真源。两者都要随代码一起更新。
-- 上游同步前先 `git fetch upstream main`，确认工作区干净，再逐文件合并；禁止 `git checkout upstream/main -- <file>` 这类整文件覆盖。
-- 冲突处理顺序：先保留行为（占位逻辑、顶部隐藏、工作流翻译、Synara 图标、原生菜单/对话框），再吸收上游结构和新功能，最后重跑定制测试、类型检查、构建、签名和真实窗口验收。
-- `.env` 只保留在本机，用于 Connections 页面所需的公共运行配置；不提交、不写入本文件、不复制进发布产物说明。
-- 每次上游更新必须重点回归：新线程/已有对话占位、发送/停止、工具调用流、Agents 空状态、命令面板、账户/移动客户端、Connections、原生菜单，以及顶部五个隐藏入口仍未回归出现。
-
-## 2026-08-10 增补回读
-
-- 项目菜单真实回读：`重命名`、`分组到…`、`复制路径`、`移除` 均为中文；项目菜单功能保留。
-- 项目重命名弹窗真实回读：`更新 /Users/alfie/Codex/Agent工作台 的标题。`、`项目标题`、`环境： Alfie Macbook`、`取消`、`保存`。
-- 封面真实截图：`/tmp/t3code-final-rename-home-20260810.jpeg`；项目名 `Agent工作台` 下方虚线已移除，点击切换项目能力仍保留。
-- 弹窗真实截图：`/tmp/t3code-final-rename-dialog-20260810.jpeg`；英文 `Environment:` 不再出现。
-- 当前覆盖安装：`/Applications/T3 Code.app`，版本 `0.0.32`；签名身份仍为 `Apple Development: jet.deng@me.com (PTY74USJAK)`，并带 `customizations/macos-electron.entitlements.plist`，无密码提示。
-
-## 2026-08-10 隐藏最终变更卡片
-
-- `apps/web/src/components/chat/MessagesTimeline.tsx`：隐藏最终助手消息下的变更文件摘要卡片，不再在对话末尾显示 `1 changed file +N -N / 显示文件 / 打开差异`；差异数据和底层差异查看能力保留。
-- `apps/web/src/components/chat/MessagesTimeline.test.tsx`：回归测试改为确认存在变更数据时不渲染该卡片。
-- `apps/web/src/components/ChatView.tsx`：将“滚动到末尾”文字胶囊替换为 Synara 风格的纯下箭头圆形按钮；点击和无障碍标签仍保留。
-
-## 2026-08-10 隐藏搜索快捷键提示
-
-- `apps/web/src/components/LegacySidebar.tsx`：搜索入口继续保留点击和 `⌘K` 快捷键功能，但隐藏搜索栏右侧的可见 `⌘K` 提示；同步移除该入口不再需要的 `Kbd` 展示依赖。
-
-## 2026-08-10 用量单位统一
-
-- `packages/shared/src/usageFormat.ts`：用量数字统一走中文单位格式化器：`≥1亿` 显示“亿”，`1万–1亿` 显示“万”，低于 `1万` 使用千位分隔整数；最多保留两位小数并去掉尾随零。
-- `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`：标题、提供商明细、统计卡片、模型/日期表格、图表坐标轴和悬浮提示全部复用同一格式化器；移除“个 Token”混搭文案，保留技术术语 `Token`。
-- `packages/shared/src/usageFormat.test.ts`：锁定 `8.78亿`、`2700万`、`273万`、`10.8万` 和 `8,765` 等边界与代表性输出。
-
-## 2026-08-10 用量术语统一
-
-- `apps/web/src/components/usage/UsagePage.tsx`、`UsageProviderChart.tsx`、`packages/zh-locale/src/zhCN.ts`：用量页用户文案统一使用 `Token`，将“原始令牌成本 / 已处理令牌 / 每日已处理令牌”改为“原始 Token 成本 / 已消耗 Token / 每日消耗的 Token”。
-- 提供商明细中的 `100.0% 的成本` 改为“成本占比 100.0%”，Token 模式对应显示“Token 占比 …”，明确百分比是成本或 Token 在当前统计范围内的占比。
-
-## 2026-08-10 新建会话英雄区位置
-
-- `apps/web/src/components/ChatView.tsx`：新建会话的标题与输入框整体使用 Synara 同款 `-translate-y-16`，相对当前居中位置上移 `64px`；仅作用于空白草稿英雄区，已有对话的底部输入框不变。
-- 参考源码：`/Users/alfie/Developer/Synara-ZH/apps/web/src/components/ChatView.tsx` 的空白落地容器同样使用 `className="flex w-full -translate-y-16 flex-col justify-center"`。
-
-## 2026-08-10 首页输入框下沿增高
-
-- `apps/web/src/components/ComposerPromptEditor.tsx`：首页草稿态编辑区在当前尺寸上增加约 `1.75rem`，使整个输入框下沿约增加四分之一。
-- `apps/web/src/components/ChatView.tsx`：父级同步向下补偿增量的一半，锁住标题和输入框上沿；已有对话、工作流和底部输入框不受影响。
-- 最终安装版 `/Applications/T3 Code.app` 的首页 AX 回读：标题仍在原位置，输入区为 `@280,303 688×80`，底部工具栏仍在输入区下方，增高已真实可见。
-
-## 2026-08-10 线程摘要与输入框状态条
-
-- `packages/zh-locale/src/zhCN.ts`、`apps/web/src/localization/zhCN.test.ts`：工具流折叠摘要从 `+N 个之前的工具调用` 收敛为 `+N 个工具调用`；底层 `previous tool calls` 识别规则保留，展开/折叠能力不变。
-- `apps/web/src/personalUi.ts`、`apps/web/src/components/ChatView.tsx`：隐藏输入框下方的“本地检出”和当前分支名状态条；检出、切换工作区、分支选择和相关状态逻辑保留，只移除这条个人不需要的可见栏。
-
-## 2026-08-10 上游同步
-
-- 已执行 `git fetch upstream main`，并将 `upstream/main` 的 28 个提交合并到私人分支；合并提交：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`。
-- 保留上游的工作区/设置面包屑、主题确认框、移动端宽 Markdown 修复、Usage 数据去重、服务器 SVG 安全处理、项目上下文路由和移动端 Usage 页面等新能力。
-- 上游把 Usage 格式化与合并逻辑迁移到 `packages/shared/src/`；中文单位、Token 术语、成本/Token 占比、桌面与移动端用量文案已在新结构上重新压回。
-- 上游重做线程顶部结构后，重新保留 `PERSONAL_UI` 的顶部入口隐藏和线程标题窄点击区；封面中文文案、无虚线、搜索栏快捷键隐藏、输入框占位、工作流汉化和 nightly 个人图标均未被整文件覆盖。
-- 合并后的证据：web/mobile/desktop/scripts/shared 类型检查 exit 0；定制格式化检查通过；web 50 项、desktop 5 项、mobile 3 项定向测试通过。
-
-## 上游同步原则
-
-更新入口：
-
-```sh
-git fetch upstream main
-git merge upstream/main
+```ts
+hideTopBarBrand: false; // 显示「T3 Code」；Code 用 data-translation-skip 保英文
+hideTopBarProjectActions: true; // 藏「添加操作」
+hideTopBarOpenInEditor: true;
+hideTopBarGitActions: true;
+hideTopBarTerminalToggle: true;
+hideRuntimeModeControl: true; // 藏「完全访问」及左侧分隔线
+hideComposerContextStrip: true; // 藏输入框下检出/分支状态条
+compactComposer: true;
+hideComposerGuide: true;
+newThreadComposerPlaceholder: "随心构建你的想法";
+threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号设置
 ```
 
-同步前确认没有未提交的 tracked 修改。冲突时先理解上游新行为，再按“上游功能 + 本地必须保留定制”处理，禁止机械选择一边覆盖另一边。
+连带必须保留的实现细节：
 
-每次同步后必须：
+| 项                        | 位置 / 要点                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| 线程标题窄点击区          | `ChatHeader.tsx`：标题菜单按钮勿 `flex-1`；空白区可拖窗                                 |
+| 已有对话占位              | 「提出后续修改」；仅草稿英雄态用新线程占位（`ChatComposer` 的 draft 分流，`b8a16de91`） |
+| 紧凑输入框                | `ComposerPromptEditor` `compact`：`2lh` 等；草稿态略增高且勿污染已有对话                |
+| 封面文案                  | `DraftHeroHeadline`：「想在〔项目名〕构建什么？」；无虚线下划线                         |
+| 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                   |
+| 发送/停止外形             | 外圆各 -2px、右移 2px；箭头 mask 用 `public/synara-icons/arrow-up.svg`                  |
+| 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                       |
+| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                              |
+| 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                |
+| 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
+| 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 
-1. 更新本文件的基线和盘点日期。
-2. 重新检查 `customizations/translation-inventory.md` 中的 P0 工作流。
-3. 跑定制守卫、相关测试、类型检查和一次正式构建。
-4. 只在真实 T3 Code 窗口逐项核对后覆盖安装。
+### 3.6 手机 UI / 视觉 / 交互钉
 
-## 构建、签名与安装硬规则
+状态：**必须保留**（合上游手机改动时逐条核对）
 
-- 只做一次最终构建和一次覆盖安装；扫描、记录和修改阶段不反复安装。
-- 构建前必须保留仓库根目录的 `.env` 公共连接配置（由 `.env.example` 提供），否则 `Connections` 页面会按设计隐藏 `T3 Connect`、`Publish agent activity` 和云连接空状态提示；这不是汉化层的可选项。
-- 只使用本机现有的本人 Apple 签名身份：`Apple Development: jet.deng@me.com (PTY74USJAK)`，除非本机实际身份已变化。
-- Electron hardened runtime 所需的 JIT/动态库权限记录在 `customizations/macos-electron.entitlements.plist`，不携带上游团队专属的 Associated Domains 权限。
-- 运行前先确认签名身份可用；禁止调用会要求输入钥匙串密码的流程。
-- 如果签名需要密码、身份不可用、只能退回 ad-hoc，立即停止，不报告为完成。
-- 构建生成的 DMG/ZIP 只作为临时产物，验收后删除；长期只保留 `/Applications/T3 Code.app` 和源码证据。
-- 构建签名、Bundle、安装路径和真实窗口状态分别验证，不能拿其中一项冒充另外三项。
+| 定制                    | 位置                                                               | 要点                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| 靛蓝强调色              | `apps/mobile/global.css`                                           | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items                         |
+| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                | iOS `PingFangSC-Regular` / `Semibold`                                                                                            |
+| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                   | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                                                 |
+| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                   | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留                      |
+| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                            | 只留 T3 Code 字标                                                                                                                |
+| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                            | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                                                  |
+| 线程标题字重            | 同文件 headerTitleStyle                                            | `800 → 700`                                                                                                                      |
+| Bundle / 能力裁剪       | `app.config.ts` + `plugins/withoutIosPersonalTeamCapabilities.cjs` | 个人 Team 用 `com.jetdeng.t3code`；插件去掉推送/Sign in with Apple/App Group/Associated Domains 等个人 Team 签不了的 entitlement |
+| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                      | **每次** `expo prebuild` 后、`xcodebuild` 前跑；抬 iOS deployment target 到 18，修 Xcode 与旧 Pod                                |
 
-### 完整构建 → 覆盖安装 → 重启 runbook（2026-08-11 实战固化）
+### 3.7 构建与签名资产
 
-> 绕过的坑都在下面标注。整个流程约 10–15 分钟，分三步：装依赖 → 构建 artifact → 签名安装重启。
+状态：**必须保留**
 
-**第 0 步：前置确认**
+- `customizations/macos-electron.entitlements.plist` — Electron hardened runtime；无上游 Associated Domains
+- 仓库根 `.env`（由 `.env.example` 来，**不提交密钥**）— Connections 页需要；缺了会藏 T3 Connect 等，不是汉化开关
+
+---
+
+## 4. 合上游操作卡
 
 ```sh
 cd ~/developer/t3code
-# 1) 依赖必须完整（含 electron 二进制）。node_modules 若被删/缺 electron，先补：
-pnpm install --prefer-offline
-# 若 pnpm install 卡在 electron 下载（GitHub CDN 慢/断），改用镜像补装 electron：
-#   cd node_modules/.pnpm/electron@<ver>/node_modules/electron
-#   curl -sL -o /tmp/electron.zip "https://npmmirror.com/mirrors/electron/<ver>/electron-v<ver>-darwin-arm64.zip"
-#   rm -rf dist && mkdir dist && unzip -q /tmp/electron.zip -d dist/ && echo "Electron.app/Contents/MacOS/Electron" > path.txt
-# 2) 确认签名身份可用：
-security find-identity -v -p codesigning   # 应有 Apple Development: jet.deng@me.com (PTY74USJAK)
-# 3) .env 必须存在（Connections 页需要 Clerk 公钥），缺则从 .env.example 补
+~/bin/git status                    # 必须干净（HANDOFF/_work 未跟踪可忽略，勿 add）
+~/bin/git fetch upstream main
+~/bin/git log --oneline HEAD..upstream/main   # 先读再合
+~/bin/git merge upstream/main
 ```
 
-**第 1 步：构建 web/server/desktop**
+冲突时按文件打开本文件 §3，对号保留本地行为。尤其警惕：
+
+- `apps/web/src/personalUi.ts`、`ChatComposer`、`ChatHeader`、`MessagesTimeline`、`DraftHeroHeadline`
+- `packages/zh-locale/**`、`apps/web/src/localization/**`
+- `apps/server/**/memmy*`、`clientModelListPreferences*`、`ws.ts`
+- `apps/mobile/**/modelOptions*`、`ThreadFeed`、`HomeHeader`、`ThreadRouteScreen`、`global.css`、`app.config.ts`
+- `scripts/lib/brand-assets.ts`、`scripts/build-desktop-artifact.ts`
+
+合完清单：
+
+1. 更新 §1 盘点三行 SHA + 日期。
+2. 扫 `translation-inventory.md` P0；上游新英文进共享词典增量层，勿打翻整本字典。
+3. 有则跑：定制相关单测、web/mobile/desktop typecheck、需要的正式构建。
+4. 真桌面窗口 + 真机（若动了手机）按 §5 验；再覆盖安装。
+5. 若上游自制了 ClientSettings 远程同步：先比写回方向，**本 fork 仍禁止手机写回隐藏列表**。
+
+---
+
+## 5. 验收清单（交付门）
+
+### 桌面（真实 `/Applications/T3 Code.app` 窗口）
+
+- [ ] 顶部：有 T3 Code 品牌；无项目操作/编辑器/Git/终端抽屉钮；输入框无「完全访问」条
+- [ ] 新线程封面文案与上移；已有对话占位「提出后续修改」；草稿占位不污染已有对话
+- [ ] 线程正文略大于 chrome；末尾无变更摘要卡；搜索无可见 ⌘K 提示
+- [ ] 工作流/工具卡/提供商错误可见中文；用户代码与终端原文不误伤
+- [ ] 发一条真实消息：Memmy DB 有 `t3` 会话；UI 无 `<memmy_memory_context>`
+- [ ] asar/`bin.mjs` 能搜到 `memmy-t3-bridge` 与 `modelListPreferences`（装过投影包时）
+
+### 手机（真机 `com.jetdeng.t3code`）
+
+- [ ] 图标为星夜 solid；splash 图标偏小（110）
+- [ ] 气泡/发送键为靛蓝系，不是系统蓝/黑主色默认
+- [ ] 列表标题苹方；主页搜索栏左侧无筛选钮
+- [ ] 线程页右上无 git/files/terminal 三钮；标题非极粗 800
+- [ ] 滚到底钮在输入框上方可点
+- [ ] 模型选择器长度跟桌面隐藏偏好走；「其他模型」文案；草稿框无英文长 placeholder
+
+### 构建签名
+
+- [ ] `codesign -dv` 为 Alfie Development；带本仓 entitlements
+- [ ] 无无故索取钥匙串密码；失败勿报完成
+
+---
+
+## 6. 桌面构建 → 覆盖安装 runbook
+
+全程约 10–15 分钟。细节坑见表。
 
 ```sh
+cd ~/developer/t3code
+pnpm install --prefer-offline          # electron 卡住见下行镜像补救
+security find-identity -v -p codesigning
+# .env 必须存在
+
 pnpm run build:desktop
-# 产物：apps/server/dist/bin.mjs、apps/desktop/dist-electron/main.cjs 等
-# 验证 memmy 等定制已进产物：
 strings apps/server/dist/bin.mjs | grep -o "memmy-t3-bridge" | head -1
-```
 
-**第 2 步：构建 artifact（产出 .app）**
-
-```sh
-# --skip-build 复用上一步产物；--target dir 直接产 .app（不是 dmg/zip）
 node scripts/build-desktop-artifact.ts --skip-build --platform mac --target dir --arch arm64 --keep-stage
-# 一定要 --keep-stage！否则 staging 临时目录构建完就被清理，.app 找不回来（默认 Scoped 清理）
-# 产物在最新 staging 目录：
+# 必须 --keep-stage
 APP=$(ls -dt /var/folders/th/*/T/t3code-desktop-mac-stage-* | head -1)/app/dist/mac-arm64/"T3 Code (Alpha).app"
-echo "$APP"
-```
 
-**第 3 步：签名（用本人证书 + 自定义 entitlements，绕过脚本的 passkey 限制）**
-
-```sh
-# 脚本 --signed 路径需要 provisioning profile（T3CODE_MACOS_PROVISIONING_PROFILE），本机没有，
-# 所以 artifact 先 unsigned 构建，再用 codesign 手动签名（效果一致，回执见 2026-08-10）
 codesign --force --deep --sign "ADCEE876C506C947B0D27F5DF46DF94052FB38DA" \
   --options runtime \
   --entitlements customizations/macos-electron.entitlements.plist "$APP"
-# 验证（必须全过）：
-codesign --verify --deep --strict "$APP"                 # → valid on disk
-codesign -dv --verbose=4 "$APP" | grep "Authority="       # → Apple Development: jet.deng@me.com
-```
+codesign --verify --deep --strict "$APP"
 
-**第 4 步：覆盖安装 + 重启**
-
-> ⚠️ 本步会杀掉正在运行的 T3 Code（也就是可能正在跑当前 agent 会话的宿主），做完要手动重启、开新会话继续。**不要**用「脚本先杀进程再 cp」——杀进程会连宿主 shell 一起杀掉，脚本后半段根本执行不到（2026-08-11 实测踩过）。
-
-```sh
-# 1) 备份旧版
+# 人先退出正在用的 T3；不要用「杀进程再 cp」的脚本（会杀宿主 Agent）
 mv "/Applications/T3 Code.app" "/Applications/T3 Code.bak.app"
-# 2) 从 staging 源直接 cp（不要经过桌面/Finder：拷贝会注入 resource fork，导致 codesign 校验报
-#    "resource fork ... not allowed"，tar --no-xattrs 也躲不掉，只有直接从 staging cp 才干净）
-cp -R "$APP" "/Applications/T3 Code.app"
-# 3) 校验安装版
-codesign --verify --deep --strict "/Applications/T3 Code.app"   # → valid on disk
-strings "/Applications/T3 Code.app/Contents/Resources/app.asar" | grep -o "memmy-t3-bridge" | head -1
-# 4) 重启
+cp -R "$APP" "/Applications/T3 Code.app"    # 直接从 staging cp，勿经桌面/Finder
+codesign --verify --deep --strict "/Applications/T3 Code.app"
 open "/Applications/T3 Code.app"
-# 5) 等稳定后删除旧版备份
-rm -rf "/Applications/T3 Code.bak.app"
+# 稳定后：rm -rf "/Applications/T3 Code.bak.app"
 ```
 
-**第 5 步：端到端验收**
+| 坑                      | 解法                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| pnpm 卡在 electron 下载 | npmmirror 下 zip → 解到对应 `node_modules/.../electron/dist` 并写 `path.txt` |
+| 不带 `--keep-stage`     | staging 被清，`.app` 找不着                                                  |
+| 脚本 `--signed`         | 缺 provisioning profile；改 unsigned + 手签                                  |
+| 经 Finder/桌面拷贝      | resource fork → codesign 挂；只用 staging `cp -R`                            |
+| 脚本先 kill T3          | 宿主会话一起死，后半段不跑                                                   |
 
-- server 进程确认加载新 asar：`ps aux | grep "T3 Code.app/Contents/MacOS" | grep bin.mjs`
-- 新开一轮真实会话发消息，Memmy 数据库出现新 `t3` source 会话：
-  `sqlite3 ~/.memmy/memory-service/memory.sqlite "SELECT id,opened_at FROM sessions WHERE source='t3' ORDER BY opened_at DESC LIMIT 3;"`
-- 界面确认无 `<memmy_memory_context>` 显性文字（后台注入，UI 干净）。
+手机：`expo prebuild`（若需要）→ `bash scripts/fix-ios-prebuild.sh` → `pod install` / `expo run:ios --configuration Release --device <物理 UDID>`。真机 UDID 用系统设备号，不要用 CoreDevice UUID。锁屏时 launch 失败很常见。
 
-**坑位汇总**
+---
 
-| 坑                                 | 表现                                      | 解法                                                |
-| ---------------------------------- | ----------------------------------------- | --------------------------------------------------- |
-| pnpm install 卡 electron           | CPU 0、无网络、日志停 postinstall         | 用 npmmirror 镜像手动下 zip 解到 dist + 写 path.txt |
-| 不 `--keep-stage`                  | 构建完 .app 消失                          | artifact 构建必须带 `--keep-stage`                  |
-| `--signed` 缺 provisioning profile | MissingMacPasskeyProvisioningProfileError | 改 unsigned 构建 + codesign 手动签名                |
-| 经过桌面/Finder 拷贝               | codesign 报 resource fork not allowed     | 直接从 staging 目录 `cp -R`                         |
-| 脚本先杀进程再覆盖                 | 杀进程连宿主会话一起挂，脚本中断          | 先备份→cp→校验→`open` 分步手动做，最后删备份        |
+## 7. 合并冲突时优先对照的文件
 
-## 完成定义
+汉化与词典：`packages/zh-locale/**`、`apps/web/src/localization/**`、`apps/mobile/src/localization/**`、`apps/desktop/src/*Zh*`、`ElectronMenu`、`ElectronDialog`、预览 `PickPreload.ts`
 
-只有同时满足以下条件，才可以说 T3 Code 汉化完成：
+桌面个人 UI：`personalUi.ts`、`ChatComposer.tsx`、`ComposerPromptEditor.tsx`、`ChatHeader.tsx`、`ChatView.tsx`、`DraftHeroHeadline.tsx`、`ComposerPrimaryActions.tsx`、`MessagesTimeline.tsx`、`LegacySidebar.tsx`、`index.css`、`public/synara-icons/**`
 
-- 盘点清单已闭环，没有“看到了但以后再翻”的 P0/P1 项。
-- Web UI、动态工作流、Electron 菜单和原生对话框均已覆盖。
-- 相关测试/类型检查/构建通过。
-- 使用本人签名完成，过程中没有密码提示。
-- 覆盖安装后的真实 T3 Code 窗口逐页可见中文。
-- 至少开一个真实测试线程，从发送到工具调用、等待、完成/失败恢复走完，并确认工作流没有漏翻。
+服务端定制：`memmyContextInjection.ts*`、`ProviderCommandReactor.ts`、`ProviderRuntimeIngestion.ts`、`clientModelListPreferences.ts*`、`ws.ts`
+
+手机定制：`modelOptions.ts*`、`ThreadFeed.tsx`、`HomeHeader.tsx`、`ThreadRouteScreen.tsx`、`CompactBrandTitle.tsx`、`thread-list-*.tsx`、`threadPresentation.ts`、`global.css`、`app.config.ts`、`BrandMark.tsx`、`NewTaskDraftScreen.tsx`、`withoutIosPersonalTeamCapabilities.cjs`
+
+品牌与打包：`scripts/lib/brand-assets.ts`、`scripts/build-desktop-artifact.ts`、`scripts/fix-ios-prebuild.sh`、`assets/nightly/**`、`customizations/macos-electron.entitlements.plist`
+
+契约 / 共享：`packages/contracts`（`modelListPreferences`、相关 stream）、`packages/shared/src/modelOrdering.ts`、`packages/shared/src/usageFormat.ts`、`packages/client-runtime/src/state/server.ts`
+
+---
+
+## 8. 完成定义
+
+同时满足才算「这轮定制/同步做完」：
+
+1. §1 盘点数字与仓库现实一致。
+2. §3 必须保留项在代码里仍在；合上游冲突已按行为优先处理。
+3. §5 桌面（及若涉及则手机）验收勾完，有真实执行证据，不是只编译绿。
+4. 未把密钥写进仓；未留下当交付物的 dmg/zip/`_work` 大包。
+
+---
+
+## 9. 维护约定
+
+- 新增会改变默认值或可见行为的定制：**先改代码，再立刻在本文件 §3 加一条**（路径 + 验收），不要只写进词典假装是汉化。
+- 能独立提交的定制独立提交，方便回滚。
+- 退役定制：移到文末「已退役」并改验收项，不要静默删除历史。
+- Alfie 说「提交 / 推送」才 commit / push；推送 ≠ 擅自提交。
