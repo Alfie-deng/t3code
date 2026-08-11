@@ -11,8 +11,10 @@
 - 本地路径：`/Users/alfie/Developer/t3code`
 - 上游：`https://github.com/pingdotgg/t3code`
 - 当前基线：`e8a7c5ec8a09a76c682cf0ee91c374112f36e959`
-- 当前安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`（2026-08-11 覆盖安装，含 Memmy 记忆桥）
-- 构建目标：macOS Apple Silicon，覆盖安装 `/Applications/T3 Code.app`
+- 当前桌面安装版：`/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`，版本 `0.0.32`（2026-08-11 晚间由 `_work/desktop-model-prefs` 覆盖；含 Memmy 记忆桥 + 模型列表只读投影）
+- 当前 iOS 安装版：真机 Bundle `com.jetdeng.t3code`，production Release（同日安装；含模型列表投影与「其他模型」文案）
+- 相关提交：`d4953b2fc`（模型列表只读投影等）
+- 构建目标：macOS Apple Silicon 覆盖 `/Applications/T3 Code.app`；iOS production 真机 `expo run:ios --configuration Release`
 
 ## 定制总览
 
@@ -72,6 +74,30 @@
 - 测试：`apps/server/src/orchestration/memmyContextInjection.test.ts` + `ProviderCommandReactor.test.ts` 新增的注入断言。
 - 验收：新开真实会话发消息后，`~/.memmy/memory-service/memory.sqlite` 出现新 `t3` source 会话；界面无 `<memmy_memory_context>` 显性文字。
 - 注意：Synara 的桥默认**注入 + 写入都开**；opencode 的 `injectContext: false` 只关了注入保留主动工具。t3 目前与 Synara 同策略（Alfie 已确认：只要不显性打出来就不要关）。
+
+### 4.5 手机模型列表只读投影桌面（隐藏 / 排序 / 收藏）
+
+状态：**必须保留。桌面 ClientSettings 为真源；手机只读投影，禁止写回。**
+
+问题：桌面把不需要的模型藏在 `~/.t3/userdata/client-settings.json` 的 `providerModelPreferences` / `favorites` 里，但旧手机只看服务端 `providers[].models`，等于另一套全量清单。
+
+实现：
+
+- 契约：`packages/contracts` 增加只读 `ClientModelListPreferences`，挂在可选字段 `ServerConfig.modelListPreferences`；流事件 `modelListPreferencesUpdated`（不要塞进可写的 `ServerSettings`）。
+- 服务端：`apps/server/src/clientModelListPreferences.ts` 读取并监视同目录 `client-settings.json`，只投影 `favorites` + `providerModelPreferences`；`apps/server/src/ws.ts` 的 `loadServerConfig` / `subscribeServerConfig` 下发。
+- 客户端投影：`packages/client-runtime/src/state/server.ts` 处理 `modelListPreferencesUpdated`。
+- 手机：`apps/mobile/src/lib/modelOptions.ts` 用与桌面相同规则过滤隐藏项、应用排序/收藏（自定义模型即使被标隐藏也仍可见）；排序算法抽出到 `@t3tools/shared/modelOrdering`，web 改为转导出。
+- 文案：`Legacy models` / `Show legacy models` / `Hide legacy models` →「其他模型 / 显示其他模型 / 隐藏其他模型」（桌面词典 + 手机 `MOBILE_UI_TEXT`）。
+- 附属：新任务草稿输入框占位改为空字符串（去掉英文 `Describe a coding task in …`）；模型设置里选项标签走 `t()`。
+
+验收：
+
+1. 桌面设置里隐藏若干模型后，手机模型选择器同步变短；手机不能改写桌面隐藏列表。
+2. 设置 → 提供商详情仍可看见「已隐藏」条目；选择器可见集合才是投影结果。
+3. 旧中转残留 slug（如 `opencodex/opencode-go/deepseek-v4-flash`）若仍是当前选型，会以幽灵项出现——应迁到官方 slug 或藏掉；这是选型脏数据，不是投影失败。
+4. 覆盖安装桌面必须带上本改动的 server asar（`modelListPreferences` 字符串可在 asar 中搜到）；手机需 production Release 重装。
+
+上游同步时：若上游自己加了 ClientSettings 远程同步，先比较写回方向；本定制明确禁止手机写回。
 
 ### 3.1 Nightly 应用图标常态化
 
