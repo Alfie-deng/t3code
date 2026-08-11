@@ -71,6 +71,16 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Command execution")).toBe("运行命令");
     expect(translateZhCnUiText("Raw token cost")).toBe("原始 Token 成本");
     expect(translateZhCnUiText("Processed tokens")).toBe("已消耗 Token");
+    expect(translateZhCnUiText("Codex automatically compacts its context when needed.")).toBe(
+      "Codex 会在需要时自动压缩上下文。",
+    );
+    expect(translateZhCnUiText("Claude automatically compacts its context when needed.")).toBe(
+      "Claude 会在需要时自动压缩上下文。",
+    );
+    expect(translateZhCnUiText("Context window 1.4万 tokens used")).toBe(
+      "上下文窗口已用 1.4万 Token",
+    );
+    expect(translateZhCnUiText("Total processed: 25.8万 tokens")).toBe("累计处理：25.8万 Token");
     expect(translateZhCnUiText("Balanced")).toBe("均衡");
     expect(translateZhCnUiText("Legacy models")).toBe("其他模型");
     expect(translateZhCnUiText("4 models")).toBe("4个模型");

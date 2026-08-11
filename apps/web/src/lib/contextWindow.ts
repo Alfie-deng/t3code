@@ -1,4 +1,5 @@
 import type { OrchestrationThreadActivity, ThreadTokenUsageSnapshot } from "@t3tools/contracts";
+import { formatTokens } from "@t3tools/shared/usageFormat";
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
@@ -99,14 +100,5 @@ export function formatContextWindowTokens(value: number | null): string {
   if (value === null || !Number.isFinite(value)) {
     return "0";
   }
-  if (value < 1_000) {
-    return `${Math.round(value)}`;
-  }
-  if (value < 10_000) {
-    return `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
-  }
-  if (value < 1_000_000) {
-    return `${Math.round(value / 1_000)}k`;
-  }
-  return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}m`;
+  return formatTokens(value);
 }

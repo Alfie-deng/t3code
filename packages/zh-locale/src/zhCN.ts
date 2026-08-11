@@ -3260,7 +3260,7 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Toggle terminal drawer": "切换终端抽屉",
   "Tool call failed": "工具调用失败",
   "Top Span Names": "顶部 Span 名称",
-  "Total processed": "已处理总数",
+  "Total processed": "已处理 Token",
   "Trace Diagnostics": "Trace 诊断",
   "Try:": "请尝试：",
   Turn: "回合",
@@ -5203,7 +5203,7 @@ function translateContextWindowTokenAmount(raw: string): string {
   }
   const withTokens =
     translateUsageChrome(`${trimmed} tokens`) ?? translateUsageChrome(trimmed) ?? trimmed;
-  return withTokens.replace(/\s+tokens?$/i, " Token");
+  return withTokens.replace(/\s+tokens?$/i, "");
 }
 
 function translateContextWindowChrome(value: string): string | null {
@@ -5780,6 +5780,12 @@ export function translateExact(value: string): string {
   if (normalizedWhitespaceValue !== value) {
     const normalizedExact = UI_TEXT_ALL[normalizedWhitespaceValue];
     if (normalizedExact) return normalizedExact;
+  }
+  const automaticCompactionMatch = /^(.+) automatically compacts its context when needed\.$/.exec(
+    value,
+  );
+  if (automaticCompactionMatch) {
+    return `${automaticCompactionMatch[1]} 会在需要时自动压缩上下文。`;
   }
   const usageMultiplierMatch = /^(.+)\s+\((\d+)x usage\)$/i.exec(value);
   if (usageMultiplierMatch) {
