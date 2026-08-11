@@ -5583,7 +5583,28 @@ function translateProviderHealthDetail(detail: string): string {
 }
 
 function translateProviderHealthChrome(value: string): string | null {
-  let match = /^Could not verify (.+) authentication status\. (.+)$/.exec(value);
+  let match = /^(.+) ACP model discovery timed out after (\d+(?:\.\d+)?)\s*ms\.$/i.exec(value);
+  if (match) return `${match[1]} ACP 模型发现在 ${match[2]} 毫秒后超时。`;
+  match = /^(.+) ACP model discovery failed\.?$/i.exec(value);
+  if (match) return `${match[1]} ACP 模型发现失败。`;
+  match = /^(.+) ACP model discovery returned no built-in models\.?$/i.exec(value);
+  if (match) return `${match[1]} ACP 模型发现未返回内置模型。`;
+  match = /^Provider connect timeout after (\d+(?:\.\d+)?)\s*ms\.?$/i.exec(value);
+  if (match) return `提供商连接在 ${match[1]} 毫秒后超时。`;
+  match =
+    /^(.+) Agent is authenticated, but model discovery timed out before T3 Code could verify available models\.$/i.exec(
+      value,
+    );
+  if (match) {
+    return `${match[1]} Agent 已通过认证，但模型发现超时，T3 Code 无法确认可用模型。`;
+  }
+  match = /^(.+) is unauthenticated$/i.exec(value);
+  if (match) return `${match[1]} 未认证`;
+  match = /^Dismiss (.+) provider (warning|error)$/i.exec(value);
+  if (match)
+    return `关闭 ${match[1]} 提供商${match[2]!.toLowerCase() === "warning" ? "警告" : "错误"}`;
+
+  match = /^Could not verify (.+) authentication status\. (.+)$/.exec(value);
   if (match) {
     return `无法验证 ${match[1]} 认证状态。${translateProviderHealthDetail(match[2]!)}`;
   }

@@ -7,7 +7,7 @@ import type { EnvironmentThreadSearchMatch } from "@t3tools/client-runtime/state
 import type { MenuAction } from "@react-native-menu/menu";
 import { SymbolView } from "../../components/AppSymbol";
 import { memo, useCallback, useMemo, type ComponentProps } from "react";
-import { Pressable, useColorScheme, useWindowDimensions, View } from "react-native";
+import { Platform, Pressable, useColorScheme, useWindowDimensions, View } from "react-native";
 import type { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
 import Svg, { Circle, Path } from "react-native-svg";
 
@@ -37,6 +37,16 @@ export type ThreadListVariant = "compact" | "sidebar";
 /** Left inset that aligns compact secondary rows with the title column. */
 export const THREAD_LIST_COMPACT_INSET = HOME_HORIZONTAL_INSET;
 const SIDEBAR_ROW_RADIUS = 12;
+const PINGFANG_REGULAR_FONT_FAMILY = Platform.select({
+  ios: "PingFangSC-Regular",
+  android: "sans-serif",
+  default: "sans-serif",
+});
+const PINGFANG_SEMIBOLD_FONT_FAMILY = Platform.select({
+  ios: "PingFangSC-Semibold",
+  android: "sans-serif",
+  default: "sans-serif",
+});
 
 function pullRequestTintColor(
   state: ThreadPr["state"],
@@ -148,6 +158,10 @@ export const ThreadListGroupHeader = memo(function ThreadListGroupHeader(props: 
               : "flex-shrink text-sm font-t3-bold tracking-[0.2px] text-foreground-muted"
           }
           numberOfLines={1}
+          style={{
+            fontFamily: PINGFANG_SEMIBOLD_FONT_FAMILY,
+            fontWeight: "600",
+          }}
         >
           {props.title}
         </Text>
@@ -468,8 +482,8 @@ export const ThreadListRow = memo(function ThreadListRow(props: {
     thread.latestUserMessageAt ?? thread.updatedAt ?? thread.createdAt,
   );
   const threadAccessibilityLabel = pr ? `${thread.title}, ${pr.accessibilityLabel}` : thread.title;
-  const subtitleParts = [props.environmentLabel, thread.branch].filter((part): part is string =>
-    Boolean(part),
+  const subtitleParts = [compact ? null : props.environmentLabel, thread.branch].filter(
+    (part): part is string => Boolean(part),
   );
 
   const backgroundColor = compact ? screenColor : drawerColor;
@@ -559,19 +573,27 @@ export const ThreadListRow = memo(function ThreadListRow(props: {
           style={{
             paddingLeft: THREAD_LIST_COMPACT_INSET,
             paddingRight: 18,
-            paddingTop: 10,
+            paddingTop: 8,
           }}
         >
           <View
             style={{
-              gap: 3,
+              gap: 2,
               borderBottomWidth: props.isLast ? 0 : 1,
               borderBottomColor: separatorColor,
-              paddingBottom: 10,
+              minHeight: 44,
+              paddingBottom: 8,
             }}
           >
             <View className="flex-row items-center justify-between gap-2">
-              <Text className="flex-1 text-lg font-t3-bold text-foreground" numberOfLines={1}>
+              <Text
+                className="flex-1 text-lg text-foreground"
+                numberOfLines={1}
+                style={{
+                  fontFamily: PINGFANG_REGULAR_FONT_FAMILY,
+                  fontWeight: "400",
+                }}
+              >
                 {thread.title}
               </Text>
               <View className="flex-row items-center gap-2">

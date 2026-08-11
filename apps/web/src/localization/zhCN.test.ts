@@ -111,6 +111,17 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Unarchive")).toBe("取消归档");
     expect(translateZhCnUiText("Created")).toBe("创建于");
     expect(translateZhCnUiText("Submit")).toBe("提交");
+    expect(translateZhCnUiText("Cursor ACP model discovery timed out after 15000ms.")).toBe(
+      "Cursor ACP 模型发现在 15000 毫秒后超时。",
+    );
+    expect(translateZhCnUiText("Dismiss Cursor provider warning")).toBe("关闭 Cursor 提供商警告");
+    expect(translateZhCnUiText("Grok ACP model discovery failed.")).toBe("Grok ACP 模型发现失败。");
+    expect(translateZhCnUiText("Cursor ACP model discovery returned no built-in models.")).toBe(
+      "Cursor ACP 模型发现未返回内置模型。",
+    );
+    expect(translateZhCnUiText("Provider connect timeout after 200000ms")).toBe(
+      "提供商连接在 200000 毫秒后超时。",
+    );
     expect(
       translateZhCnUiText(
         "Refresh remote branch status in the background. Set this to 0 seconds if Git credentials or security keys should only be prompted by explicit Git actions.",

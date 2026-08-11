@@ -64,4 +64,20 @@ describe("ProviderStatusBanner", () => {
 
     expect(markup).toContain('aria-label="关闭 Codex 提供商错误"');
   });
+
+  it("translates dynamic ACP discovery timeout details and dismiss labels", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderStatusBanner
+        status={{
+          ...warningProvider(),
+          displayName: "Cursor",
+          message: "Cursor ACP model discovery timed out after 15000ms.",
+        }}
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("Cursor ACP 模型发现在 15000 毫秒后超时。");
+    expect(markup).toContain('aria-label="关闭 Cursor 提供商警告"');
+  });
 });

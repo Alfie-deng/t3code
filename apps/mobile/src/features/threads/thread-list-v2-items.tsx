@@ -17,7 +17,7 @@ import {
 import type { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
 
 import { SymbolView } from "../../components/AppSymbol";
-import { AppText as Text } from "../../components/AppText";
+import { AppText } from "../../components/AppText";
 import { t } from "../../localization/zhCN";
 import { ControlPillMenu } from "../../components/ControlPill";
 import { ProjectFavicon } from "../../components/ProjectFavicon";
@@ -44,11 +44,21 @@ import { ThreadSearchMatchExcerpt } from "./thread-search-match";
  * hierarchy rather than card fills.
  */
 
+const PINGFANG_FONT_FAMILY = Platform.select({
+  ios: "PingFangSC-Regular",
+  android: "sans-serif",
+  default: "sans-serif",
+});
+
 const MONO_FONT = Platform.select({
   ios: "Menlo",
   android: "monospace",
   default: "monospace",
 });
+
+const Text = (props: ComponentProps<typeof AppText>) => (
+  <AppText {...props} style={[props.style, { fontFamily: PINGFANG_FONT_FAMILY }]} />
+);
 
 // Status hues follow the system-wide convention set by sidebar v1 and the
 // Live Activity/widgets (amber approval, indigo input, indigo working) so a
