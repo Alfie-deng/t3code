@@ -72,6 +72,25 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Raw token cost")).toBe("原始 Token 成本");
     expect(translateZhCnUiText("Processed tokens")).toBe("已消耗 Token");
     expect(translateZhCnUiText("Balanced")).toBe("均衡");
+    expect(translateZhCnUiText("Legacy models")).toBe("其他模型");
+    expect(translateZhCnUiText("4 models")).toBe("4个模型");
+    expect(translateZhCnUiText("DeepSeek V4 Flash (2x usage)")).toBe(
+      "DeepSeek V4 Flash（2倍用量）",
+    );
+    expect(translateZhCnUiText("Server URL")).toBe("服务器 URL");
+    expect(translateZhCnUiText("Server password")).toBe("服务器密码");
+    expect(translateZhCnUiText("Optional")).toBe("可选");
+    expect(translateZhCnUiText("Path to the OpenCode binary.")).toBe("OpenCode 二进制文件路径。");
+    expect(
+      translateZhCnUiText(
+        "Tune the shared power policy and the background intervals that feed it.",
+      ),
+    ).toBe("调整共享电源策略及其所使用的后台间隔。");
+    expect(
+      translateZhCnUiText(
+        "Uses custom background intervals with the selected shared power policy. Current shared policy: Performance.",
+      ),
+    ).toBe("使用所选共享电源策略的自定义后台间隔。当前共享策略：性能优先。");
     expect(translateZhCnUiText("4m ago")).toBe("4分钟前");
     expect(translateZhCnUiText("Reset Claude provider settings to default")).toBe(
       "将Claude提供商设置恢复为默认值",
@@ -122,6 +141,12 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("Provider connect timeout after 200000ms")).toBe(
       "提供商连接在 200000 毫秒后超时。",
     );
+    expect(translateZhCnUiText("Checking Cursor Agent availability...")).toBe(
+      "正在检查 Cursor Agent 可用性…",
+    );
+    expect(
+      translateZhCnUiText("Selected model is at capacity. Please try a different model."),
+    ).toBe("所选模型当前容量已满，请尝试其他模型。");
     expect(
       translateZhCnUiText(
         "Your input exceeds the context window of this model. Please adjust your input and try again.",

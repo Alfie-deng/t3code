@@ -2532,6 +2532,8 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   Available: "可用",
   "Background activity": "后台活动",
   "Background Activity": "后台活动",
+  "Tune the shared power policy and the background intervals that feed it.":
+    "调整共享电源策略及其所使用的后台间隔。",
   "Clipboard API unavailable.": "剪贴板 API 不可用。",
   "Copied!": "已复制！",
   "Copy image": "复制图像",
@@ -2562,7 +2564,7 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Shared policy": "共享策略",
   "Latest turn": "最近回合",
   "Legacy features": "旧版功能",
-  "Legacy models": "旧版模型",
+  "Legacy models": "其他模型",
   Latest: "最新",
   Nightly: "夜间版",
   "No activity in this window.": "此时间窗口内没有活动。",
@@ -3219,6 +3221,13 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   "Search models...": "搜索模型…",
   "Search or enter URL": "搜索或输入 URL",
   "Search project contents": "搜索项目内容",
+  "Server URL": "服务器 URL",
+  "Server password": "服务器密码",
+  Optional: "可选",
+  "Path to the OpenCode binary.": "OpenCode 二进制文件路径。",
+  "Leave blank to let T3 Code spawn the server when needed.":
+    "留空后，T3 Code 会在需要时启动服务器。",
+  "Stored in plain text on disk.": "以明文存储在磁盘上。",
   Sensitive: "敏感",
   "Server environment": "服务器环境",
   "Shared background policy": "共享后台策略",
@@ -4317,7 +4326,7 @@ const MOBILE_APPEND_UI_TEXT: Readonly<Record<string, string>> = {
   "Full access": "完全访问",
   Full: "完全",
   Runtime: "运行时",
-  "Hide legacy models": "隐藏旧版模型",
+  "Hide legacy models": "隐藏其他模型",
   "Add Comment": "添加评论",
   "No selection": "未选择",
   "Select a diff line or range first.": "请先选择差异行或范围。",
@@ -5032,6 +5041,12 @@ function compactEnglishSuffixToZh(numRaw: string, suffix: string): string {
 function translateRuntimeError(value: string): string | null {
   if (/^Runtime error$/i.test(value)) return "运行错误";
 
+  if (
+    /^(?:The )?selected model is at capacity\.\s*Please try (?:a )?different model\.?$/i.test(value)
+  ) {
+    return "所选模型当前容量已满，请尝试其他模型。";
+  }
+
   const structuredError = translateStructuredErrorPayload(value);
   if (structuredError) return structuredError;
 
@@ -5665,7 +5680,10 @@ function translateProviderHealthDetail(detail: string): string {
 }
 
 function translateProviderHealthChrome(value: string): string | null {
-  let match = /^(.+) ACP model discovery timed out after (\d+(?:\.\d+)?)\s*ms\.$/i.exec(value);
+  let match = /^Checking (.+) availability(?:\.\.\.|…)$/i.exec(value);
+  if (match) return `正在检查 ${match[1]} 可用性…`;
+
+  match = /^(.+) ACP model discovery timed out after (\d+(?:\.\d+)?)\s*ms\.$/i.exec(value);
   if (match) return `${match[1]} ACP 模型发现在 ${match[2]} 毫秒后超时。`;
   match = /^(.+) ACP model discovery failed\.?$/i.exec(value);
   if (match) return `${match[1]} ACP 模型发现失败。`;
@@ -5745,6 +5763,14 @@ function translateProviderAdapterError(value: string): string | null {
 export function translateExact(value: string): string {
   const runtimeTranslated = translateRuntimeError(value);
   if (runtimeTranslated) return runtimeTranslated;
+  const backgroundPolicyMatch =
+    /^Uses custom background intervals with the selected shared power policy\. Current shared policy: (.+)\.$/.exec(
+      value,
+    );
+  if (backgroundPolicyMatch) {
+    const policy = backgroundPolicyMatch[1] ?? "";
+    return `使用所选共享电源策略的自定义后台间隔。当前共享策略：${UI_TEXT_ALL[policy] ?? policy}。`;
+  }
   // Prefer exact dictionary hits before verb/chrome heuristics that can mangle phrases
   // like "Found something to review" → "已找到 something to review".
   const exactEarly = UI_TEXT_ALL[value];
@@ -5753,6 +5779,10 @@ export function translateExact(value: string): string {
   if (normalizedWhitespaceValue !== value) {
     const normalizedExact = UI_TEXT_ALL[normalizedWhitespaceValue];
     if (normalizedExact) return normalizedExact;
+  }
+  const usageMultiplierMatch = /^(.+)\s+\((\d+)x usage\)$/i.exec(value);
+  if (usageMultiplierMatch) {
+    return `${usageMultiplierMatch[1]}（${usageMultiplierMatch[2]}倍用量）`;
   }
   let projectRenameMatch = /^Update the title for (.+)\.$/.exec(value);
   if (projectRenameMatch) return `更新 ${projectRenameMatch[1]} 的标题。`;
@@ -6169,7 +6199,9 @@ export function translateExact(value: string): string {
           : noun.startsWith("process")
             ? "个进程"
             : "处使用";
-    return `${simpleCountLabelMatch[1]} ${nounZh}`;
+    return noun.startsWith("model")
+      ? `${simpleCountLabelMatch[1]}${nounZh}`
+      : `${simpleCountLabelMatch[1]} ${nounZh}`;
   }
   const retainedCountMatch = /^(\d+)\/(\d+) retained$/i.exec(value);
   if (retainedCountMatch) return `${retainedCountMatch[1]}/${retainedCountMatch[2]} 已保留`;

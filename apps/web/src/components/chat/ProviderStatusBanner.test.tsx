@@ -80,4 +80,20 @@ describe("ProviderStatusBanner", () => {
     expect(markup).toContain("Cursor ACP 模型发现在 15000 毫秒后超时。");
     expect(markup).toContain('aria-label="关闭 Cursor 提供商警告"');
   });
+
+  it("translates dynamic provider availability checks completely", () => {
+    const markup = renderToStaticMarkup(
+      <ProviderStatusBanner
+        status={{
+          ...warningProvider(),
+          displayName: "Cursor",
+          message: "Checking Cursor Agent availability...",
+        }}
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("正在检查 Cursor Agent 可用性…");
+    expect(markup).not.toContain("availability");
+  });
 });

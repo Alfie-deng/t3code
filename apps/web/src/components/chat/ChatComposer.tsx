@@ -95,6 +95,7 @@ import { ComposerPendingApprovalPanel } from "./ComposerPendingApprovalPanel";
 import { ComposerPendingUserInputPanel } from "./ComposerPendingUserInputPanel";
 import { ComposerPlanFollowUpBanner } from "./ComposerPlanFollowUpBanner";
 import { ComposerControl, ComposerControlIcon, ComposerSelectControl } from "./ComposerControl";
+import { resolveComposerGuidePlaceholder } from "./composerPlaceholder";
 import { resolveComposerMenuActiveItemId } from "./composerMenuHighlight";
 import { searchSlashCommandItems } from "./composerSlashCommandSearch";
 import {
@@ -2831,11 +2832,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                   : prompt.trim() ||
                     (noProviderAvailable
                       ? translateZhCnUiText("Enable a provider in Settings")
-                      : phase === "disconnected"
-                        ? PERSONAL_UI.newThreadComposerPlaceholder
-                        : PERSONAL_UI.hideComposerGuide
-                          ? translateZhCnUiText("Ask for follow-up changes")
-                          : translateZhCnUiText("Ask anything..."))}
+                      : resolveComposerGuidePlaceholder(props.isDraftHeroState))}
               </button>
               <button
                 type="button"
@@ -3073,13 +3070,10 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                           ? translateZhCnUiText("Choose a project above to start a thread")
                           : noProviderAvailable
                             ? translateZhCnUiText("Enable a provider in Settings to send a message")
-                            : phase === "disconnected"
-                              ? PERSONAL_UI.newThreadComposerPlaceholder
-                              : PERSONAL_UI.hideComposerGuide
-                                ? translateZhCnUiText("Ask for follow-up changes")
-                                : translateZhCnUiText(
-                                    "Ask anything, @tag files/folders, $use skills, or / for commands",
-                                  )
+                            : resolveComposerGuidePlaceholder(
+                                props.isDraftHeroState,
+                                "Ask anything, @tag files/folders, $use skills, or / for commands",
+                              )
                 }
                 disabled={isConnecting || isComposerApprovalState || projectSelectionRequired}
               />

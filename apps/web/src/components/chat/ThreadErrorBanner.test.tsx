@@ -48,4 +48,16 @@ describe("ThreadErrorBanner", () => {
     expect(markup).not.toContain("Your input exceeds the context window");
     expect(markup).not.toContain('"message"');
   });
+
+  it("translates model capacity errors", () => {
+    const markup = renderToStaticMarkup(
+      <ThreadErrorBanner
+        error="Selected model is at capacity. Please try a different model."
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("所选模型当前容量已满，请尝试其他模型。");
+    expect(markup).not.toContain("Selected model is at capacity");
+  });
 });
