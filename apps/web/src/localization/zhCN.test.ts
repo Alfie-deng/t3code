@@ -110,6 +110,7 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("GitHub availability")).toBe("GitHub 可用性");
     expect(translateZhCnUiText("Unarchive")).toBe("取消归档");
     expect(translateZhCnUiText("Created")).toBe("创建于");
+    expect(translateZhCnUiText("Submit")).toBe("提交");
     expect(
       translateZhCnUiText(
         "Refresh remote branch status in the background. Set this to 0 seconds if Git credentials or security keys should only be prompted by explicit Git actions.",

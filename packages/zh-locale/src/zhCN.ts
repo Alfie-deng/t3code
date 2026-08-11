@@ -652,6 +652,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Activity: "活动",
   Stop: "停止",
   Studio: "工作室",
+  Submit: "提交",
   "Submit answers": "提交答案",
   "User input needed": "需要用户输入",
   "Or type a custom answer": "或输入自定义答案",
