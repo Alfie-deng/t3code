@@ -30,6 +30,12 @@ import * as Stream from "effect/Stream";
 import { makeDrainableWorker } from "@t3tools/shared/DrainableWorker";
 
 import { ProviderService } from "../../provider/Services/ProviderService.ts";
+import {
+  clearMemmyPendingForThread,
+  completeMemmyTurn,
+  getMemmyPendingForThread,
+  resolveMemmyCaptureAnswer,
+} from "../memmyContextInjection.ts";
 import { ProjectionTurnRepository } from "../../persistence/Services/ProjectionTurns.ts";
 import { ProjectionTurnRepositoryLive } from "../../persistence/Layers/ProjectionTurns.ts";
 import { isGitRepository } from "../../git/Utils.ts";
@@ -1829,23 +1835,86 @@ const make = Effect.gen(function* () {
         const turnId = toTurnId(event.turnId);
         if (turnId) {
           const assistantMessageIds = yield* getAssistantMessageIdsForTurn(thread.id, turnId);
-          yield* Effect.forEach(
-            assistantMessageIds,
-            (assistantMessageId) =>
-              finalizeAssistantMessage({
-                event,
-                threadId: thread.id,
-                messageId: assistantMessageId,
-                turnId,
-                createdAt: now,
-                commandTag: "assistant-complete-finalize",
-                finalDeltaCommandTag: "assistant-delta-finalize-fallback",
-                hasProjectedMessage: findMessageById(messages, assistantMessageId) !== undefined,
+          // Memmy bridge: IDE/TUI hooks never fire for t3 sessions. Capture the
+          // turn's final answer into Memmy right before finalize drains buffers.
+          const memmyPending = getMemmyPendingForThread(String(thread.id));
+          if (memmyPending !== undefined) {
+            const memmyBufferedTexts = yield* Effect.forEach(
+              [...assistantMessageIds],
+              (assistantMessageId) =>
+                Cache.getOption(bufferedAssistantTextByMessageId, assistantMessageId).pipe(
+                  Effect.map((existing) => Option.getOrElse(existing, () => "")),
+                ),
+            );
+            yield* Effect.forEach(
+              assistantMessageIds,
+              (assistantMessageId) =>
+                finalizeAssistantMessage({
+                  event,
+                  threadId: thread.id,
+                  messageId: assistantMessageId,
+                  turnId,
+                  createdAt: now,
+                  commandTag: "assistant-complete-finalize",
+                  finalDeltaCommandTag: "assistant-delta-finalize-fallback",
+                  hasProjectedMessage: findMessageById(messages, assistantMessageId) !== undefined,
+                }),
+              { concurrency: 1 },
+            ).pipe(Effect.asVoid);
+            yield* clearAssistantMessageIdsForTurn(thread.id, turnId);
+            yield* clearAssistantSegmentStateForTurn(thread.id, turnId);
+
+            const settledThread = yield* getLoadedThreadDetail();
+            const threadAssistantTexts = (settledThread?.messages ?? messages)
+              .filter(
+                (message) =>
+                  message.role === "assistant" &&
+                  message.turnId !== undefined &&
+                  String(message.turnId) === String(turnId),
+              )
+              .map((message) => message.text);
+            const answer = resolveMemmyCaptureAnswer({
+              bufferedTexts: memmyBufferedTexts,
+              threadAssistantTexts,
+            });
+            yield* Effect.tryPromise(() =>
+              completeMemmyTurn({
+                threadId: String(thread.id),
+                answer,
+                status:
+                  normalizeRuntimeTurnState(event.payload.state) === "failed"
+                    ? ("failed" as const)
+                    : ("completed" as const),
               }),
-            { concurrency: 1 },
-          ).pipe(Effect.asVoid);
-          yield* clearAssistantMessageIdsForTurn(thread.id, turnId);
-          yield* clearAssistantSegmentStateForTurn(thread.id, turnId);
+            ).pipe(
+              Effect.catch((error) =>
+                Effect.logWarning("memmy turn complete failed", {
+                  threadId: thread.id,
+                  turnId,
+                  error,
+                }),
+              ),
+              Effect.asVoid,
+            );
+          } else {
+            yield* Effect.forEach(
+              assistantMessageIds,
+              (assistantMessageId) =>
+                finalizeAssistantMessage({
+                  event,
+                  threadId: thread.id,
+                  messageId: assistantMessageId,
+                  turnId,
+                  createdAt: now,
+                  commandTag: "assistant-complete-finalize",
+                  finalDeltaCommandTag: "assistant-delta-finalize-fallback",
+                  hasProjectedMessage: findMessageById(messages, assistantMessageId) !== undefined,
+                }),
+              { concurrency: 1 },
+            ).pipe(Effect.asVoid);
+            yield* clearAssistantMessageIdsForTurn(thread.id, turnId);
+            yield* clearAssistantSegmentStateForTurn(thread.id, turnId);
+          }
 
           yield* finalizeBufferedProposedPlan({
             event,
@@ -1856,6 +1925,14 @@ const make = Effect.gen(function* () {
             updatedAt: now,
           });
         }
+      }
+
+      if (
+        event.type === "turn.aborted" &&
+        getMemmyPendingForThread(String(thread.id)) !== undefined
+      ) {
+        // Abort must drop the pending Memmy turn so the next chat is not stuck.
+        clearMemmyPendingForThread(String(thread.id));
       }
 
       if (event.type === "session.exited") {

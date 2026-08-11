@@ -2943,4 +2943,106 @@ describe("ProviderCommandReactor", () => {
     expect(thread?.session?.providerInstanceId).toBe(ProviderInstanceId.make("codex_work"));
     expect(thread?.session?.activeTurnId).toBeNull();
   });
+
+  it("injects Memmy recall context into the provider turn input", async () => {
+    // Override the default 0ms inject timeout so the fast recall wins the race.
+    vi.stubEnv("T3_MEMMY_INJECT_TIMEOUT_MS", "2000");
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+      if (url.endsWith("/api/v1/sessions/open")) {
+        return new Response(JSON.stringify({ sessionId: "sess-memmy-test", status: "open" }), {
+          status: 200,
+        });
+      }
+      if (url.endsWith("/api/v1/turns/start")) {
+        return new Response(
+          JSON.stringify({
+            turnId: "turn-memmy-test",
+            episodeId: "ep-memmy-test",
+            injectedContext: { markdown: "## Recall\nremember the t3 memmy bridge marker" },
+          }),
+          { status: 200 },
+        );
+      }
+      if (url.includes("/complete")) {
+        return new Response(JSON.stringify({ turnId: "turn-memmy-test" }), { status: 200 });
+      }
+      return new Response("missing", { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const harness = await createHarness();
+    const now = "2026-01-01T00:00:00.000Z";
+
+    await harness.runEffect(
+      harness.engine.dispatch({
+        type: "thread.turn.start",
+        commandId: CommandId.make("cmd-turn-start-memmy"),
+        threadId: ThreadId.make("thread-1"),
+        message: {
+          messageId: asMessageId("user-message-memmy"),
+          role: "user",
+          text: "hello memmy bridge",
+          attachments: [],
+        },
+        modelSelection: createModelSelection(ProviderInstanceId.make("codex"), "gpt-5-codex", []),
+        interactionMode: DEFAULT_PROVIDER_INTERACTION_MODE,
+        runtimeMode: "approval-required",
+        createdAt: now,
+      }),
+    );
+
+    await waitFor(() => harness.sendTurn.mock.calls.length === 1);
+    const sent = harness.sendTurn.mock.calls[0]?.[0] as { input?: string };
+    expect(sent.input).toBeDefined();
+    expect(sent.input).toContain("<memmy_memory_context");
+    expect(sent.input).toContain("remember the t3 memmy bridge marker");
+    expect(sent.input).toContain("hello memmy bridge");
+    expect(fetchMock).toHaveBeenCalled();
+
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("does not block the provider turn when Memmy recall is slow", async () => {
+    vi.stubEnv("T3_MEMMY_INJECT_TIMEOUT_MS", "50");
+    const slowFetch = vi.fn(
+      async () =>
+        new Promise<Response>((resolve) => {
+          // Never resolves within the 50ms inject window: the turn must start anyway.
+          setTimeout(() => resolve(new Response("{}", { status: 200 })), 5_000);
+        }),
+    );
+    vi.stubGlobal("fetch", slowFetch);
+
+    const harness = await createHarness();
+    const now = "2026-01-01T00:00:00.000Z";
+
+    await harness.runEffect(
+      harness.engine.dispatch({
+        type: "thread.turn.start",
+        commandId: CommandId.make("cmd-turn-start-memmy-slow"),
+        threadId: ThreadId.make("thread-1"),
+        message: {
+          messageId: asMessageId("user-message-memmy-slow"),
+          role: "user",
+          text: "hello slow memmy",
+          attachments: [],
+        },
+        modelSelection: createModelSelection(ProviderInstanceId.make("codex"), "gpt-5-codex", []),
+        interactionMode: DEFAULT_PROVIDER_INTERACTION_MODE,
+        runtimeMode: "approval-required",
+        createdAt: now,
+      }),
+    );
+
+    // sendTurn must fire without waiting for the slow Memmy recall.
+    await waitFor(() => harness.sendTurn.mock.calls.length === 1);
+    const sent = harness.sendTurn.mock.calls[0]?.[0] as { input?: string };
+    expect(sent.input).toBe("hello slow memmy");
+    expect(sent.input).not.toContain("<memmy_memory_context");
+
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
 });

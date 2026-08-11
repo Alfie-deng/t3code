@@ -26,6 +26,12 @@ import * as Stream from "effect/Stream";
 import { makeDrainableWorker } from "@t3tools/shared/DrainableWorker";
 
 import { resolveThreadWorkspaceCwd } from "../../checkpointing/Utils.ts";
+import {
+  prependMemmyContextToInput,
+  resolveMemmyInjectTimeoutMs,
+  resolveMemmyMaxChars,
+  startMemmyTurn,
+} from "../memmyContextInjection.ts";
 import { increment, orchestrationEventsProcessedTotal } from "../../observability/Metrics.ts";
 import { ProviderAdapterRequestError } from "../../provider/Errors.ts";
 import type { ProviderServiceError } from "../../provider/Errors.ts";
@@ -753,13 +759,74 @@ const make = Effect.gen(function* () {
     if (input.modelSelection !== undefined) {
       threadModelSelections.set(input.threadId, input.modelSelection);
     }
-    const normalizedInput = toNonEmptyProviderInput(input.messageText);
-    const normalizedAttachments = input.attachments ?? [];
+    let normalizedInput = toNonEmptyProviderInput(input.messageText);
     const activeSession = yield* providerService
       .listSessions()
       .pipe(
         Effect.map((sessions) => sessions.find((session) => session.threadId === input.threadId)),
       );
+    // Memmy bridge: IDE/TUI hooks never fire for t3 sessions. Inject recall for
+    // every provider on ordinary queued turns. Failures degrade silently.
+    if (normalizedInput) {
+      const memmyBudget = Math.max(
+        0,
+        Math.min(resolveMemmyMaxChars(), 240_000 - normalizedInput.length - 4_000),
+      );
+      if (memmyBudget >= 400) {
+        const project = yield* resolveProject(thread.projectId);
+        const memmyWorkspaceCwd = resolveThreadWorkspaceCwd({
+          thread,
+          projects: project ? [project] : [],
+        });
+        // Race recall against a short inject window so a slow Memmy embedding
+        // lookup never blocks the provider turn from starting (blank "working"
+        // state). timeout=0 means never wait: startMemmyTurn runs purely in the
+        // background (the turn still registers so turn.complete can capture it).
+        const injectTimeoutMs = resolveMemmyInjectTimeoutMs();
+        const memmyStartPromise = startMemmyTurn({
+          threadId: String(input.threadId),
+          messageId: input.createdAt,
+          query: input.messageText,
+          ...(memmyWorkspaceCwd ? { workspacePath: memmyWorkspaceCwd } : {}),
+          ...(activeSession?.provider ? { provider: String(activeSession.provider) } : {}),
+          maxContextChars: memmyBudget,
+        }).catch((error) => {
+          console.warn("[memmy] turn start failed:", error);
+          return null;
+        });
+        if (injectTimeoutMs <= 0) {
+          // Pure background recall: send the user's message immediately. The
+          // startMemmyTurn promise keeps running and registers the pending turn.
+          void memmyStartPromise;
+        } else {
+          const memmyTimedOut = Symbol("memmy-inject-timeout");
+          const memmyInjected = yield* Effect.tryPromise(() =>
+            Promise.race<null | Awaited<ReturnType<typeof startMemmyTurn>> | typeof memmyTimedOut>([
+              memmyStartPromise,
+              new Promise((resolve) => setTimeout(() => resolve(memmyTimedOut), injectTimeoutMs)),
+            ]),
+          ).pipe(
+            Effect.catch(() =>
+              Effect.succeed<
+                null | Awaited<ReturnType<typeof startMemmyTurn>> | typeof memmyTimedOut
+              >(memmyTimedOut),
+            ),
+          );
+          if (
+            memmyInjected !== memmyTimedOut &&
+            memmyInjected !== null &&
+            memmyInjected.contextBlock
+          ) {
+            normalizedInput = prependMemmyContextToInput({
+              messageText: normalizedInput,
+              contextBlock: memmyInjected.contextBlock,
+              maxInputChars: 240_000,
+            });
+          }
+        }
+      }
+    }
+    const normalizedAttachments = input.attachments ?? [];
     const sessionModelSwitch =
       activeSession === undefined
         ? "in-session"
