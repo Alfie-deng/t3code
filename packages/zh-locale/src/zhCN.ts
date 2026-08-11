@@ -2805,6 +2805,7 @@ const T3_UI_TEXT: Readonly<Record<string, string>> = {
   Connections: "连接",
   "Branch changed — was": "分支已更改，原为",
   "Scroll to end": "滚动到末尾",
+  "Jump to the latest messages": "跳到最新消息",
   "Switch branch": "切换分支",
   "Add variables to pass API keys, base URLs, or other per-instance CLI settings.":
     "添加要传递给 API 密钥、基础 URL 或其他实例级 CLI 设置的变量。",

@@ -45,7 +45,12 @@ import {
 import { TouchableOpacity } from "react-native-gesture-handler";
 import ImageViewing from "react-native-image-viewing";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeIn, FadeInUp, type SharedValue } from "react-native-reanimated";
+import Animated, {
+  FadeIn,
+  FadeInUp,
+  useAnimatedStyle,
+  type SharedValue,
+} from "react-native-reanimated";
 import { useThemeColor } from "../../lib/useThemeColor";
 import { useFontFamily } from "../../lib/useFontFamily";
 import { copyTextWithHaptic } from "../../lib/copyTextWithHaptic";
@@ -258,6 +263,34 @@ const markdownLinkStyles = StyleSheet.create({
   },
   favicon: {
     borderRadius: 3,
+  },
+});
+
+const scrollToEndButtonStyles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 30,
+  },
+  button: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(128,128,128,0.28)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.35)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.18,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  pressed: {
+    opacity: 0.6,
   },
 });
 
@@ -1391,6 +1424,14 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
   const anchorTopInset = usesNativeAutomaticInsets
     ? navigationHeaderHeight || insets.top + 44
     : topContentInset;
+  // contentInsetEndAdjustment reports list inset math (iOS automatic mode strips
+  // the home-indicator so UIKit won't double it). The scroll-to-end chip sits in
+  // the screen overlay, so add that safe-area back and keep a small gap above
+  // the composer — otherwise the chip lands under the input and can't be tapped.
+  const scrollToEndSafeAreaOvercount = usesNativeAutomaticInsets ? insets.bottom : 0;
+  const scrollToEndAnimatedStyle = useAnimatedStyle(() => ({
+    bottom: props.contentInsetEndAdjustment.value + scrollToEndSafeAreaOvercount + 8,
+  }));
 
   const iconSubtleColor = useThemeColor("--color-icon-subtle");
   const userBubbleColor = useThemeColor("--color-user-bubble");
@@ -1962,6 +2003,36 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
               horizontalPadding={horizontalPadding}
             />
           </View>
+        ) : null}
+
+        {!endFollowEnabled ? (
+          <Animated.View
+            style={[scrollToEndButtonStyles.container, scrollToEndAnimatedStyle]}
+            pointerEvents="box-none"
+          >
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("Scroll to end")}
+              accessibilityHint={t("Jump to the latest messages")}
+              hitSlop={8}
+              onPress={() => {
+                void props.listRef.current?.scrollToEnd({ animated: true });
+                setEndFollow(true);
+              }}
+              style={({ pressed }) => [
+                scrollToEndButtonStyles.button,
+                pressed && scrollToEndButtonStyles.pressed,
+              ]}
+            >
+              <SymbolView
+                name={{ ios: "chevron.down", android: "keyboard_arrow_down" }}
+                size={14}
+                tintColor={iconSubtleColor}
+                type="monochrome"
+                weight="semibold"
+              />
+            </Pressable>
+          </Animated.View>
         ) : null}
       </View>
 
