@@ -187,7 +187,6 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                      |
 | 发送/停止外形             | 外圆各 -2px、右移 2px；箭头 mask 用 `public/synara-icons/arrow-up.svg`                     |
 | 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                          |
-| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                 |
 | 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                   |
 | 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用          |
 | 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning               |
@@ -196,6 +195,8 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 发送后空态 Working 灯     | 一点发送就开始「正在运行」计秒；冷启动接着数到真 running，不归零；切线程回来也不从 1s 重数 |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                        |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                         |
+
+滚动回底部按钮：跟上游同一套，**不再**改成纯下箭头圆钮；文案「Scroll to end」走汉化词典即可。
 
 ### 3.6 手机 UI / 视觉 / 交互钉
 
