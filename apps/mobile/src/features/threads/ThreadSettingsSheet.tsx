@@ -30,6 +30,7 @@ import { cn } from "../../lib/cn";
 import type { ModelOption, ProviderGroup } from "../../lib/modelOptions";
 import { applyProviderOptionSelection, providerOptionValueLabels } from "../../lib/providerOptions";
 import { useThemeColor } from "../../lib/useThemeColor";
+import { selectableChoices } from "./thread-settings-menu";
 import { pendingModelAfterPress } from "./thread-settings-sheet-state";
 import type { ThreadSettingsSheetCloseReason } from "./use-thread-settings-sheet-presentation";
 import { t } from "../../localization/zhCN";
@@ -78,13 +79,6 @@ export function threadSettingsSummaryLabel(input: {
     ...(runtime ? [runtime.shortLabel] : []),
     ...(input.interactionMode === "plan" ? [t("Plan")] : []),
   ].join(" · ");
-}
-
-function selectableChoices(descriptor: Extract<ProviderOptionDescriptor, { type: "select" }>) {
-  const injected = new Set(descriptor.promptInjectedValues ?? []);
-  return descriptor.options.filter(
-    (option) => !injected.has(option.id) && !HIDDEN_EFFORT_OPTION_IDS.has(option.id),
-  );
 }
 
 function ModelRow(props: {

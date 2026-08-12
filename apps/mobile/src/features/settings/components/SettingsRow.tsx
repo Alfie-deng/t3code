@@ -65,7 +65,8 @@ export function SettingsRow(props: {
         disabled={props.disabled}
         onPress={() =>
           navigation.navigate("SettingsSheet", {
-            screen: target,
+            screen: "SettingsContent",
+            params: { screen: target },
           })
         }
       >

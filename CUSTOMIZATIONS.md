@@ -35,18 +35,25 @@
 
 ---
 
-## 1. 当前盘点（2026-08-11）
+## 1. 当前盘点（2026-08-12）
 
-| 字段                                            | 值                                                                                    |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 私人 tip                                        | `2c6e8db18`（重连短句+苹方；合并提交 `95a4ff73e`）                                    |
-| 上次合入上游                                    | `95a4ff73e`（合入上游 17 笔至 `9c7622dac`；含 v0.0.33、多提供商 PR 页、安卓手势条等） |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `9c7622dac`                                                                           |
-| 官方 tip（已 fetch）                            | `f5fce7416`（相对已合入点多 1 笔：GitLab self-hosted PR 路由；**尚未**再合）          |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（合上游 + 藏侧栏 PR；签名 Alfie Development）    |
-| 手机安装版                                      | 真机 `com.jetdeng.t3code` production Release（含重连短句「正在重新连接…」+ 苹方）     |
+| 字段                                            | 值                                                                                  |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 私人 tip                                        | （本合并提交；合完以 `git rev-parse HEAD` 为准）                                    |
+| 上次合入上游                                    | 本合并：合入上游 23 笔至 `5a8461480`（主题/侧栏/手机作曲与标题重生/用量近 24h 等）  |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（合完应与 `upstream/main` 对齐）                                        |
+| 官方 tip（已 fetch）                            | `5a8461480`                                                                         |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**尚未**用本合并覆盖安装；等 Alfie 到电脑旁） |
+| 手机安装版                                      | 真机 `com.jetdeng.t3code`（**尚未**用本合并重装；等 Alfie 到电脑旁）                |
 
 下次合完上游后：立刻改本表三行 tip / 上次合入 / merge-base，并勾验收清单。
+
+### 本轮合并备注（2026-08-12）
+
+- 冲突优先保留：侧栏藏 PR（`PERSONAL_UI.hideSidebarPullRequests`）、发送钮靛蓝尺寸、用量中文（含「近 24 小时」）、手机 `t()` 汉化、隐藏 ultracode effort。
+- 吸收上游：侧栏底部图标化 + Back、主题 OKLCH/Open VSX、手机作曲稳定与标题重生、用量按小时。
+- `pnpm install` 因本机 Corepack 拉 pnpm 失败未重跑；lockfile 先用上游版。到电脑旁装桌面/iOS 前先 `pnpm install`。
+- 合前 stash：`wip: sticky working timer before upstream merge`（空态计时 WIP）仍在 stash，未并入本提交。
 
 ---
 
