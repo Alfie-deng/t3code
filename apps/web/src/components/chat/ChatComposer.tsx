@@ -46,6 +46,7 @@ import {
   dataTransferHasComposerMention,
   makeComposerMentionDragHandlers,
 } from "./composerMentionDrag";
+import { partitionComposerDropFiles, resolveComposerTextDropFile } from "./composerTextFileDrop";
 import {
   type ComposerImageAttachment,
   type DraftId,
@@ -2419,7 +2420,53 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     dragDepthRef.current = 0;
     setIsDragOverComposer(false);
     const files = Array.from(event.dataTransfer.files);
-    void addComposerImages(files);
+    const { images, textFiles, unsupported } = partitionComposerDropFiles(files);
+
+    if (images.length > 0) {
+      void addComposerImages(images);
+    }
+
+    if (textFiles.length > 0) {
+      void (async () => {
+        const chunks: string[] = [];
+        let firstError: string | null = null;
+        for (const file of textFiles) {
+          const resolved = await resolveComposerTextDropFile(file, gitCwd);
+          if (resolved.kind === "mention" || resolved.kind === "inline") {
+            chunks.push(resolved.text);
+            continue;
+          }
+          if (resolved.kind === "too-large") {
+            firstError ??= `'${resolved.fileName}' is too large to drop into the composer as text.`;
+            continue;
+          }
+          firstError ??= `Failed to read '${resolved.fileName}'.`;
+        }
+        if (chunks.length > 0) {
+          const inserted = insertComposerTextAtEnd(chunks.join("\n"), {
+            ensureLeadingBoundary: true,
+          });
+          if (!inserted) {
+            toastManager.add({
+              type: "error",
+              title: translateZhCnUiText("Unable to add to chat"),
+              description: translateZhCnUiText("The composer is busy; try again once it is ready."),
+            });
+          }
+        }
+        if (firstError !== null) {
+          setThreadError(activeThreadId, firstError);
+        }
+      })();
+    } else if (unsupported.length > 0 && images.length === 0) {
+      // Same tone as image-only rejection, but only when nothing else landed.
+      const first = unsupported[0]!;
+      setThreadError(
+        activeThreadId,
+        `Unsupported file type for '${first.name}'. Please attach image files only.`,
+      );
+    }
+
     focusComposer();
   };
 

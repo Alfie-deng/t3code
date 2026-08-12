@@ -24,6 +24,7 @@ import { isElectron } from "~/env";
 import type { RightPanelSurface } from "~/rightPanelStore";
 import { cn } from "~/lib/utils";
 import { readLocalApi } from "~/localApi";
+import { translateZhCnUiText } from "~/localization/zhCN";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "~/components/ui/tooltip";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "~/components/ui/menu";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -94,7 +95,7 @@ function DisabledReasonTooltip(props: { reason: string; trigger: ReactElement })
   return (
     <Tooltip>
       <TooltipTrigger render={props.trigger} />
-      <TooltipPopup side="top">{props.reason}</TooltipPopup>
+      <TooltipPopup side="top">{translateZhCnUiText(props.reason)}</TooltipPopup>
     </Tooltip>
   );
 }
@@ -194,9 +195,11 @@ function RightPanelEmptyState(props: {
     <div className="flex min-h-0 flex-1 items-center justify-center p-6">
       <div className="w-full max-w-xl">
         <div className="mb-5 text-center">
-          <h3 className="text-sm font-medium text-foreground">Open a surface</h3>
+          <h3 className="text-sm font-medium text-foreground">
+            {translateZhCnUiText("Open a surface")}
+          </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Choose what to show in the right panel.
+            {translateZhCnUiText("Choose what to show in the right panel.")}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -215,9 +218,9 @@ function RightPanelEmptyState(props: {
                     </span>
                   ) : null}
                 </span>
-                <span className="text-sm font-medium">{action.label}</span>
+                <span className="text-sm font-medium">{translateZhCnUiText(action.label)}</span>
                 <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  {action.description}
+                  {translateZhCnUiText(action.description)}
                 </span>
               </>
             );

@@ -73,4 +73,17 @@ describe("ThreadErrorBanner", () => {
     expect(markup).not.toContain("RetriableError");
     expect(markup).not.toContain("http/2 stream closed");
   });
+
+  it("translates unsupported attachment type errors", () => {
+    const markup = renderToStaticMarkup(
+      <ThreadErrorBanner
+        error="Unsupported file type for '一、项目背景.md'. Please attach image files only."
+        onDismiss={() => {}}
+      />,
+    );
+
+    expect(markup).toContain("不支持的文件类型「一、项目背景.md」。请只附加图片文件。");
+    expect(markup).not.toContain("Unsupported file type");
+    expect(markup).not.toContain("Please attach image files only");
+  });
 });

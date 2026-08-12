@@ -3567,6 +3567,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Add feedback to refine the plan, or leave this blank to implement it":
     "添加反馈以完善计划，留空则直接实施",
   "Agent controlling browser": "智能体正在控制浏览器",
+  "Agents are only available from a thread.": "仅在对话中可使用智能体面板。",
   "Alerts enabled for approvals, completions.": "已启用权限确认和完成提醒。",
   "An error occurred while copying.": "复制时发生错误。",
   "An error occurred while creating the new thread.": "创建新对话时发生错误。",
@@ -3753,6 +3754,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
     "打开“设置 -> 源代码管理”以配置此提供商。",
   "Open a chat for this project and try again.": "打开此项目中的对话，然后重试。",
   "Open a local app or URL.": "打开本地应用或 URL。",
+  "Open the pull request for this thread's branch.": "打开此对话分支的拉取请求。",
   "Open in browser": "在浏览器中打开",
   "Open in integrated browser": "在内置浏览器中打开",
   "Open in preview": "在预览中打开",
@@ -3877,6 +3879,7 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "Sync ref": "同步引用",
   "Terminal closed": "终端已关闭",
   "Terminal logs only": "仅终端日志",
+  "Terminal surfaces are only available from a project thread.": "仅在项目对话中可使用终端面板。",
   "Terminal write failed": "终端写入失败",
   "The chat isn't ready to accept input right now.": "当前对话还没有准备好接收输入。",
   "The composer is busy; try again once it is ready.": "输入框正在忙碌；准备好后再试。",
@@ -4145,6 +4148,8 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
   "This removes only this project entry.": "这只会移除此项目记录。",
   "This site can't be reached": "无法访问此网站",
   "This thread does not have a workspace path to save into.": "此对话没有可用于保存的工作区路径。",
+  "This thread's branch has no pull request": "此对话的分支没有拉取请求",
+  "This thread's branch has no pull request yet.": "此对话的分支尚无拉取请求。",
   "This thread woke from snooze": "此对话已从暂缓状态唤醒",
   "This will discard newer messages and turn diffs in this thread.":
     "这会丢弃此对话中较新的消息和回合差异。",
@@ -5127,6 +5132,37 @@ function translateRuntimeError(value: string): string | null {
   // Cursor/provider transport cancels and siblings (often mid-build / mid-turn interrupt).
   const retriableTranslated = translateRetriableTransportError(value);
   if (retriableTranslated) return retriableTranslated;
+
+  const attachmentTranslated = translateComposerAttachmentError(value);
+  if (attachmentTranslated) return attachmentTranslated;
+
+  return null;
+}
+
+function translateComposerAttachmentError(value: string): string | null {
+  let match = /^Unsupported file type for '(.+)'\. Please attach image files only\.$/i.exec(value);
+  if (match) return `不支持的文件类型「${match[1]}」。请只附加图片文件。`;
+
+  match = /^Unsupported file type for '(.+)'\.$/i.exec(value);
+  if (match) return `不支持的文件类型「${match[1]}」。`;
+
+  match = /^You can attach up to (\d+) images? per message\.$/i.exec(value);
+  if (match) return `每条消息最多可附加 ${match[1]} 张图片。`;
+
+  match = /^'(.+)' could not be read as an image\.$/i.exec(value);
+  if (match) return `「${match[1]}」无法作为图片读取。`;
+
+  match = /^'(.+)' is too large to attach, even after compression\.$/i.exec(value);
+  if (match) return `「${match[1]}」过大，压缩后仍无法附加。`;
+
+  match = /^'(.+)' exceeds the (\d+)\s*MB attachment limit\.$/i.exec(value);
+  if (match) return `「${match[1]}」超过 ${match[2]} MB 附件上限。`;
+
+  match = /^Failed to read '(.+)'\.$/i.exec(value);
+  if (match) return `无法读取「${match[1]}」。`;
+
+  match = /^'(.+)' is too large to drop into the composer as text\.$/i.exec(value);
+  if (match) return `「${match[1]}」太大，无法作为文本拖入输入框。`;
 
   return null;
 }

@@ -187,6 +187,26 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnProviderErrorMessage("Here is a normal assistant answer.")).toBeNull();
     expect(
       translateZhCnUiText(
+        "Unsupported file type for '一、项目背景.md'. Please attach image files only.",
+      ),
+    ).toBe("不支持的文件类型「一、项目背景.md」。请只附加图片文件。");
+    expect(translateZhCnUiText("You can attach up to 8 images per message.")).toBe(
+      "每条消息最多可附加 8 张图片。",
+    );
+    expect(translateZhCnUiText("'shot.png' is too large to attach, even after compression.")).toBe(
+      "「shot.png」过大，压缩后仍无法附加。",
+    );
+    expect(translateZhCnUiText("'huge.md' is too large to drop into the composer as text.")).toBe(
+      "「huge.md」太大，无法作为文本拖入输入框。",
+    );
+    expect(translateZhCnUiText("Open the pull request for this thread's branch.")).toBe(
+      "打开此对话分支的拉取请求。",
+    );
+    expect(translateZhCnUiText("This thread's branch has no pull request yet.")).toBe(
+      "此对话的分支尚无拉取请求。",
+    );
+    expect(
+      translateZhCnUiText(
         "Your input exceeds the context window of this model. Please adjust your input and try again.",
       ),
     ).toBe("你的输入超出了该模型的上下文窗口。请调整输入后重试。");
