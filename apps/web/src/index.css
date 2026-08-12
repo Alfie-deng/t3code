@@ -1622,6 +1622,10 @@ code {
   font-size: calc(0.75rem + var(--thread-content-font-size-step, 1px));
 }
 
+[data-thread-content="true"] .chat-markdown table {
+  font-size: var(--thread-font-size-sm);
+}
+
 [data-thread-content="true"] .chat-markdown a[data-footnote-ref],
 [data-thread-content="true"] .chat-markdown a[data-footnote-backref] {
   font-size: calc(0.6875rem + var(--thread-content-font-size-step, 1px));
@@ -2040,7 +2044,7 @@ label:has(> select#reasoning-effort) select {
   border-collapse: collapse;
   overflow-wrap: normal;
   word-break: normal;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .chat-markdown th,

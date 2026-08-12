@@ -541,11 +541,6 @@ export function hasServerAcknowledgedLocalDispatch(input: {
   const session = input.session ?? null;
   const latestUserMessageChanged =
     input.localDispatch.latestUserMessageId !== input.latestUserMessageId;
-  const latestTurnChanged =
-    input.localDispatch.latestTurnTurnId !== (latestTurn?.turnId ?? null) ||
-    input.localDispatch.latestTurnRequestedAt !== (latestTurn?.requestedAt ?? null) ||
-    input.localDispatch.latestTurnStartedAt !== (latestTurn?.startedAt ?? null) ||
-    input.localDispatch.latestTurnCompletedAt !== (latestTurn?.completedAt ?? null);
 
   if (input.phase === "running") {
     // Steering adds a user message to the current running turn without
@@ -555,6 +550,11 @@ export function hasServerAcknowledgedLocalDispatch(input: {
     if (latestUserMessageChanged) {
       return true;
     }
+    const latestTurnChanged =
+      input.localDispatch.latestTurnTurnId !== (latestTurn?.turnId ?? null) ||
+      input.localDispatch.latestTurnRequestedAt !== (latestTurn?.requestedAt ?? null) ||
+      input.localDispatch.latestTurnStartedAt !== (latestTurn?.startedAt ?? null) ||
+      input.localDispatch.latestTurnCompletedAt !== (latestTurn?.completedAt ?? null);
     if (!latestTurnChanged) {
       return false;
     }
@@ -571,9 +571,35 @@ export function hasServerAcknowledgedLocalDispatch(input: {
     return true;
   }
 
-  return (
-    latestTurnChanged ||
-    input.localDispatch.sessionStatus !== (session?.status ?? null) ||
-    input.localDispatch.sessionUpdatedAt !== (session?.updatedAt ?? null)
-  );
+  // Only a real turn start/finish counts as ack while still idle/connecting.
+  // `turnId` / `requestedAt` can land seconds before the provider actually starts
+  // (Cursor/Codex cold start); treating those as ack blanks the Working indicator
+  // for the whole spin-up window. Same for session.updatedAt-only bumps.
+  // Also ignore startedAt/completedAt flipping back to null when a new turn is
+  // requested but not started yet — that must not clear send-busy.
+  const startedAtAdvanced =
+    latestTurn?.startedAt != null &&
+    input.localDispatch.latestTurnStartedAt !== latestTurn.startedAt;
+  const completedAtAdvanced =
+    latestTurn?.completedAt != null &&
+    input.localDispatch.latestTurnCompletedAt !== latestTurn.completedAt;
+  if (startedAtAdvanced || completedAtAdvanced) {
+    return true;
+  }
+
+  const nextStatus = session?.status ?? null;
+  if (input.localDispatch.sessionStatus !== nextStatus) {
+    // First-turn bootstrap often goes null → ready with no live work yet.
+    if (input.localDispatch.sessionStatus === null && nextStatus === "ready") {
+      return false;
+    }
+    if (nextStatus === "error" || nextStatus === "interrupted" || nextStatus === "stopped") {
+      return true;
+    }
+    // starting/running/ready/idle alone must not clear send-busy; `phase ===
+    // "connecting"` and turn.started keep the Working row lit instead.
+    return false;
+  }
+
+  return false;
 }
