@@ -1,20 +1,15 @@
 import { describe, expect, it } from "vite-plus/test";
 
 import {
-  COMPOSER_TEXT_DROP_MAX_BYTES,
-  formatDroppedTextFileForComposer,
   isComposerTextDropFile,
   partitionComposerDropFiles,
   relativePathUnderCwd,
   resolveComposerTextDropFile,
+  resolveDroppedFileAbsolutePath,
 } from "./composerTextFileDrop.ts";
 
-function fakeFile(name: string, type: string, contents = "hi", size?: number): File {
-  const file = new File([contents], name, { type });
-  if (typeof size === "number") {
-    Object.defineProperty(file, "size", { value: size });
-  }
-  return file;
+function fakeFile(name: string, type: string, contents = "hi"): File {
+  return new File([contents], name, { type });
 }
 
 describe("isComposerTextDropFile", () => {
@@ -58,39 +53,41 @@ describe("partitionComposerDropFiles", () => {
   });
 });
 
-describe("formatDroppedTextFileForComposer", () => {
-  it("wraps contents with a filename header", () => {
-    expect(formatDroppedTextFileForComposer({ fileName: "a.md", contents: "hello\n" })).toBe(
-      "--- a.md ---\nhello\n",
+describe("resolveDroppedFileAbsolutePath", () => {
+  it("prefers the desktop bridge path helper", () => {
+    const file = fakeFile("a.md", "text/markdown");
+    expect(resolveDroppedFileAbsolutePath(file, () => "/Users/alfie/proj/docs/a.md")).toBe(
+      "/Users/alfie/proj/docs/a.md",
     );
   });
 });
 
 describe("resolveComposerTextDropFile", () => {
-  it("prefers a composer file mention when the absolute path is under cwd", async () => {
+  it("uses a workspace-relative composer file link when possible", () => {
     const file = fakeFile("a.md", "text/markdown", "# hi");
-    Object.defineProperty(file, "path", { value: "/Users/alfie/proj/docs/a.md" });
-    await expect(resolveComposerTextDropFile(file, "/Users/alfie/proj")).resolves.toEqual({
+    expect(
+      resolveComposerTextDropFile(file, "/Users/alfie/proj", () => "/Users/alfie/proj/docs/a.md"),
+    ).toEqual({
       kind: "mention",
       text: "[a.md](docs/a.md) ",
     });
   });
 
-  it("inlines file contents when the drop is outside the workspace", async () => {
+  it("falls back to an absolute file link outside the workspace", () => {
     const file = fakeFile("一、项目背景.md", "text/markdown", "# 背景\n");
-    await expect(resolveComposerTextDropFile(file, "/Users/alfie/proj")).resolves.toEqual({
-      kind: "inline",
-      text: "--- 一、项目背景.md ---\n# 背景\n",
+    expect(
+      resolveComposerTextDropFile(file, "/Users/alfie/proj", () => "/tmp/一、项目背景.md"),
+    ).toEqual({
+      kind: "mention",
+      text: "[一、项目背景.md](/tmp/%E4%B8%80%E3%80%81%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF.md) ",
     });
   });
 
-  it("rejects oversized text drops", async () => {
-    const file = fakeFile("big.md", "text/markdown", "x");
-    Object.defineProperty(file, "size", { value: COMPOSER_TEXT_DROP_MAX_BYTES + 1 });
-    await expect(resolveComposerTextDropFile(file, null)).resolves.toEqual({
-      kind: "too-large",
-      fileName: "big.md",
-      sizeBytes: COMPOSER_TEXT_DROP_MAX_BYTES + 1,
+  it("reports no-path when the absolute path cannot be resolved", () => {
+    const file = fakeFile("orphan.md", "text/markdown", "# hi");
+    expect(resolveComposerTextDropFile(file, "/Users/alfie/proj", () => null)).toEqual({
+      kind: "no-path",
+      fileName: "orphan.md",
     });
   });
 });

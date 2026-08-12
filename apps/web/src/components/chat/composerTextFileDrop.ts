@@ -1,8 +1,5 @@
 import { serializeComposerFileLink } from "@t3tools/shared/composerTrigger";
 
-/** Soft cap so a dragged novel doesn't nuke the prompt. */
-export const COMPOSER_TEXT_DROP_MAX_BYTES = 200_000;
-
 const TEXT_DROP_EXTENSIONS = new Set([
   ".md",
   ".markdown",
@@ -76,6 +73,23 @@ export function electronAbsolutePath(file: File): string | null {
   return typeof path === "string" && path.trim().length > 0 ? path : null;
 }
 
+export function resolveDroppedFileAbsolutePath(
+  file: File,
+  getPathForFile?: ((dropped: File) => string | null) | null,
+): string | null {
+  if (typeof getPathForFile === "function") {
+    try {
+      const bridged = getPathForFile(file);
+      if (typeof bridged === "string" && bridged.trim().length > 0) {
+        return bridged;
+      }
+    } catch {
+      // Fall through to legacy File.path.
+    }
+  }
+  return electronAbsolutePath(file);
+}
+
 export function relativePathUnderCwd(
   absolutePath: string,
   cwd: string | null | undefined,
@@ -94,15 +108,6 @@ export function relativePathUnderCwd(
     return normAbs.slice(prefix.length);
   }
   return null;
-}
-
-export function formatDroppedTextFileForComposer(input: {
-  fileName: string;
-  contents: string;
-}): string {
-  const name = input.fileName.trim() || "file";
-  const body = input.contents.replace(/^\uFEFF/, "");
-  return `--- ${name} ---\n${body.trimEnd()}\n`;
 }
 
 export type ComposerDropPartition = {
@@ -131,31 +136,23 @@ export function partitionComposerDropFiles(files: ReadonlyArray<File>): Composer
 
 export type ResolvedComposerTextDrop =
   | { readonly kind: "mention"; readonly text: string }
-  | { readonly kind: "inline"; readonly text: string }
-  | { readonly kind: "too-large"; readonly fileName: string; readonly sizeBytes: number }
-  | { readonly kind: "unreadable"; readonly fileName: string };
+  | { readonly kind: "no-path"; readonly fileName: string };
 
-export async function resolveComposerTextDropFile(
+/**
+ * Always resolve text/markdown drops to a composer file link.
+ * Never paste file contents — the user wants a reference the agent can open.
+ */
+export function resolveComposerTextDropFile(
   file: File,
   cwd: string | null | undefined,
-): Promise<ResolvedComposerTextDrop> {
-  const absolutePath = electronAbsolutePath(file);
-  const relative = absolutePath ? relativePathUnderCwd(absolutePath, cwd) : null;
-  if (relative) {
-    return { kind: "mention", text: `${serializeComposerFileLink(relative)} ` };
+  getPathForFile?: ((dropped: File) => string | null) | null,
+): ResolvedComposerTextDrop {
+  const absolutePath = resolveDroppedFileAbsolutePath(file, getPathForFile);
+  if (!absolutePath) {
+    return { kind: "no-path", fileName: file.name || "file" };
   }
 
-  if (file.size > COMPOSER_TEXT_DROP_MAX_BYTES) {
-    return { kind: "too-large", fileName: file.name || "file", sizeBytes: file.size };
-  }
-
-  try {
-    const contents = await file.text();
-    return {
-      kind: "inline",
-      text: formatDroppedTextFileForComposer({ fileName: file.name || "file", contents }),
-    };
-  } catch {
-    return { kind: "unreadable", fileName: file.name || "file" };
-  }
+  const relative = relativePathUnderCwd(absolutePath, cwd);
+  const linkPath = relative ?? absolutePath;
+  return { kind: "mention", text: `${serializeComposerFileLink(linkPath)} ` };
 }

@@ -5161,8 +5161,13 @@ function translateComposerAttachmentError(value: string): string | null {
   match = /^Failed to read '(.+)'\.$/i.exec(value);
   if (match) return `无法读取「${match[1]}」。`;
 
-  match = /^'(.+)' is too large to drop into the composer as text\.$/i.exec(value);
-  if (match) return `「${match[1]}」太大，无法作为文本拖入输入框。`;
+  match =
+    /^Could not resolve a file path for '(.+)'\. Drag it from the project file tree, or open it from inside the workspace\.$/i.exec(
+      value,
+    );
+  if (match) {
+    return `无法解析「${match[1]}」的文件路径。请从项目文件树拖入，或确保文件在工作区内。`;
+  }
 
   return null;
 }

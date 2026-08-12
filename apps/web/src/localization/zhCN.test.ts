@@ -196,9 +196,11 @@ describe("T3 Code 简体中文工作流文案", () => {
     expect(translateZhCnUiText("'shot.png' is too large to attach, even after compression.")).toBe(
       "「shot.png」过大，压缩后仍无法附加。",
     );
-    expect(translateZhCnUiText("'huge.md' is too large to drop into the composer as text.")).toBe(
-      "「huge.md」太大，无法作为文本拖入输入框。",
-    );
+    expect(
+      translateZhCnUiText(
+        "Could not resolve a file path for 'orphan.md'. Drag it from the project file tree, or open it from inside the workspace.",
+      ),
+    ).toBe("无法解析「orphan.md」的文件路径。请从项目文件树拖入，或确保文件在工作区内。");
     expect(translateZhCnUiText("Open the pull request for this thread's branch.")).toBe(
       "打开此对话分支的拉取请求。",
     );
