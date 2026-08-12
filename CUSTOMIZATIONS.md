@@ -285,7 +285,7 @@ codesign --force --deep --sign "ADCEE876C506C947B0D27F5DF46DF94052FB38DA" \
 codesign --verify --deep --strict "$APP"
 
 # 人先退出正在用的 T3；不要用「杀进程再 cp」的脚本（会杀宿主 Agent）
-# 备份放到仓库本地目录，禁止留 /Applications/T3 Code.bak.app
+# 备份放到仓库本地目录（已进 .gitignore），禁止留 /Applications/T3 Code.bak.app
 BAK_DIR="$PWD/.desktop-install-bak"
 rm -rf "$BAK_DIR"
 mkdir -p "$BAK_DIR"
