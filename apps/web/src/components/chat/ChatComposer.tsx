@@ -46,7 +46,13 @@ import {
   dataTransferHasComposerMention,
   makeComposerMentionDragHandlers,
 } from "./composerMentionDrag";
-import { partitionComposerDropFiles, resolveComposerTextDropFile } from "./composerTextFileDrop";
+import {
+  absolutePathsFromDataTransfer,
+  isComposerTextDropFile,
+  partitionComposerDropFiles,
+  relativePathUnderCwd,
+  resolveComposerTextDropFile,
+} from "./composerTextFileDrop";
 import {
   type ComposerImageAttachment,
   type DraftId,
@@ -2414,12 +2420,40 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     }
   };
 
+  const insertDroppedTextFileLinks = (chunks: string[], firstError: string | null) => {
+    if (chunks.length > 0) {
+      const inserted = insertComposerTextAtEnd(chunks.join(""), {
+        ensureLeadingBoundary: true,
+      });
+      if (!inserted) {
+        toastManager.add({
+          type: "error",
+          title: translateZhCnUiText("Unable to add to chat"),
+          description: translateZhCnUiText("The composer is busy; try again once it is ready."),
+        });
+      }
+    }
+    if (firstError !== null) {
+      setThreadError(activeThreadId, firstError);
+      toastManager.add({
+        type: "error",
+        title: translateZhCnUiText("Unable to add to chat"),
+        description: translateZhCnUiText(firstError),
+      });
+    }
+  };
+
   const onComposerDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    // File-tree mentions are claimed in capture; OS file drops land here.
+    if (dataTransferHasComposerMention(event.dataTransfer.types)) return;
     if (!event.dataTransfer.types.includes("Files")) return;
     event.preventDefault();
+    event.stopPropagation();
+    event.nativeEvent.stopPropagation();
     dragDepthRef.current = 0;
     setIsDragOverComposer(false);
     const files = Array.from(event.dataTransfer.files);
+    const uriListPaths = absolutePathsFromDataTransfer(event.dataTransfer);
     const { images, textFiles, unsupported } = partitionComposerDropFiles(files);
 
     if (images.length > 0) {
@@ -2431,38 +2465,59 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
       let firstError: string | null = null;
       const getPathForFile = window.desktopBridge?.getPathForFile;
       for (const file of textFiles) {
-        const resolved = resolveComposerTextDropFile(file, gitCwd, getPathForFile);
+        const resolved = resolveComposerTextDropFile(file, gitCwd, getPathForFile, uriListPaths);
         if (resolved.kind === "mention") {
           chunks.push(resolved.text);
           continue;
         }
         firstError ??= `Could not resolve a file path for '${resolved.fileName}'. Drag it from the project file tree, or open it from inside the workspace.`;
       }
-      if (chunks.length > 0) {
-        const inserted = insertComposerTextAtEnd(chunks.join(""), {
-          ensureLeadingBoundary: true,
-        });
-        if (!inserted) {
-          toastManager.add({
-            type: "error",
-            title: translateZhCnUiText("Unable to add to chat"),
-            description: translateZhCnUiText("The composer is busy; try again once it is ready."),
-          });
+      insertDroppedTextFileLinks(chunks, firstError);
+    } else if (files.length === 0 && uriListPaths.length > 0) {
+      // Some Electron drops expose file:// URLs without a FileList.
+      const chunks: string[] = [];
+      let firstError: string | null = null;
+      for (const absolutePath of uriListPaths) {
+        const base = absolutePath.replaceAll("\\", "/").split("/").pop() || "file";
+        if (!isComposerTextDropFile({ name: base, type: "" })) {
+          firstError ??= `Unsupported file type for '${base}'. Please attach image files only.`;
+          continue;
         }
+        const relative = relativePathUnderCwd(absolutePath, gitCwd);
+        chunks.push(`${serializeComposerFileLink(relative ?? absolutePath)} `);
       }
-      if (firstError !== null) {
-        setThreadError(activeThreadId, firstError);
-      }
+      insertDroppedTextFileLinks(chunks, firstError);
     } else if (unsupported.length > 0 && images.length === 0) {
       // Same tone as image-only rejection, but only when nothing else landed.
       const first = unsupported[0]!;
-      setThreadError(
-        activeThreadId,
-        `Unsupported file type for '${first.name}'. Please attach image files only.`,
-      );
+      const message = `Unsupported file type for '${first.name}'. Please attach image files only.`;
+      setThreadError(activeThreadId, message);
+      toastManager.add({
+        type: "error",
+        title: translateZhCnUiText("Unable to add to chat"),
+        description: translateZhCnUiText(message),
+      });
     }
 
     focusComposer();
+  };
+
+  // Claim OS file drags in capture so the Lexical editor cannot swallow the
+  // drop (empty reaction) before the composer turns text files into links.
+  const onComposerOsFileDragOverCapture = (event: React.DragEvent<HTMLDivElement>) => {
+    if (dataTransferHasComposerMention(event.dataTransfer.types)) return;
+    if (!event.dataTransfer.types.includes("Files")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.nativeEvent.stopPropagation();
+    event.dataTransfer.dropEffect = "copy";
+    setIsDragOverComposer(true);
+  };
+
+  const onComposerOsFileDropCapture = (event: React.DragEvent<HTMLDivElement>) => {
+    if (dataTransferHasComposerMention(event.dataTransfer.types)) return;
+    if (!event.dataTransfer.types.includes("Files")) return;
+    onComposerDrop(event);
   };
 
   const insertComposerTextAtEnd = (
@@ -2715,9 +2770,15 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
         onDragLeave={onComposerDragLeave}
         onDrop={onComposerDrop}
         onDragEnterCapture={composerMentionDragHandlers.onDragEnter}
-        onDragOverCapture={composerMentionDragHandlers.onDragOver}
+        onDragOverCapture={(event) => {
+          composerMentionDragHandlers.onDragOver(event);
+          onComposerOsFileDragOverCapture(event);
+        }}
         onDragLeaveCapture={onComposerMentionDragLeaveCapture}
-        onDropCapture={composerMentionDragHandlers.onDrop}
+        onDropCapture={(event) => {
+          composerMentionDragHandlers.onDrop(event);
+          onComposerOsFileDropCapture(event);
+        }}
       >
         <div
           ref={composerSurfaceRef}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vite-plus/test";
 
 import {
+  absolutePathsFromUriList,
   isComposerTextDropFile,
   partitionComposerDropFiles,
   relativePathUnderCwd,
@@ -59,6 +60,24 @@ describe("resolveDroppedFileAbsolutePath", () => {
     expect(resolveDroppedFileAbsolutePath(file, () => "/Users/alfie/proj/docs/a.md")).toBe(
       "/Users/alfie/proj/docs/a.md",
     );
+  });
+});
+
+describe("absolutePathsFromUriList / resolve with uri-list fallback", () => {
+  it("parses macOS file:// URIs", () => {
+    expect(
+      absolutePathsFromUriList("file:///Users/alfie/proj/docs/a.md\nfile:///tmp/b.txt\n"),
+    ).toEqual(["/Users/alfie/proj/docs/a.md", "/tmp/b.txt"]);
+  });
+
+  it("uses uri-list paths when bridge and File.path are missing", () => {
+    const file = fakeFile("a.md", "text/markdown", "# hi");
+    expect(
+      resolveComposerTextDropFile(file, "/Users/alfie/proj", null, ["/Users/alfie/proj/docs/a.md"]),
+    ).toEqual({
+      kind: "mention",
+      text: "[a.md](docs/a.md) ",
+    });
   });
 });
 
