@@ -39,7 +39,7 @@
 
 | 字段                                            | 值                                                                                    |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 私人 tip                                        | （重连短句+苹方；合并提交 ）                                                          |
+| 私人 tip                                        | `2c6e8db18`（重连短句+苹方；合并提交 `95a4ff73e`）                                    |
 | 上次合入上游                                    | `95a4ff73e`（合入上游 17 笔至 `9c7622dac`；含 v0.0.33、多提供商 PR 页、安卓手势条等） |
 | 合并基点 merge-base（相对当下 `upstream/main`） | `9c7622dac`                                                                           |
 | 官方 tip（已 fetch）                            | `f5fce7416`（相对已合入点多 1 笔：GitLab self-hosted PR 路由；**尚未**再合）          |
@@ -175,7 +175,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning            |
 | 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件      |
 | 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）    |
-| 发送后空态 Working 灯     | 空窗保灯；计时不拿点发送时间；无秒数时文案为「正在运行」不带省略号                      |
+| 发送后空态 Working 灯     | 空窗用「正在思考」装忙；真 running 后「正在运行」从 1s 起跳，不把冷启动秒数算进去       |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 
