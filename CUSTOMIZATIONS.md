@@ -37,14 +37,14 @@
 
 ## 1. 当前盘点（2026-08-12）
 
-| 字段                                            | 值                                                                                                                 |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 私人 tip                                        | 以 `git rev-parse --short HEAD` 为准（功能：`78102b68a` 个人 Team 签名、`8a349e674` 空态计时、`edd915ee4` 合上游） |
-| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                               |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                           |
-| 官方 tip（已 fetch）                            | `5a8461480`                                                                                                        |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**仍是合前包**；源码已超前，**尚未**覆盖安装）                               |
-| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-12 已装本合并**）                         |
+| 字段                                            | 值                                                                                                                           |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 私人 tip                                        | 以 `git rev-parse --short HEAD` 为准（功能：`78102b68a` 个人 Team 签名、`8a349e674` 空态计时、`edd915ee4` 合上游）           |
+| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                                         |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                                     |
+| 官方 tip（已 fetch）                            | `5a8461480`                                                                                                                  |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**仍是合前包**；源码已超前，**尚未**覆盖安装）                                         |
+| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-12 16:05 重装**：去 ThreadFeed 叠钮，留上游滚到底） |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
 
@@ -168,6 +168,7 @@ hideTopBarOpenInEditor: true;
 hideTopBarGitActions: true;
 hideTopBarTerminalToggle: true;
 hideSidebarPullRequests: true; // 藏侧栏左下「Pull Requests」；路由与线程内 PR 仍可用
+hideSidebarUpdateCheck: true; // 藏侧栏底部「检查更新」；本地 build 无官方更新通道，按钮恒灰
 hideRuntimeModeControl: true; // 藏「完全访问」及左侧分隔线
 hideComposerContextStrip: true; // 藏输入框下检出/分支状态条
 compactComposer: true;
@@ -189,14 +190,14 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                          |
 | 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                   |
 | 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用          |
+| 藏侧栏检查更新            | `SidebarChrome`：`hideSidebarUpdateCheck`；本地覆盖安装无 auto-update feed，升级走 §6 重装 |
 | 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning               |
 | 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件         |
 | 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）       |
+| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                 |
 | 发送后空态 Working 灯     | 一点发送就开始「正在运行」计秒；冷启动接着数到真 running，不归零；切线程回来也不从 1s 重数 |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                        |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                         |
-
-滚动回底部按钮：跟上游同一套，**不再**改成纯下箭头圆钮；文案「Scroll to end」走汉化词典即可。
 
 ### 3.6 手机 UI / 视觉 / 交互钉
 
@@ -208,7 +209,6 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                            | iOS `PingFangSC-Regular` / `Semibold`                                                                       |
 | 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                    |
 | 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle` | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                          |
-| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                               | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                            |
 | 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                               | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留 |
 | 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                        | 只留 T3 Code 字标                                                                                           |
 | 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                        | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                             |
@@ -279,7 +279,7 @@ cd ~/developer/t3code
 ### 桌面（真实 `/Applications/T3 Code.app` 窗口）
 
 - [ ] 顶部：有 T3 Code 品牌；无项目操作/编辑器/Git/终端抽屉钮；输入框无「完全访问」条
-- [ ] 侧栏左下：无 Pull Requests；Usage / Settings 仍在
+- [ ] 侧栏左下：无 Pull Requests、无「检查更新」刷新钮；Usage / Settings 仍在
 - [ ] 新线程封面文案与上移；已有对话占位「提出后续修改」；草稿占位不污染已有对话
 - [ ] 线程正文略大于 chrome；末尾无变更摘要卡；搜索无可见 ⌘K 提示
 - [ ] 工作流/工具卡/提供商错误可见中文；用户代码与终端原文不误伤
@@ -293,7 +293,7 @@ cd ~/developer/t3code
 - [ ] 气泡/发送键为靛蓝系，不是系统蓝/黑主色默认
 - [ ] 列表标题苹方；主页搜索栏左侧无筛选钮；重连文案为「正在重新连接…」
 - [ ] 线程页右上无 git/files/terminal 三钮；标题非极粗 800
-- [ ] 滚到底钮在输入框上方可点
+- [ ] 滚到底钮：只用上游 `ThreadDetailScreen` 那一颗（勿再在 `ThreadFeed` 叠第二颗）；贴输入框上方可点
 - [ ] 模型选择器长度跟桌面隐藏偏好走；「其他模型」文案；草稿框无英文长 placeholder
 - [ ] （合过标题重生后）线程菜单有「重新生成标题」中文项
 - [ ] （合过用量后）用量页有「近 24 小时」
@@ -418,7 +418,7 @@ xcrun devicectl device process launch --device 00008150-000C296E1420401C com.jet
 
 汉化与词典：`packages/zh-locale/**`、`apps/web/src/localization/**`、`apps/mobile/src/localization/**`、`apps/desktop/src/*Zh*`、`ElectronMenu`、`ElectronDialog`、预览 `PickPreload.ts`
 
-桌面个人 UI：`personalUi.ts`、`ChatComposer.tsx`、`ComposerPromptEditor.tsx`、`ChatHeader.tsx`、`ChatView.tsx`、`DraftHeroHeadline.tsx`、`ComposerPrimaryActions.tsx`、`MessagesTimeline.tsx`、`LegacySidebar.tsx`、`index.css`、`public/synara-icons/**`
+桌面个人 UI：`personalUi.ts`、`SidebarChrome.tsx`、`ChatComposer.tsx`、`ComposerPromptEditor.tsx`、`ChatHeader.tsx`、`ChatView.tsx`、`DraftHeroHeadline.tsx`、`ComposerPrimaryActions.tsx`、`MessagesTimeline.tsx`、`LegacySidebar.tsx`、`index.css`、`public/synara-icons/**`
 
 服务端定制：`memmyContextInjection.ts*`、`ProviderCommandReactor.ts`、`ProviderRuntimeIngestion.ts`、`clientModelListPreferences.ts*`、`ws.ts`
 

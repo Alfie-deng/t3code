@@ -162,7 +162,7 @@ export const SidebarChromeFooter = memo(function SidebarChromeFooter() {
   return (
     <SidebarFooter className="p-[var(--sidebar-content-inset)]">
       <SidebarProviderUpdatePill />
-      <SidebarUpdateArchitectureWarning />
+      {!PERSONAL_UI.hideSidebarUpdateCheck ? <SidebarUpdateArchitectureWarning /> : null}
       <SidebarMenu className="flex-row items-center">
         {currentFooterPage ? (
           <SidebarMenuItem className="min-w-0 flex-1">
@@ -221,7 +221,7 @@ export const SidebarChromeFooter = memo(function SidebarChromeFooter() {
             </SidebarMenuItem>
           </>
         )}
-        <SidebarUpdatePill />
+        {!PERSONAL_UI.hideSidebarUpdateCheck ? <SidebarUpdatePill /> : null}
       </SidebarMenu>
     </SidebarFooter>
   );
