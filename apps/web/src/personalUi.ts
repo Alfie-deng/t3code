@@ -11,6 +11,8 @@ export const PERSONAL_UI = {
   hideTopBarGitActions: true,
   hideTopBarTerminalToggle: true,
   hideSidebarPullRequests: true, // 藏侧栏左下「Pull Requests」；/pull-requests 与线程内 PR 仍可用
+  /** 提供商状态卡片：只弹 error，不弹「正在检查可用性」这类 warning */
+  providerStatusBannerErrorsOnly: true,
   hideRuntimeModeControl: true,
   hideComposerContextStrip: true,
   compactComposer: true,

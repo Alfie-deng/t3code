@@ -3,13 +3,31 @@ import { memo } from "react";
 import { InfoIcon, XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { translateZhCnUiText } from "~/localization/zhCN";
+import { PERSONAL_UI } from "../../personalUi";
 import { formatProviderDriverKindLabel } from "../../providerModels";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
+/** Provisional probe text while a provider is still being checked — not a real fault. */
+export function isProvisionalProviderAvailabilityMessage(
+  message: string | null | undefined,
+): boolean {
+  if (typeof message !== "string") return false;
+  return /^Checking .+ availability(?:\.\.\.|…)?$/i.test(message.trim());
+}
+
 export function getProviderStatusBannerKey(status: ServerProvider | null): string | null {
-  return !status || status.status === "ready" || status.status === "disabled"
-    ? null
-    : [status.instanceId, status.status, status.auth.status, status.message ?? ""].join("\u0000");
+  if (!status || status.status === "ready" || status.status === "disabled") {
+    return null;
+  }
+  if (PERSONAL_UI.providerStatusBannerErrorsOnly && status.status !== "error") {
+    return null;
+  }
+  if (isProvisionalProviderAvailabilityMessage(status.message)) {
+    return null;
+  }
+  return [status.instanceId, status.status, status.auth.status, status.message ?? ""].join(
+    "\u0000",
+  );
 }
 
 export function shouldShowProviderStatusBanner(
@@ -27,7 +45,10 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
   onDismiss: () => void;
   status: ServerProvider | null;
 }) {
-  if (!status || status.status === "ready" || status.status === "disabled") {
+  if (!shouldShowProviderStatusBanner(status, null)) {
+    return null;
+  }
+  if (!status) {
     return null;
   }
 

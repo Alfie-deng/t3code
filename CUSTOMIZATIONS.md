@@ -172,6 +172,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                                          |
 | 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                                            |
 | 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用                                   |
+| 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning                                        |
 | 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件                                  |
 | 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）                                |
 | 发送后空态 Working 灯     | `hasServerAcknowledgedLocalDispatch` 不因 turn.requested 提前灭灯；`isConnecting` 接 `phase`；计时只从 turn.started |
