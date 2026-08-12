@@ -285,11 +285,16 @@ codesign --force --deep --sign "ADCEE876C506C947B0D27F5DF46DF94052FB38DA" \
 codesign --verify --deep --strict "$APP"
 
 # 人先退出正在用的 T3；不要用「杀进程再 cp」的脚本（会杀宿主 Agent）
-mv "/Applications/T3 Code.app" "/Applications/T3 Code.bak.app"
+# 备份放到仓库本地目录，禁止留 /Applications/T3 Code.bak.app
+BAK_DIR="$PWD/.desktop-install-bak"
+rm -rf "$BAK_DIR"
+mkdir -p "$BAK_DIR"
+mv "/Applications/T3 Code.app" "$BAK_DIR/T3 Code.app"
 cp -R "$APP" "/Applications/T3 Code.app"    # 直接从 staging cp，勿经桌面/Finder
 codesign --verify --deep --strict "/Applications/T3 Code.app"
 open "/Applications/T3 Code.app"
-# 稳定后：rm -rf "/Applications/T3 Code.bak.app"
+# 打开成功后立刻清掉备份（不要留在应用程序里）
+rm -rf "$BAK_DIR"
 ```
 
 | 坑                      | 解法                                                                         |
@@ -299,6 +304,7 @@ open "/Applications/T3 Code.app"
 | 脚本 `--signed`         | 缺 provisioning profile；改 unsigned + 手签                                  |
 | 经 Finder/桌面拷贝      | resource fork → codesign 挂；只用 staging `cp -R`                            |
 | 脚本先 kill T3          | 宿主会话一起死，后半段不跑                                                   |
+| `/Applications/*.bak`   | 禁止；备份只用 `.desktop-install-bak/`，装成后删                             |
 
 手机：`expo prebuild`（若需要）→ `bash scripts/fix-ios-prebuild.sh` → `pod install` / `expo run:ios --configuration Release --device <物理 UDID>`。真机 UDID 用系统设备号，不要用 CoreDevice UUID。锁屏时 launch 失败很常见。
 
