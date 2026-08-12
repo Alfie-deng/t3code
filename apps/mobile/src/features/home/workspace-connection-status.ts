@@ -20,11 +20,10 @@ export function shouldShowWorkspaceConnectionStatus(state: WorkspaceState): bool
 
 export function workspaceConnectionStatusLabel(state: WorkspaceState): string {
   if (state.networkStatus === "offline") return t("You are offline");
-  if (state.connectingEnvironments.length === 1) {
-    return t(`Reconnecting to ${state.connectingEnvironments[0]!.environmentLabel}`);
-  }
-  if (state.connectingEnvironments.length > 1) {
-    return t(`Reconnecting ${state.connectingEnvironments.length} environments`);
+  // Never put environment hostnames in this chrome — Alfie wants a fixed
+  // short reconnect line, not "…到 Alfie Macbook".
+  if (state.connectingEnvironments.length > 0) {
+    return t("Reconnecting...");
   }
   if (state.connectionError !== null) return state.connectionError;
   if (state.hasPendingShellSnapshot) {

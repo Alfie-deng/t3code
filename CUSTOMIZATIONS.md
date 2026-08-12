@@ -39,12 +39,12 @@
 
 | 字段                                            | 值                                                                                    |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 私人 tip                                        | `51164dc28`（项目组头行距收紧；合并提交 `95a4ff73e`）                                 |
+| 私人 tip                                        | （提交后对齐）                                                                        |
 | 上次合入上游                                    | `95a4ff73e`（合入上游 17 笔至 `9c7622dac`；含 v0.0.33、多提供商 PR 页、安卓手势条等） |
 | 合并基点 merge-base（相对当下 `upstream/main`） | `9c7622dac`                                                                           |
 | 官方 tip（已 fetch）                            | `f5fce7416`（相对已合入点多 1 笔：GitLab self-hosted PR 路由；**尚未**再合）          |
 | 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（合上游 + 藏侧栏 PR；签名 Alfie Development）    |
-| 手机安装版                                      | 真机 `com.jetdeng.t3code` production Release（含模型设置三词 + 主页项目组头行距收紧） |
+| 手机安装版                                      | 真机 `com.jetdeng.t3code` production Release（含重连短句「正在重新连接…」+ 苹方）     |
 
 下次合完上游后：立刻改本表三行 tip / 上次合入 / merge-base，并勾验收清单。
 
@@ -160,41 +160,42 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 
 连带必须保留的实现细节：
 
-| 项                        | 位置 / 要点                                                                                                         |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 线程标题窄点击区          | `ChatHeader.tsx`：标题菜单按钮勿 `flex-1`；空白区可拖窗                                                             |
-| 已有对话占位              | 「提出后续修改」；仅草稿英雄态用新线程占位（`ChatComposer` 的 draft 分流，`b8a16de91`）                             |
-| 紧凑输入框                | `ComposerPromptEditor` `compact`：`2lh` 等；草稿态略增高且勿污染已有对话                                            |
-| 封面文案                  | `DraftHeroHeadline`：「想在〔项目名〕构建什么？」；无虚线下划线                                                     |
-| 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                                               |
-| 发送/停止外形             | 外圆各 -2px、右移 2px；箭头 mask 用 `public/synara-icons/arrow-up.svg`                                              |
-| 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                                                   |
-| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                                          |
-| 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                                            |
-| 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用                                   |
-| 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning                                        |
-| 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件                                  |
-| 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）                                |
-| 发送后空态 Working 灯     | `hasServerAcknowledgedLocalDispatch` 不因 turn.requested 提前灭灯；`isConnecting` 接 `phase`；计时只从 turn.started |
-| 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                                                 |
-| 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                                                  |
+| 项                        | 位置 / 要点                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| 线程标题窄点击区          | `ChatHeader.tsx`：标题菜单按钮勿 `flex-1`；空白区可拖窗                                 |
+| 已有对话占位              | 「提出后续修改」；仅草稿英雄态用新线程占位（`ChatComposer` 的 draft 分流，`b8a16de91`） |
+| 紧凑输入框                | `ComposerPromptEditor` `compact`：`2lh` 等；草稿态略增高且勿污染已有对话                |
+| 封面文案                  | `DraftHeroHeadline`：「想在〔项目名〕构建什么？」；无虚线下划线                         |
+| 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                   |
+| 发送/停止外形             | 外圆各 -2px、右移 2px；箭头 mask 用 `public/synara-icons/arrow-up.svg`                  |
+| 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                       |
+| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                              |
+| 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                |
+| 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用       |
+| 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning            |
+| 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件      |
+| 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）    |
+| 发送后空态 Working 灯     | 空窗保灯；计时不拿点发送时间；无秒数时文案为「正在运行」不带省略号                      |
+| 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
+| 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 
 ### 3.6 手机 UI / 视觉 / 交互钉
 
 状态：**必须保留**（合上游手机改动时逐条核对）
 
-| 定制                    | 位置                                                               | 要点                                                                                                                             |
-| ----------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| 靛蓝强调色              | `apps/mobile/global.css`                                           | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items                         |
-| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                | iOS `PingFangSC-Regular` / `Semibold`                                                                                            |
-| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                    | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                                         |
-| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                   | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                                                 |
-| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                   | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留                      |
-| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                            | 只留 T3 Code 字标                                                                                                                |
-| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                            | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                                                  |
-| 线程标题字重            | 同文件 headerTitleStyle                                            | `800 → 700`                                                                                                                      |
-| Bundle / 能力裁剪       | `app.config.ts` + `plugins/withoutIosPersonalTeamCapabilities.cjs` | 个人 Team 用 `com.jetdeng.t3code`；插件去掉推送/Sign in with Apple/App Group/Associated Domains 等个人 Team 签不了的 entitlement |
-| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                      | **每次** `expo prebuild` 后、`xcodebuild` 前跑；抬 iOS deployment target 到 18，修 Xcode 与旧 Pod                                |
+| 定制                    | 位置                                                                           | 要点                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| 靛蓝强调色              | `apps/mobile/global.css`                                                       | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items                         |
+| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                            | iOS `PingFangSC-Regular` / `Semibold`                                                                                            |
+| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                                         |
+| 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle` | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                                               |
+| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                               | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                                                 |
+| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                               | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留                      |
+| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                        | 只留 T3 Code 字标                                                                                                                |
+| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                        | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                                                  |
+| 线程标题字重            | 同文件 headerTitleStyle                                                        | `800 → 700`                                                                                                                      |
+| Bundle / 能力裁剪       | `app.config.ts` + `plugins/withoutIosPersonalTeamCapabilities.cjs`             | 个人 Team 用 `com.jetdeng.t3code`；插件去掉推送/Sign in with Apple/App Group/Associated Domains 等个人 Team 签不了的 entitlement |
+| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                                  | **每次** `expo prebuild` 后、`xcodebuild` 前跑；抬 iOS deployment target 到 18，修 Xcode 与旧 Pod                                |
 
 ### 3.7 构建与签名资产
 

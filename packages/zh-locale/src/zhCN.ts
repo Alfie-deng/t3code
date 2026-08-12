@@ -6735,16 +6735,16 @@ export function translateExact(value: string): string {
     return `将删除此文件夹中的 ${deleteThreadsInFolderMatch[1]} 个对话，并移除该项目。`;
   }
   const mobileReconnectingMatch = /^Reconnecting to (.+?)\.\.\.$/.exec(value);
-  if (mobileReconnectingMatch) return `正在重新连接到 ${mobileReconnectingMatch[1]}…`;
+  if (mobileReconnectingMatch) return "正在重新连接…";
   const mobileReconnectingNoDotsMatch = /^Reconnecting to (.+?)$/.exec(value);
-  if (mobileReconnectingNoDotsMatch) return `正在重新连接到 ${mobileReconnectingNoDotsMatch[1]}`;
+  if (mobileReconnectingNoDotsMatch) return "正在重新连接…";
   const mobileReconnectingCountMatch = /^Reconnecting (\d+) environments$/.exec(value);
-  if (mobileReconnectingCountMatch) return `正在重新连接 ${mobileReconnectingCountMatch[1]} 个环境`;
+  if (mobileReconnectingCountMatch) return "正在重新连接…";
   if (value === "Syncing threads...") return "正在同步对话…";
   if (value === "Loading threads...") return "正在加载对话…";
   if (value === "Not connected") return "未连接";
   const mobileRetryConnectMatch = /^Failed to connect\. Retrying (.+?)\.\.\.$/.exec(value);
-  if (mobileRetryConnectMatch) return `连接失败，正在重试 ${mobileRetryConnectMatch[1]}…`;
+  if (mobileRetryConnectMatch) return "正在重新连接…";
   const mobileConnectErrorMatch = /^Failed to connect to (.+): (.+)$/.exec(value);
   if (mobileConnectErrorMatch) {
     return `无法连接到 ${mobileConnectErrorMatch[1]}：${mobileConnectErrorMatch[2]}`;

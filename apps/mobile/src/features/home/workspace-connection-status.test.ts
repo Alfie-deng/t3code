@@ -37,7 +37,7 @@ describe("workspace connection status", () => {
     expect(workspaceConnectionStatusLabel(state)).toBe("当前离线");
   });
 
-  it("names the environment while reconnecting", () => {
+  it("uses a fixed reconnect label without the environment name", () => {
     const state = workspaceState({
       hasConnectingEnvironment: true,
       hasReadyEnvironment: false,
@@ -55,7 +55,7 @@ describe("workspace connection status", () => {
     });
 
     expect(shouldShowWorkspaceConnectionStatus(state)).toBe(true);
-    expect(workspaceConnectionStatusLabel(state)).toBe("正在重新连接到 Julius’s Mac mini");
+    expect(workspaceConnectionStatusLabel(state)).toBe("正在重新连接…");
   });
 
   it("surfaces connection errors before the generic disconnected fallback", () => {
@@ -107,7 +107,7 @@ describe("workspace connection status", () => {
       ],
     });
     expect(workspaceConnectionStatusPresentation(reconnecting)).toEqual({
-      label: "正在重新连接到 Julius’s Mac mini",
+      label: "正在重新连接…",
       showsProgress: true,
     });
 

@@ -138,11 +138,19 @@ export function WorkspaceConnectionTitle(props: {
         <Text
           className={
             size === "pageTitle"
-              ? "text-[20px] font-t3-bold text-foreground-muted"
-              : "text-[16px] font-t3-bold text-foreground-muted"
+              ? "text-[20px] text-foreground-muted"
+              : "text-[16px] text-foreground-muted"
           }
           numberOfLines={1}
-          style={{ flexShrink: 1 }}
+          style={{
+            flexShrink: 1,
+            fontFamily: Platform.select({
+              ios: "PingFangSC-Semibold",
+              android: "sans-serif-medium",
+              default: "sans-serif",
+            }),
+            fontWeight: "600",
+          }}
         >
           {status.label}
         </Text>

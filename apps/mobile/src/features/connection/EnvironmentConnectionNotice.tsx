@@ -17,7 +17,7 @@ function noticeTitle(phase: EnvironmentConnectionPhase, environmentLabel: string
     case "connecting":
       return t(`Connecting to ${environmentLabel}...`);
     case "reconnecting":
-      return t(`Reconnecting to ${environmentLabel}...`);
+      return t("Reconnecting...");
     case "error":
       return t(`${environmentLabel} is unavailable`);
     case "available":

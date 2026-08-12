@@ -197,10 +197,8 @@ function composerConnectionStatus(input: {
     case "reconnecting":
       return {
         kind: "reconnecting",
-        label:
-          input.connectionError === null
-            ? t(`Reconnecting to ${environmentLabel}...`)
-            : t(`Failed to connect. Retrying ${environmentLabel}...`),
+        // Fixed copy — no environment label (see CUSTOMIZATIONS mobile nail).
+        label: t("Reconnecting..."),
       };
     case "offline":
       return { kind: "unavailable", label: t("You are offline") };
@@ -254,8 +252,16 @@ const ComposerConnectionStatusPill = memo(function ComposerConnectionStatusPill(
           <View className="h-2 w-2 rounded-full bg-red-500" />
         )}
         <Text
-          className="max-w-[260px] text-sm font-t3-bold leading-snug text-foreground"
+          className="max-w-[260px] text-sm leading-snug text-foreground"
           numberOfLines={1}
+          style={{
+            fontFamily: Platform.select({
+              ios: "PingFangSC-Semibold",
+              android: "sans-serif-medium",
+              default: "sans-serif",
+            }),
+            fontWeight: "600",
+          }}
         >
           {props.status.label}
         </Text>
