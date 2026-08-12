@@ -2,6 +2,7 @@ import {
   type GrokSettings,
   type ModelCapabilities,
   type ServerProvider,
+  type ServerProviderAuth,
   type ServerProviderModel,
 } from "@t3tools/contracts";
 import type * as EffectAcpSchema from "effect-acp/schema";
@@ -29,7 +30,12 @@ import {
   enrichProviderSnapshotWithVersionAdvisory,
   type ProviderMaintenanceCapabilities,
 } from "../providerMaintenance.ts";
-import { makeGrokAcpRuntime, resolveGrokAcpBaseModelId } from "../acp/GrokAcpSupport.ts";
+import type { AcpSessionRuntimeStartResult } from "../acp/AcpSessionRuntime.ts";
+import {
+  makeGrokAcpRuntime,
+  resolveGrokAcpBaseModelId,
+  resolveGrokAuthMethodId,
+} from "../acp/GrokAcpSupport.ts";
 
 const GROK_PRESENTATION = {
   displayName: "Grok",
@@ -42,7 +48,7 @@ const EMPTY_CAPABILITIES: ModelCapabilities = createModelCapabilities({
 });
 
 const VERSION_PROBE_TIMEOUT_MS = 4_000;
-const GROK_ACP_MODEL_DISCOVERY_TIMEOUT_MS = 15_000;
+const GROK_ACP_MODEL_DISCOVERY_TIMEOUT_MS = 30_000;
 
 const GROK_BUILT_IN_MODELS: ReadonlyArray<ServerProviderModel> = [
   {
@@ -123,6 +129,32 @@ function buildGrokDiscoveredModelsFromSessionModelState(
     .filter((model): model is ServerProviderModel => model !== undefined);
 }
 
+interface GrokAcpDiscoveryResult {
+  readonly models: ReadonlyArray<ServerProviderModel>;
+  readonly auth: ServerProviderAuth;
+}
+
+function buildGrokAuthFromAcpStart(
+  started: AcpSessionRuntimeStartResult,
+  environment: NodeJS.ProcessEnv,
+): ServerProviderAuth {
+  const authMethodId = resolveGrokAuthMethodId(environment);
+  const authMethod = started.initializeResult.authMethods?.find(
+    (method) => method.id === authMethodId,
+  );
+  const label =
+    authMethodId === "xai.api_key"
+      ? "xAI API Key"
+      : authMethod?.name && authMethod.name !== "cached_token"
+        ? authMethod.name
+        : "Grok Account";
+  return {
+    status: "authenticated",
+    type: "Grok",
+    label,
+  };
+}
+
 const discoverGrokModelsViaAcp = (
   grokSettings: GrokSettings,
   environment: NodeJS.ProcessEnv = process.env,
@@ -137,7 +169,10 @@ const discoverGrokModelsViaAcp = (
       clientInfo: { name: "t3-code-provider-probe", version: "0.0.0" },
     });
     const started = yield* acp.start();
-    return buildGrokDiscoveredModelsFromSessionModelState(started.sessionSetupResult.models);
+    return {
+      models: buildGrokDiscoveredModelsFromSessionModelState(started.sessionSetupResult.models),
+      auth: buildGrokAuthFromAcpStart(started, environment),
+    } satisfies GrokAcpDiscoveryResult;
   }).pipe(Effect.scoped);
 
 const runGrokVersionCommand = (
@@ -291,7 +326,8 @@ export const checkGrokProviderStatus = Effect.fn("checkGrokProviderStatus")(func
       },
     });
   }
-  const discoveredModels = discoveryExit.value.value;
+  const discovery = discoveryExit.value.value;
+  const discoveredModels = discovery.models;
   const models =
     discoveredModels.length > 0
       ? grokModelsFromSettings(grokSettings.customModels, discoveredModels)
@@ -306,7 +342,7 @@ export const checkGrokProviderStatus = Effect.fn("checkGrokProviderStatus")(func
       installed: true,
       version,
       status: "ready",
-      auth: { status: "unknown" },
+      auth: discovery.auth,
     },
   });
 });

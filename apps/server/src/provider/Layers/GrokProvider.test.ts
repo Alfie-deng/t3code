@@ -1,3 +1,5 @@
+import * as NodeOS from "node:os";
+
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
@@ -9,6 +11,37 @@ import { GrokSettings } from "@t3tools/contracts";
 import { buildInitialGrokProviderSnapshot, checkGrokProviderStatus } from "./GrokProvider.ts";
 
 const decodeGrokSettings = Schema.decodeSync(GrokSettings);
+
+const resolveMockAgentPath = Effect.fn("resolveMockAgentPath")(function* () {
+  const path = yield* Path.Path;
+  return yield* path.fromFileUrl(new URL("../../../scripts/acp-mock-agent.ts", import.meta.url));
+});
+
+const makeGrokAcpMockWrapper = Effect.fn("makeGrokAcpMockWrapper")(function* () {
+  const fileSystem = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const mockAgentPath = yield* resolveMockAgentPath();
+  const dir = yield* fileSystem.makeTempDirectory({
+    directory: NodeOS.tmpdir(),
+    prefix: "grok-provider-mock-",
+  });
+  const wrapperPath = path.join(dir, "grok");
+  const mockAgentCommand = ["node", mockAgentPath].map((arg) => JSON.stringify(arg)).join(" ");
+  const script = `#!/bin/sh
+if [ "$1" = "--version" ]; then
+  printf "grok 1.0.1\\n"
+  exit 0
+fi
+if [ "$1" = "agent" ] && [ "$2" = "stdio" ]; then
+  exec ${mockAgentCommand}
+fi
+printf "unsupported grok invocation: %s\\n" "$*" >&2
+exit 1
+`;
+  yield* fileSystem.writeFileString(wrapperPath, script);
+  yield* fileSystem.chmod(wrapperPath, 0o755);
+  return wrapperPath;
+});
 
 describe("buildInitialGrokProviderSnapshot", () => {
   it.effect("returns a disabled snapshot when settings.enabled is false", () =>
@@ -78,6 +111,26 @@ it.layer(NodeServices.layer)("checkGrokProviderStatus", (it) => {
       expect(snapshot.status).toBe("error");
       expect(snapshot.message).toBe("Grok CLI is installed but failed to run.");
       expect(snapshot.message).not.toContain(secretStderr);
+    }),
+  );
+
+  it.effect("reports ready with authenticated status when ACP discovery succeeds", () =>
+    Effect.gen(function* () {
+      const snapshot = yield* Effect.scoped(
+        Effect.gen(function* () {
+          const wrapperPath = yield* makeGrokAcpMockWrapper();
+          return yield* checkGrokProviderStatus(
+            decodeGrokSettings({ enabled: true, binaryPath: wrapperPath }),
+          );
+        }),
+      );
+
+      expect(snapshot.status).toBe("ready");
+      expect(snapshot.installed).toBe(true);
+      expect(snapshot.auth.status).toBe("authenticated");
+      expect(snapshot.auth.type).toBe("Grok");
+      expect(snapshot.auth.label).toBe("Grok Account");
+      expect(snapshot.models.map((model) => model.slug)).toEqual(["grok-build", "grok-mock-alt"]);
     }),
   );
 
