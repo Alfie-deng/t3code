@@ -19,6 +19,10 @@ import {
   createLocalDispatchSnapshot,
   deriveComposerSendState,
   dismissBranchMismatchForSession,
+  readStickyWorkingTimerForThread,
+  writeStickyWorkingTimerForThread,
+  clearStickyWorkingTimerForThread,
+  resetStickyWorkingTimersForTests,
   ENVIRONMENT_RECONNECT_WARNING_GRACE_MS,
   getStartedThreadModelChangeBlockReason,
   hasEnvironmentReconnectWarningGraceElapsed,
@@ -434,6 +438,29 @@ describe("session branch mismatch dismissal", () => {
     expect(isBranchMismatchDismissedForSession("t1:a:b")).toBe(true);
     expect(isBranchMismatchDismissedForSession("t1:a:c")).toBe(false);
     expect(isBranchMismatchDismissedForSession(null)).toBe(false);
+  });
+});
+
+describe("sticky working timer per thread", () => {
+  afterEach(() => {
+    resetStickyWorkingTimersForTests();
+  });
+
+  it("keeps the earliest anchor across remount-style reads", () => {
+    const threadId = ThreadId.make("thread-working");
+    writeStickyWorkingTimerForThread(threadId, "2026-02-27T21:10:00.000Z");
+    writeStickyWorkingTimerForThread(threadId, "2026-02-27T21:10:40.000Z");
+    expect(readStickyWorkingTimerForThread(threadId)).toBe("2026-02-27T21:10:00.000Z");
+  });
+
+  it("isolates anchors by thread and clears only the target", () => {
+    const left = ThreadId.make("thread-left");
+    const right = ThreadId.make("thread-right");
+    writeStickyWorkingTimerForThread(left, "2026-02-27T21:10:00.000Z");
+    writeStickyWorkingTimerForThread(right, "2026-02-27T21:11:00.000Z");
+    clearStickyWorkingTimerForThread(right);
+    expect(readStickyWorkingTimerForThread(left)).toBe("2026-02-27T21:10:00.000Z");
+    expect(readStickyWorkingTimerForThread(right)).toBeNull();
   });
 });
 

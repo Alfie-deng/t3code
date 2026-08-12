@@ -11,6 +11,7 @@ import { describe, expect, it } from "vite-plus/test";
 import {
   deriveActiveWorkStartedAt,
   resolveStickyWorkingTimerStartedAt,
+  resolveWorkingTimerDurableStartedAt,
   deriveActivePlanState,
   deriveTurnPlans,
   derivePendingApprovals,
@@ -1726,6 +1727,7 @@ describe("resolveStickyWorkingTimerStartedAt", () => {
         isWorking: false,
         previousAnchor: "2026-02-27T21:10:00.000Z",
         localDispatchStartedAt: "2026-02-27T21:10:00.000Z",
+        durableStartedAt: "2026-02-27T21:10:00.000Z",
         nowIso: "2026-02-27T21:10:07.000Z",
       }),
     ).toBeNull();
@@ -1737,6 +1739,7 @@ describe("resolveStickyWorkingTimerStartedAt", () => {
         isWorking: true,
         previousAnchor: "2026-02-27T21:10:00.000Z",
         localDispatchStartedAt: null,
+        durableStartedAt: "2026-02-27T21:10:05.000Z",
         nowIso: "2026-02-27T21:10:07.000Z",
       }),
     ).toBe("2026-02-27T21:10:00.000Z");
@@ -1748,9 +1751,46 @@ describe("resolveStickyWorkingTimerStartedAt", () => {
         isWorking: true,
         previousAnchor: null,
         localDispatchStartedAt: "2026-02-27T21:10:00.000Z",
+        durableStartedAt: null,
         nowIso: "2026-02-27T21:10:00.050Z",
       }),
     ).toBe("2026-02-27T21:10:00.000Z");
+  });
+
+  it("recovers from durable turn time after remount without sticky or local dispatch", () => {
+    expect(
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: true,
+        previousAnchor: null,
+        localDispatchStartedAt: null,
+        durableStartedAt: "2026-02-27T21:10:00.000Z",
+        nowIso: "2026-02-27T21:10:40.000Z",
+      }),
+    ).toBe("2026-02-27T21:10:00.000Z");
+  });
+});
+
+describe("resolveWorkingTimerDurableStartedAt", () => {
+  it("prefers the earlier of requestedAt and startedAt", () => {
+    expect(
+      resolveWorkingTimerDurableStartedAt({
+        turnId: TurnId.make("turn-1"),
+        requestedAt: "2026-02-27T21:10:00.000Z",
+        startedAt: "2026-02-27T21:10:07.000Z",
+        completedAt: null,
+      }),
+    ).toBe("2026-02-27T21:10:00.000Z");
+  });
+
+  it("falls back to startedAt when requestedAt is missing", () => {
+    expect(
+      resolveWorkingTimerDurableStartedAt({
+        turnId: TurnId.make("turn-1"),
+        requestedAt: null,
+        startedAt: "2026-02-27T21:10:07.000Z",
+        completedAt: null,
+      }),
+    ).toBe("2026-02-27T21:10:07.000Z");
   });
 });
 

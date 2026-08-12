@@ -364,6 +364,38 @@ export function isBranchMismatchDismissedForSession(key: string | null): boolean
   return key !== null && sessionDismissedBranchMismatchKeys.has(key);
 }
 
+// Survives ChatView remounts when switching threads. Without this, the live
+// "Working for Xs" clock restarts at 1s every time you leave and come back.
+const stickyWorkingTimerByThreadId = new Map<string, string>();
+
+export function readStickyWorkingTimerForThread(threadId: ThreadId): string | null {
+  return stickyWorkingTimerByThreadId.get(threadId) ?? null;
+}
+
+export function writeStickyWorkingTimerForThread(
+  threadId: ThreadId,
+  startedAt: string | null,
+): void {
+  if (startedAt === null) {
+    stickyWorkingTimerByThreadId.delete(threadId);
+    return;
+  }
+  const existing = stickyWorkingTimerByThreadId.get(threadId);
+  if (existing && existing <= startedAt) {
+    return;
+  }
+  stickyWorkingTimerByThreadId.set(threadId, startedAt);
+}
+
+export function clearStickyWorkingTimerForThread(threadId: ThreadId): void {
+  stickyWorkingTimerByThreadId.delete(threadId);
+}
+
+/** Test helper — do not call from product UI. */
+export function resetStickyWorkingTimersForTests(): void {
+  stickyWorkingTimerByThreadId.clear();
+}
+
 export function threadHasStarted(thread: Thread | null | undefined): boolean {
   return Boolean(
     thread && (thread.latestTurn !== null || thread.messages.length > 0 || thread.session !== null),

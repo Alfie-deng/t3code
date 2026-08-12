@@ -84,6 +84,7 @@ import {
   derivePhase,
   deriveTimelineEntries,
   resolveStickyWorkingTimerStartedAt,
+  resolveWorkingTimerDurableStartedAt,
   deriveActivePlanState,
   deriveTurnPlans,
   findLatestProposedPlan,
@@ -294,6 +295,9 @@ import {
   createLocalDispatchSnapshot,
   deriveComposerSendState,
   dismissBranchMismatchForSession,
+  readStickyWorkingTimerForThread,
+  writeStickyWorkingTimerForThread,
+  clearStickyWorkingTimerForThread,
   hasEnvironmentReconnectWarningGraceElapsed,
   scheduleEnvironmentReconnectWarning,
   hasServerAcknowledgedLocalDispatch,
@@ -2286,23 +2290,34 @@ function ChatViewContent(props: ChatViewProps) {
   const isWorking = phase === "running" || isSendBusy || isConnecting || isRevertingCheckpoint;
   // Sticky clock from the first busy frame (usually local send) through cold
   // start into true running — 7s of wait becomes "Working for 7s" then 8s.
-  const [stickyWorkingStartedAt, setStickyWorkingStartedAt] = useState<string | null>(null);
+  // Anchors live in a module map so switching threads (ChatView remount) does
+  // not restart the counter at 1s.
+  const workingTimerThreadId = props.threadId;
+  const durableWorkingStartedAt = resolveWorkingTimerDurableStartedAt(activeLatestTurn);
+  const [stickyWorkingStartedAt, setStickyWorkingStartedAt] = useState<string | null>(() =>
+    readStickyWorkingTimerForThread(workingTimerThreadId),
+  );
   useEffect(() => {
     if (!isWorking) {
+      clearStickyWorkingTimerForThread(workingTimerThreadId);
       setStickyWorkingStartedAt(null);
       return;
     }
-    setStickyWorkingStartedAt((current) =>
-      resolveStickyWorkingTimerStartedAt({
-        isWorking: true,
-        previousAnchor: current,
-        localDispatchStartedAt,
-        nowIso: new Date().toISOString(),
-      }),
-    );
-  }, [isWorking, localDispatchStartedAt]);
-  // Prefer sticky; fall back to localDispatch on the first busy frame before the effect pins it.
-  const activeWorkStartedAt = isWorking ? (stickyWorkingStartedAt ?? localDispatchStartedAt) : null;
+    const resolved = resolveStickyWorkingTimerStartedAt({
+      isWorking: true,
+      previousAnchor: readStickyWorkingTimerForThread(workingTimerThreadId),
+      localDispatchStartedAt,
+      durableStartedAt: durableWorkingStartedAt,
+      nowIso: new Date().toISOString(),
+    });
+    writeStickyWorkingTimerForThread(workingTimerThreadId, resolved);
+    setStickyWorkingStartedAt(resolved);
+  }, [isWorking, localDispatchStartedAt, durableWorkingStartedAt, workingTimerThreadId]);
+  // Prefer sticky; fall back to localDispatch / durable turn times on the first
+  // busy frame before the effect pins the module map.
+  const activeWorkStartedAt = isWorking
+    ? (stickyWorkingStartedAt ?? localDispatchStartedAt ?? durableWorkingStartedAt)
+    : null;
   useEffect(() => {
     attachmentPreviewHandoffByMessageIdRef.current = attachmentPreviewHandoffByMessageId;
   }, [attachmentPreviewHandoffByMessageId]);
