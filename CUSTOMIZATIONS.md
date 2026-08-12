@@ -12,16 +12,16 @@
 
 ## 0. 接手 60 秒
 
-| 项          | 值                                                             |
-| ----------- | -------------------------------------------------------------- |
-| 本地路径    | `/Users/alfie/developer/t3code`（`~/Developer/t3code` 同目录） |
-| 私人 fork   | `https://github.com/Alfie-deng/t3code`（remote：`origin`）     |
-| 上游        | `https://github.com/pingdotgg/t3code`（remote：`upstream`）    |
-| 工作分支    | `agent/zh-cn-personal-desktop`                                 |
-| 桌面安装    | `/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`       |
-| 手机安装    | 真机 Bundle `com.jetdeng.t3code`（个人 Team 覆盖生产包名）     |
-| 签名        | `Apple Development: jet.deng@me.com (PTY74USJAK)`              |
-| GitHub 命令 | 用 `~/bin/git`（见 `~/developer/AGENTS.md`）                   |
+| 项          | 值                                                                         |
+| ----------- | -------------------------------------------------------------------------- |
+| 本地路径    | `/Users/alfie/developer/t3code`（`~/Developer/t3code` 同目录）             |
+| 私人 fork   | `https://github.com/Alfie-deng/t3code`（remote：`origin`）                 |
+| 上游        | `https://github.com/pingdotgg/t3code`（remote：`upstream`）                |
+| 工作分支    | `agent/zh-cn-personal-desktop`                                             |
+| 桌面安装    | `/Applications/T3 Code.app`，Bundle `com.t3tools.t3code`                   |
+| 手机安装    | 真机 Bundle `com.jetdeng.t3code`；个人 Team `D4SUBHNYW9`（见 §3.7 / §6.2） |
+| 签名        | `Apple Development: jet.deng@me.com (PTY74USJAK)`；手机 Team 见 §3.7       |
+| GitHub 命令 | 用 `~/bin/git`（见 `~/developer/AGENTS.md`）                               |
 
 **分支语义（别搞混）**
 
@@ -37,23 +37,33 @@
 
 ## 1. 当前盘点（2026-08-12）
 
-| 字段                                            | 值                                                                                   |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 私人 tip                                        | `e9b0cb372`（盘点文档；合并本体 `edd915ee4`）                                        |
-| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`；主题/侧栏/手机作曲与标题重生/用量近 24h） |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                             |
-| 官方 tip（已 fetch）                            | `5a8461480`                                                                          |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**尚未**用本合并覆盖安装；等 Alfie 到电脑旁）  |
-| 手机安装版                                      | 真机 `com.jetdeng.t3code`（**尚未**用本合并重装；等 Alfie 到电脑旁）                 |
+| 字段                                            | 值                                                                                                                 |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 私人 tip                                        | 以 `git rev-parse --short HEAD` 为准（功能：`78102b68a` 个人 Team 签名、`8a349e674` 空态计时、`edd915ee4` 合上游） |
+| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                               |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                           |
+| 官方 tip（已 fetch）                            | `5a8461480`                                                                                                        |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**仍是合前包**；源码已超前，**尚未**覆盖安装）                               |
+| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-12 已装本合并**）                         |
 
-下次合完上游后：立刻改本表三行 tip / 上次合入 / merge-base，并勾验收清单。
+下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
 
-### 本轮合并备注（2026-08-12）
+### 2026-08-12 合并与安装纪要
 
-- 冲突优先保留：侧栏藏 PR（`PERSONAL_UI.hideSidebarPullRequests`）、发送钮靛蓝尺寸、用量中文（含「近 24 小时」）、手机 `t()` 汉化、隐藏 ultracode effort。
-- 吸收上游：侧栏底部图标化 + Back、主题 OKLCH/Open VSX、手机作曲稳定与标题重生、用量按小时。
-- `pnpm install` 因本机 Corepack 拉 pnpm 失败未重跑；lockfile 先用上游版。到电脑旁装桌面/iOS 前先 `pnpm install`。
-- 合前 stash：`wip: sticky working timer before upstream merge`（空态计时 WIP）仍在 stash，未并入本提交。
+**合上游（`edd915ee4`）**
+
+- 保住：藏侧栏 PR、发送钮靛蓝尺寸、用量中文（含「近 24 小时」）、手机 `t()`、隐藏 ultracode effort。
+- 吃进：侧栏底栏图标化 + Back、主题 OKLCH/Open VSX、手机作曲稳定与标题重生、用量按小时。
+
+**合后本地提交**
+
+- `8a349e674`：发送后空态 Working 计时粘住（冷启动不归零、按线程锚点）。
+- `78102b68a`：个人 Team 真机 `appleTeamId` → `D4SUBHNYW9`，并清掉个人 Team 签不了的 associated domains。
+
+**安装**
+
+- 手机：已按 §6.2 装上并启动（截图可见中文主页）。
+- 桌面：未覆盖；要装走 §6.1。
 
 ---
 
@@ -63,10 +73,11 @@
 2. **冲突顺序**：先保住下面「必须保留」行为 → 再吸收上游结构和新功能 → 再跑测试/构建 → 真窗口或真机验收后才覆盖安装。
 3. **桌面真源 vs 手机**：模型隐藏/排序/收藏以桌面 `~/.t3/userdata/client-settings.json` 为真源；手机**只读投影，禁止写回**。
 4. **界面减法 ≠ 删功能**：隐藏的入口必须仍能从快捷键、命令面板、设置或别的路径用到。
-5. **签名**：只用 Alfie 本机 Development 证 + `customizations/macos-electron.entitlements.plist`；不要默认 ad-hoc；不要在对话里要钥匙串密码。
+5. **签名**：桌面用 Alfie Development 证 + `customizations/macos-electron.entitlements.plist`；手机真机走个人 Team `D4SUBHNYW9`（§3.7），禁止默认同公司队 `ARK85ZXQ4Z`。不要默认 ad-hoc；不要在对话里要钥匙串密码。
 6. **产物**：不保留 dmg/zip；长期靠 `/Applications` + 源码。构建缓存可再生（`node_modules`、`dist`、`ios/Pods` 等），可清。
 7. **宿主会话**：若 Agent 正在 `/Applications/T3 Code.app` 里跑，覆盖安装会杀会话。先让人退出，或在外部终端/Cursor 做覆盖。
-8. **本仓没有** Synara 那种 `guards.json` 机械守卫。同步后靠本文件验收清单 + 测试，别假设有自动门禁。
+8. **手机装机**：必须按 §6.2（环境变量 + `fix-ios-prebuild.sh` + 系统 UDID）；装完改 §1 手机安装版。
+9. **本仓没有** Synara 那种 `guards.json` 机械守卫。同步后靠本文件验收清单 + 测试，别假设有自动门禁。
 
 ---
 
@@ -190,26 +201,47 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 
 状态：**必须保留**（合上游手机改动时逐条核对）
 
-| 定制                    | 位置                                                                           | 要点                                                                                                                             |
-| ----------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| 靛蓝强调色              | `apps/mobile/global.css`                                                       | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items                         |
-| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                            | iOS `PingFangSC-Regular` / `Semibold`                                                                                            |
-| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                                         |
-| 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle` | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                                               |
-| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                               | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                                                 |
-| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                               | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留                      |
-| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                        | 只留 T3 Code 字标                                                                                                                |
-| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                        | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                                                  |
-| 线程标题字重            | 同文件 headerTitleStyle                                                        | `800 → 700`                                                                                                                      |
-| Bundle / 能力裁剪       | `app.config.ts` + `plugins/withoutIosPersonalTeamCapabilities.cjs`             | 个人 Team 用 `com.jetdeng.t3code`；插件去掉推送/Sign in with Apple/App Group/Associated Domains 等个人 Team 签不了的 entitlement |
-| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                                  | **每次** `expo prebuild` 后、`xcodebuild` 前跑；抬 iOS deployment target 到 18，修 Xcode 与旧 Pod                                |
+| 定制                    | 位置                                                                           | 要点                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| 靛蓝强调色              | `apps/mobile/global.css`                                                       | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items    |
+| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                            | iOS `PingFangSC-Regular` / `Semibold`                                                                       |
+| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                    |
+| 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle` | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                          |
+| 滚到底钮贴输入框上方    | `ThreadFeed.tsx`                                                               | `bottom = contentInsetEndAdjustment + safeArea修正 + 8`；勿沉到手势条/输入框底下                            |
+| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                               | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留 |
+| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                        | 只留 T3 Code 字标                                                                                           |
+| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                        | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                             |
+| 线程标题字重            | 同文件 headerTitleStyle                                                        | `800 → 700`                                                                                                 |
+| Bundle / 能力裁剪       | 见 §3.7「手机个人 Team」                                                       | 真机自用必须走个人 Team 路径；细节与命令只维护在 §3.7 / §6.2，这里不重复抄                                  |
+| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                                  | **每次** `expo prebuild` 后、装机前跑；抬 deployment target 到 18，修 Xcode 27 与旧 Pod                     |
 
 ### 3.7 构建与签名资产
 
 状态：**必须保留**
 
+#### 桌面
+
 - `customizations/macos-electron.entitlements.plist` — Electron hardened runtime；无上游 Associated Domains
+- 签名身份：`Apple Development: jet.deng@me.com (PTY74USJAK)`（以 `security find-identity -v -p codesigning` 为准；hash 见 §6.1）
 - 仓库根 `.env`（由 `.env.example` 来，**不提交密钥**）— Connections 页需要；缺了会藏 T3 Connect 等，不是汉化开关
+
+#### 手机个人 Team（真机自用 · 翻车高发）
+
+上游默认钉公司 Team `ARK85ZXQ4Z`（能签推送 / Apple 登录 / App Group）。Alfie 真机**不能**走那条路。
+
+| 项           | 正确值                                                                                                         |
+| ------------ | -------------------------------------------------------------------------------------------------------------- |
+| 开关         | `T3CODE_IOS_PERSONAL_TEAM=1`                                                                                   |
+| Bundle       | `T3CODE_IOS_PERSONAL_TEAM_BUNDLE_ID=com.jetdeng.t3code`                                                        |
+| 个人 Team ID | `D4SUBHNYW9`（证书 OU；`app.config.ts` 在个人 Team 模式下必须写这个）                                          |
+| 公司 Team ID | `ARK85ZXQ4Z`（**仅**非个人 Team / 官方能力构建；真机自用禁止）                                                 |
+| 签名证       | `Apple Development: jet.deng@me.com (PTY74USJAK)`                                                              |
+| 能力裁剪插件 | `plugins/withoutIosPersonalTeamCapabilities.cjs`：删推送 / Sign in with Apple / App Group / Associated Domains |
+| 关联域       | 个人 Team 时 `associatedDomains: []`（`app.config.ts`）                                                        |
+| 主用真机     | 名「Alfie」、iPhone 17 Pro Max、系统 UDID `00008150-000C296E1420401C`                                          |
+| 勿用         | CoreDevice UUID（形如 `0F07F1E5-…`）当 `--device`；锁屏时 launch 常失败                                        |
+
+合上游时若 `app.config.ts` 又把 `appleTeamId` 写死成 `ARK85ZXQ4Z`：**必须**改回「个人 Team → `D4SUBHNYW9`，否则公司队」。装完用 `codesign -dv` 看 `TeamIdentifier=D4SUBHNYW9` + `Identifier=com.jetdeng.t3code`。
 
 ---
 
@@ -255,21 +287,27 @@ cd ~/developer/t3code
 
 ### 手机（真机 `com.jetdeng.t3code`）
 
+- [ ] `codesign`：`Identifier=com.jetdeng.t3code`，`TeamIdentifier=D4SUBHNYW9`，证为 Alfie Development
 - [ ] 图标为星夜 solid；splash 图标偏小（110）
 - [ ] 气泡/发送键为靛蓝系，不是系统蓝/黑主色默认
-- [ ] 列表标题苹方；主页搜索栏左侧无筛选钮
+- [ ] 列表标题苹方；主页搜索栏左侧无筛选钮；重连文案为「正在重新连接…」
 - [ ] 线程页右上无 git/files/terminal 三钮；标题非极粗 800
 - [ ] 滚到底钮在输入框上方可点
 - [ ] 模型选择器长度跟桌面隐藏偏好走；「其他模型」文案；草稿框无英文长 placeholder
+- [ ] （合过标题重生后）线程菜单有「重新生成标题」中文项
+- [ ] （合过用量后）用量页有「近 24 小时」
 
 ### 构建签名
 
-- [ ] `codesign -dv` 为 Alfie Development；带本仓 entitlements
+- [ ] 桌面：`codesign -dv` 为 Alfie Development；带本仓 entitlements
+- [ ] 手机：见上「手机」第一条；勿出现公司 Team `ARK85ZXQ4Z`
 - [ ] 无无故索取钥匙串密码；失败勿报完成
 
 ---
 
-## 6. 桌面构建 → 覆盖安装 runbook
+## 6. 安装 runbook
+
+### 6.1 桌面 → 覆盖 `/Applications/T3 Code.app`
 
 全程约 10–15 分钟。细节坑见表。
 
@@ -313,7 +351,65 @@ rm -rf "$BAK_DIR"
 | 脚本先 kill T3          | 宿主会话一起死，后半段不跑                                                   |
 | `/Applications/*.bak`   | 禁止；备份只用 `.desktop-install-bak/`，装成后删                             |
 
-手机：`expo prebuild`（若需要）→ `bash scripts/fix-ios-prebuild.sh` → `pod install` / `expo run:ios --configuration Release --device <物理 UDID>`。真机 UDID 用系统设备号，不要用 CoreDevice UUID。锁屏时 launch 失败很常见。
+装成后改 §1「桌面安装版」一行，并勾 §5 桌面项。
+
+### 6.2 手机 → 真机 `com.jetdeng.t3code`（个人 Team）
+
+**先读 §3.7「手机个人 Team」。** 漏环境变量或 Team 写错会签成公司队 / 装不上。
+
+```sh
+cd ~/developer/t3code
+
+# 1) 确认真机在线（名「Alfie」）；锁屏先解锁
+xcrun devicectl list devices
+# 系统 UDID（例子）：00008150-000C296E1420401C —— 不要用 CoreDevice UUID
+
+# 2) 个人 Team + production Release prebuild
+cd apps/mobile
+export T3CODE_IOS_PERSONAL_TEAM=1
+export T3CODE_IOS_PERSONAL_TEAM_BUNDLE_ID=com.jetdeng.t3code
+export APP_VARIANT=production
+export EXPO_NO_GIT_STATUS=1
+
+./node_modules/.bin/expo prebuild --clean --platform ios
+
+# 3) 每次 prebuild 后必跑（抬 deployment target / 修 Pod）
+cd ../..
+bash scripts/fix-ios-prebuild.sh
+
+# 4) 核对工程（个人 Team，不是 ARK85ZXQ4Z）
+rg 'DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER' apps/mobile/ios/T3Code.xcodeproj/project.pbxproj | head
+# 期望：DEVELOPMENT_TEAM = D4SUBHNYW9; PRODUCT_BUNDLE_IDENTIFIER = com.jetdeng.t3code;
+# 若仍是 ARK85ZXQ4Z：说明个人 Team 环境没进到 config，停下来查 §3.7，勿硬装
+
+# 5) 个人 Team 签不了推送：若 entitlements 仍有 aps-environment，清空为 <dict/>
+#    （withoutIosPersonalTeamCapabilities 正常应已删；prebuild 漏删时手清）
+
+# 6) Release 装到真机（把 UDID 换成当前设备）
+cd apps/mobile
+./node_modules/.bin/expo run:ios \
+  --configuration Release \
+  --no-bundler \
+  --device 00008150-000C296E1420401C
+
+# 7) 验收签名 + 启动
+APP=$(ls -dt ~/Library/Developer/Xcode/DerivedData/T3Code-*/Build/Products/Release-iphoneos/T3Code.app | head -1)
+codesign -dv --verbose=2 "$APP" 2>&1 | rg 'Identifier|Authority|TeamIdentifier'
+# 期望 Identifier=com.jetdeng.t3code、TeamIdentifier=D4SUBHNYW9、Authority 含 jet.deng@me.com
+xcrun devicectl device process launch --device 00008150-000C296E1420401C com.jetdeng.t3code
+# 可选截图：xcrun devicectl device capture screenshot --device <UDID> --destination /tmp/t3-ios.png
+```
+
+| 坑                          | 解法                                                                    |
+| --------------------------- | ----------------------------------------------------------------------- |
+| `appleTeamId` 又变回公司队  | 合上游冲突后核对 `app.config.ts`：个人 Team 分支必须是 `D4SUBHNYW9`     |
+| 用了 CoreDevice UUID        | 改用系统 UDID（`00008150-…` 这种）                                      |
+| 设备 unavailable / 锁屏     | 解锁、同网或 USB；`devicectl list devices` 要看到 available             |
+| entitlements 残留推送       | 个人 Team 构建必须无 `aps-environment`                                  |
+| Corepack 拉不动 pnpm        | 直接用 `apps/mobile/node_modules/.bin/expo`，或先修好本机 pnpm          |
+| `ios/` 被 prebuild 洗掉定制 | 正常；靠 `app.config` + 插件 + `fix-ios-prebuild.sh` 重建，勿手改当真源 |
+
+装成后改 §1「手机安装版」一行，并勾 §5 手机项。
 
 ---
 
