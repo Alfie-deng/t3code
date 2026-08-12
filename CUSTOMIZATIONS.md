@@ -173,6 +173,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                |
 | 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用       |
 | 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件      |
+| 聊天气泡 Markdown 表格    | `index.css` + `ChatMarkdown`：表格贴合气泡宽度自动换行，不再 `max-content` 横向拖读     |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 
