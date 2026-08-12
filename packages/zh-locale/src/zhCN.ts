@@ -6791,6 +6791,11 @@ export function translateExact(value: string): string {
   if (selectedSuffixMatch) return `${selectedSuffixMatch[1]}（已选中）`;
   const closeSubmenuMatch = /^Close (.+)$/.exec(value);
   if (closeSubmenuMatch) return `关闭 ${closeSubmenuMatch[1]}`;
+  const threadProviderLockedMatch =
+    /^(.+) is unavailable in this thread\. Start a new thread to switch providers\.$/.exec(value);
+  if (threadProviderLockedMatch) {
+    return `${threadProviderLockedMatch[1]} 在此对话中不可用。请开新对话再切换提供商。`;
+  }
 
   const exact = UI_TEXT_ALL[value];
   if (exact) return exact;

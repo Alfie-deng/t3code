@@ -159,6 +159,16 @@ describe("T3 Code 简体中文工作流文案", () => {
       "正在检查 Cursor Agent 可用性…",
     );
     expect(
+      translateZhCnUiText(
+        "Codex is unavailable in this thread. Start a new thread to switch providers.",
+      ),
+    ).toBe("Codex 在此对话中不可用。请开新对话再切换提供商。");
+    expect(
+      translateZhCnUiText(
+        "Cursor is unavailable in this thread. Start a new thread to switch providers.",
+      ),
+    ).toBe("Cursor 在此对话中不可用。请开新对话再切换提供商。");
+    expect(
       translateZhCnUiText("Selected model is at capacity. Please try a different model."),
     ).toBe("所选模型当前容量已满，请尝试其他模型。");
     expect(
