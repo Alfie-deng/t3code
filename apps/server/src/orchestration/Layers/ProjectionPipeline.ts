@@ -1253,14 +1253,16 @@ const makeOrchestrationProjectionPipeline = Effect.fn("makeOrchestrationProjecti
                   : null),
               startedAt:
                 existingTurn.value.startedAt ??
-                (Option.isSome(pendingTurnStart)
-                  ? pendingTurnStart.value.requestedAt
-                  : event.occurredAt),
+                // `startedAt` must be when the session actually became running —
+                // NOT the pending request time. Using requestedAt here made the
+                // "Working for" timer jump by the whole cold-start gap (often ~7s
+                // on Cursor session/load) the moment the indicator appeared.
+                event.payload.session.updatedAt,
               requestedAt:
                 existingTurn.value.requestedAt ??
                 (Option.isSome(pendingTurnStart)
                   ? pendingTurnStart.value.requestedAt
-                  : event.occurredAt),
+                  : event.payload.session.updatedAt),
             });
           } else {
             yield* projectionTurnRepository.upsertByTurnId({
@@ -1279,10 +1281,8 @@ const makeOrchestrationProjectionPipeline = Effect.fn("makeOrchestrationProjecti
               state: "running",
               requestedAt: Option.isSome(pendingTurnStart)
                 ? pendingTurnStart.value.requestedAt
-                : event.occurredAt,
-              startedAt: Option.isSome(pendingTurnStart)
-                ? pendingTurnStart.value.requestedAt
-                : event.occurredAt,
+                : event.payload.session.updatedAt,
+              startedAt: event.payload.session.updatedAt,
               completedAt: null,
               checkpointTurnCount: null,
               checkpointRef: null,

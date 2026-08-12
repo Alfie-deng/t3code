@@ -10,6 +10,7 @@ import { describe, expect, it } from "vite-plus/test";
 
 import {
   deriveActiveWorkStartedAt,
+  resolveStickyWorkingTimerStartedAt,
   deriveActivePlanState,
   deriveTurnPlans,
   derivePendingApprovals,
@@ -1715,6 +1716,41 @@ describe("deriveActiveWorkStartedAt", () => {
         "2026-02-27T21:11:00.000Z",
       ),
     ).toBe("2026-02-27T21:11:00.000Z");
+  });
+});
+
+describe("resolveStickyWorkingTimerStartedAt", () => {
+  it("clears when not working", () => {
+    expect(
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: false,
+        previousAnchor: "2026-02-27T21:10:00.000Z",
+        localDispatchStartedAt: "2026-02-27T21:10:00.000Z",
+        nowIso: "2026-02-27T21:10:07.000Z",
+      }),
+    ).toBeNull();
+  });
+
+  it("keeps the previous anchor through cold start into running", () => {
+    expect(
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: true,
+        previousAnchor: "2026-02-27T21:10:00.000Z",
+        localDispatchStartedAt: null,
+        nowIso: "2026-02-27T21:10:07.000Z",
+      }),
+    ).toBe("2026-02-27T21:10:00.000Z");
+  });
+
+  it("anchors to local dispatch start on the first busy frame", () => {
+    expect(
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: true,
+        previousAnchor: null,
+        localDispatchStartedAt: "2026-02-27T21:10:00.000Z",
+        nowIso: "2026-02-27T21:10:00.050Z",
+      }),
+    ).toBe("2026-02-27T21:10:00.000Z");
   });
 });
 

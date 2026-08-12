@@ -319,7 +319,10 @@ export function formatElapsed(startIso: string, endIso: string | undefined): str
   return formatDuration(endedAt - startedAt);
 }
 
-type LatestTurnTiming = Pick<OrchestrationLatestTurn, "turnId" | "startedAt" | "completedAt">;
+type LatestTurnTiming = Pick<
+  OrchestrationLatestTurn,
+  "turnId" | "startedAt" | "completedAt" | "requestedAt"
+>;
 type SessionActivityState = Pick<NonNullable<Thread["session"]>, "status" | "activeTurnId">;
 
 export function isLatestTurnSettled(
@@ -349,6 +352,26 @@ export function deriveActiveWorkStartedAt(
     return latestTurn?.startedAt ?? sendStartedAt;
   }
   return sendStartedAt;
+}
+
+/**
+ * Sticky live "Working for Xs" clock.
+ *
+ * The busy row lights as soon as the user sends (local dispatch / connecting
+ * filler). That wait is intentional UI — and the second count must run through
+ * it so a 7s cold start shows "Working for 7s", then continues at 8s when the
+ * provider is truly running. Never reset the anchor when phase flips to running.
+ */
+export function resolveStickyWorkingTimerStartedAt(input: {
+  isWorking: boolean;
+  previousAnchor: string | null;
+  localDispatchStartedAt: string | null;
+  nowIso: string;
+}): string | null {
+  if (!input.isWorking) {
+    return null;
+  }
+  return input.previousAnchor ?? input.localDispatchStartedAt ?? input.nowIso;
 }
 
 function requestKindFromRequestType(requestType: unknown): PendingApproval["requestKind"] | null {

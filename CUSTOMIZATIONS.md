@@ -175,7 +175,7 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning            |
 | 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件      |
 | 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）    |
-| 发送后空态 Working 灯     | 空窗用「正在思考」装忙；真 running 后「正在运行」从 1s 起跳，不把冷启动秒数算进去       |
+| 发送后空态 Working 灯     | 一点发送就开始「正在运行」计秒；冷启动 7s 接着数到真 running 的 8s，不归零              |
 | 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                     |
 | 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                      |
 

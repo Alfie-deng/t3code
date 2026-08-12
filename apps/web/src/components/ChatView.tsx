@@ -83,7 +83,7 @@ import {
   derivePendingUserInputs,
   derivePhase,
   deriveTimelineEntries,
-  deriveActiveWorkStartedAt,
+  resolveStickyWorkingTimerStartedAt,
   deriveActivePlanState,
   deriveTurnPlans,
   findLatestProposedPlan,
@@ -2245,21 +2245,40 @@ function ChatViewContent(props: ChatViewProps) {
     latestTurnSettled &&
     hasActionableProposedPlan(activeProposedPlan);
   const activePendingApproval = pendingApprovals[0] ?? null;
-  const { beginLocalDispatch, resetLocalDispatch, isPreparingWorktree, isSendBusy } =
-    useLocalDispatchState({
-      activeThread,
-      activeLatestTurn,
-      phase,
-      activePendingApproval: activePendingApproval?.requestId ?? null,
-      activePendingUserInput: activePendingUserInput?.requestId ?? null,
-      threadError,
-    });
+  const {
+    beginLocalDispatch,
+    resetLocalDispatch,
+    localDispatchStartedAt,
+    isPreparingWorktree,
+    isSendBusy,
+  } = useLocalDispatchState({
+    activeThread,
+    activeLatestTurn,
+    phase,
+    activePendingApproval: activePendingApproval?.requestId ?? null,
+    activePendingUserInput: activePendingUserInput?.requestId ?? null,
+    threadError,
+  });
   const isWorking = phase === "running" || isSendBusy || isConnecting || isRevertingCheckpoint;
-  // "Working for Xs" only counts a real provider turn — not local send / cold-start wait.
-  const activeWorkStartedAt =
-    phase === "running"
-      ? deriveActiveWorkStartedAt(activeLatestTurn, activeThread?.session ?? null, null)
-      : null;
+  // Sticky clock from the first busy frame (usually local send) through cold
+  // start into true running — 7s of wait becomes "Working for 7s" then 8s.
+  const [stickyWorkingStartedAt, setStickyWorkingStartedAt] = useState<string | null>(null);
+  useEffect(() => {
+    if (!isWorking) {
+      setStickyWorkingStartedAt(null);
+      return;
+    }
+    setStickyWorkingStartedAt((current) =>
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: true,
+        previousAnchor: current,
+        localDispatchStartedAt,
+        nowIso: new Date().toISOString(),
+      }),
+    );
+  }, [isWorking, localDispatchStartedAt]);
+  // Prefer sticky; fall back to localDispatch on the first busy frame before the effect pins it.
+  const activeWorkStartedAt = isWorking ? (stickyWorkingStartedAt ?? localDispatchStartedAt) : null;
   useEffect(() => {
     attachmentPreviewHandoffByMessageIdRef.current = attachmentPreviewHandoffByMessageId;
   }, [attachmentPreviewHandoffByMessageId]);

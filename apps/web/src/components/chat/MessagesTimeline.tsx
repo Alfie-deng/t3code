@@ -1306,10 +1306,10 @@ function WorkingTimelineRow({ row }: { row: Extract<TimelineRow, { kind: "workin
         <span className="shrink-0">
           {row.createdAt ? (
             <>
-              Working for <WorkingTimer createdAt={row.createdAt} />
+              {translateZhCnUiText("Working for")} <WorkingTimer createdAt={row.createdAt} />
             </>
           ) : (
-            "Working..."
+            translateZhCnUiText("Working for")
           )}
         </span>
         {workingStepLabel ? (
