@@ -186,6 +186,27 @@ describe("T3 Code 简体中文工作流文案", () => {
         "RetriableError: [aborted] http/2 stream closed with error code CANCEL (0x8)",
       ),
     ).toBe("错误：可重试失败（已中止）：HTTP/2 连接流被取消关闭");
+    expect(translateZhCnUiText("Service Tier")).toBe("速度响应");
+    expect(translateZhCnUiText("Normal")).toBe("正常");
+    expect(translateZhCnUiText("Fast")).toBe("快速");
+    expect(translateZhCnUiText("Standard")).toBe("标准");
+    expect(
+      translateZhCnUiText(
+        "RetriableError: [aborted] Client network socket disconnected before secure TLS connection was established",
+      ),
+    ).toBe(
+      "错误：可重试失败（已中止）：建立加密连接前，客户端网络连接已断开。请检查网络或代理后重试。",
+    );
+    expect(
+      translateZhCnUiText(
+        "RetriableError: Stream ended without turnEnded — connection likely dropped mid-stream",
+      ),
+    ).toBe("错误：可重试失败：输出流中途断开，回合未正常结束。请检查网络后重试。");
+    expect(
+      translateZhCnUiText(
+        'Invalid value "default" for session config option "model": expected one of auto, composer-2.5, gpt-5.5-high',
+      ),
+    ).toBe("会话配置「模型」的值「default」无效：应为以下之一：auto, composer-2.5, gpt-5.5-high");
     expect(translateZhCnUiText("http/2 stream closed with error code INTERNAL_ERROR (0x2)")).toBe(
       "错误：HTTP/2 连接流已关闭（INTERNAL_ERROR 0x2）",
     );

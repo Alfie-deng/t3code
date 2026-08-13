@@ -456,6 +456,7 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Minimal: "最低",
   "(default)": "（默认）",
   Default: "默认",
+  Normal: "正常",
   Fast: "快速",
   "Fast mode": "快速模式",
   "Fast Mode": "快速模式",
@@ -4832,6 +4833,20 @@ function translateProviderTransportDetail(value: string): string {
   if (/^The socket connection was closed unexpectedly\b/i.test(detail)) {
     return "模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。";
   }
+  if (
+    /^Client network socket disconnected before secure TLS connection was established\.?$/i.test(
+      detail,
+    )
+  ) {
+    return "建立加密连接前，客户端网络连接已断开。请检查网络或代理后重试。";
+  }
+  if (
+    /^Stream ended without turnEnded\s*[—–-]\s*connection likely dropped mid-stream\.?$/i.test(
+      detail,
+    )
+  ) {
+    return "输出流中途断开，回合未正常结束。请检查网络后重试。";
+  }
   if (/^upstream fetch failed after a credential-visible connection reset:/i.test(detail)) {
     return "上游服务重置了连接，当前无法连接。请检查网络、代理或登录状态后重试。";
   }
@@ -4846,6 +4861,45 @@ function translateProviderTransportDetail(value: string): string {
   }
 
   return detail;
+}
+
+function translateSessionConfigOptionId(configId: string): string {
+  const normalized = configId.trim().toLowerCase();
+  if (normalized === "model") return "模型";
+  if (normalized === "mode") return "模式";
+  if (normalized === "effort" || normalized === "reasoning") return "思考强度";
+  if (normalized === "fast") return "快速模式";
+  if (normalized === "thinking") return "思考";
+  if (normalized === "context" || normalized === "context_size" || normalized === "contextwindow") {
+    return "上下文";
+  }
+  return configId;
+}
+
+function translateSessionConfigOptionError(value: string): string | null {
+  let match =
+    /^Invalid value (?:"([^"]*)"|'([^']*)'|([^\s:]+)) for session config option "([^"]+)": expected one of (.+)$/i.exec(
+      value,
+    );
+  if (match) {
+    const received = match[1] ?? match[2] ?? match[3] ?? "";
+    const configId = match[4] ?? "";
+    const allowed = (match[5] ?? "").trim().replace(/\s+$/, "");
+    return `会话配置「${translateSessionConfigOptionId(configId)}」的值「${received}」无效：应为以下之一：${allowed}`;
+  }
+
+  match =
+    /^Invalid value (?:"([^"]*)"|'([^']*)'|([^\s:]+)) for session config option "([^"]+)": expected (boolean|string)$/i.exec(
+      value,
+    );
+  if (match) {
+    const received = match[1] ?? match[2] ?? match[3] ?? "";
+    const configId = match[4] ?? "";
+    const expectedType = (match[5] ?? "").toLowerCase() === "boolean" ? "布尔值" : "字符串";
+    return `会话配置「${translateSessionConfigOptionId(configId)}」的值「${received}」无效：应为${expectedType}`;
+  }
+
+  return null;
 }
 
 function translateContextLengthError(value: string): string | null {
@@ -5138,6 +5192,9 @@ function translateRuntimeError(value: string): string | null {
   // Cursor/provider transport cancels and siblings (often mid-build / mid-turn interrupt).
   const retriableTranslated = translateRetriableTransportError(value);
   if (retriableTranslated) return retriableTranslated;
+
+  const sessionConfigTranslated = translateSessionConfigOptionError(value);
+  if (sessionConfigTranslated) return sessionConfigTranslated;
 
   const attachmentTranslated = translateComposerAttachmentError(value);
   if (attachmentTranslated) return attachmentTranslated;
