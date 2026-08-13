@@ -37,14 +37,14 @@
 
 ## 1. 当前盘点（2026-08-12）
 
-| 字段                                            | 值                                                                                                                           |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 私人 tip                                        | 以 `git rev-parse --short HEAD` 为准（功能：`78102b68a` 个人 Team 签名、`8a349e674` 空态计时、`edd915ee4` 合上游）           |
-| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                                         |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                                     |
-| 官方 tip（已 fetch）                            | `5a8461480`                                                                                                                  |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-13 12:34 覆盖**：含 Auto/`default` 跳过 + 发现超时 60s；版本号仍是 0.0.33）  |
-| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-12 16:05 重装**：去 ThreadFeed 叠钮，留上游滚到底） |
+| 字段                                            | 值                                                                                                                                                        |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 私人 tip                                        | 以 `git rev-parse --short HEAD` 为准（功能：`78102b68a` 个人 Team 签名、`8a349e674` 空态计时、`edd915ee4` 合上游）                                        |
+| 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                                                                      |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                                                                  |
+| 官方 tip（已 fetch）                            | `5a8461480`                                                                                                                                               |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-13 12:34 覆盖**：含 Auto/`default` 跳过 + 发现超时 60s；版本号仍是 0.0.33）                               |
+| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-13 13:20 重装**：短名隐藏覆盖前缀变体；签名 D4SUBHNYW9。装上后因锁屏未自动打开） |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
 
@@ -142,6 +142,7 @@
 2. 设置 → 提供商详情仍可能看到「已隐藏」；选择器可见集才是投影结果。
 3. 旧中转残留 slug（如 `opencodex/opencode-go/deepseek-v4-flash`）若仍是当前选型会以幽灵项出现——迁官方 slug 或藏掉；那是脏选型，不是投影失败。
 4. 桌面 asar 可搜到 `modelListPreferences`；手机需 production Release 重装。
+5. **短名隐藏覆盖前缀变体**：桌面 `hiddenModels` 里藏 `claude-opus-5` / `gpt-5.5` 时，选择器也要藏掉 `claude-opus-5-thinking-high`、`gpt-5.5-high`、`composer-2.5[fast=true]` 这类变体（共享 `isProviderModelHidden`；精确匹配仍有效；`claude-opus-50` 不得误伤）。桌面设置里点「显示」变体时，会清掉覆盖它的短名条目。
 
 ### 3.4 Nightly / 星夜应用图标
 
@@ -389,7 +390,7 @@ export EXPO_NO_GIT_STATUS=1
 
 ./node_modules/.bin/expo prebuild --clean --platform ios
 
-# 3) 每次 prebuild 后必跑（抬 deployment target / 修 Pod）
+# 3) 每次 prebuild 后必跑（抬 deployment target / 修 Pod / 清漏网的推送权限）
 cd ../..
 bash scripts/fix-ios-prebuild.sh
 

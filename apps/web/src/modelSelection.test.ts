@@ -220,6 +220,31 @@ describe("instance-scoped model selection", () => {
     ]);
   });
 
+  it("hides hyphenated variants when a short base model id is hidden", () => {
+    const providers = [
+      provider({
+        instanceId: "cursor",
+        models: ["composer-2", "claude-opus-5-thinking-high", "gpt-5.5-high"],
+      }),
+    ];
+    const settings: UnifiedSettings = {
+      ...settingsWithProviderInstances(),
+      providerModelPreferences: {
+        [ProviderInstanceId.make("cursor")]: {
+          hiddenModels: ["claude-opus-5", "gpt-5.5"],
+          modelOrder: [],
+        },
+      },
+    };
+    const stock = deriveProviderInstanceEntries(providers).find(
+      (entry) => entry.instanceId === "cursor",
+    )!;
+
+    expect(getAppModelOptionsForInstance(settings, stock).map((option) => option.slug)).toEqual([
+      "composer-2",
+    ]);
+  });
+
   it("applies persisted per-instance model ordering", () => {
     const providers = [
       provider({

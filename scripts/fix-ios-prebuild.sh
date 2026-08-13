@@ -44,5 +44,27 @@ else
   echo "Podfile post_install patch already present"
 fi
 
+# 4. Personal Team cannot sign Push. The config plugin should already drop
+#    aps-environment; Expo still leaks it into T3Code.entitlements after
+#    some prebuilds, which then fails provisioning. Strip if present.
+python3 - <<'PY'
+from pathlib import Path
+path = Path("T3Code/T3Code.entitlements")
+if not path.exists():
+    raise SystemExit(0)
+text = path.read_text()
+if "aps-environment" not in text:
+    raise SystemExit(0)
+path.write_text(
+    """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict/>
+</plist>
+"""
+)
+print("stripped leftover aps-environment from T3Code.entitlements")
+PY
+
 pod install --silent
 echo "iOS prebuild fixes applied"

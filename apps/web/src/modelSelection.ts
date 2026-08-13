@@ -23,7 +23,7 @@ import {
 } from "./providerModels";
 import { ModelEsque } from "./components/chat/providerIconUtils";
 import { type ProviderInstanceEntry, deriveProviderInstanceEntries } from "./providerInstances";
-import { sortModelsForProviderInstance } from "./modelOrdering";
+import { isProviderModelHidden, sortModelsForProviderInstance } from "./modelOrdering";
 
 const MAX_CUSTOM_MODEL_COUNT = 32;
 export const MAX_CUSTOM_MODEL_LENGTH = 256;
@@ -111,9 +111,11 @@ function applyInstanceModelPreferences(
     readonly modelOrder: ReadonlyArray<string>;
   },
 ): AppModelOption[] {
-  const hiddenModels = new Set(preferences.hiddenModels);
+  const hiddenModels = preferences.hiddenModels;
   return sortModelsForProviderInstance(
-    options.filter((option) => option.isCustom || !hiddenModels.has(option.slug)),
+    options.filter(
+      (option) => option.isCustom || !isProviderModelHidden(option.slug, hiddenModels),
+    ),
     { modelOrder: preferences.modelOrder },
   );
 }

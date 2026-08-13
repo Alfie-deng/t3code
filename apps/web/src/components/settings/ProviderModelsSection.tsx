@@ -20,7 +20,7 @@ import { normalizeCustomModelSlug } from "@t3tools/shared/model";
 
 import { cn } from "../../lib/utils";
 import { translateZhCnUiText } from "../../localization/zhCN";
-import { sortModelsForProviderInstance } from "../../modelOrdering";
+import { isProviderModelHidden, sortModelsForProviderInstance } from "../../modelOrdering";
 import { MAX_CUSTOM_MODEL_LENGTH } from "../../modelSelection";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -101,7 +101,6 @@ export function ProviderModelsSection({
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const hiddenModelSet = useMemo(() => new Set(hiddenModels), [hiddenModels]);
   const favoriteModelSet = useMemo(() => new Set(favoriteModels), [favoriteModels]);
   const orderedModels = useMemo(() => {
     return sortModelsForProviderInstance(models, {
@@ -158,8 +157,13 @@ export function ProviderModelsSection({
   };
 
   const handleToggleHidden = (slug: string) => {
-    if (hiddenModelSet.has(slug)) {
-      onHiddenModelsChange(hiddenModels.filter((model) => model !== slug));
+    if (isProviderModelHidden(slug, hiddenModels)) {
+      onHiddenModelsChange(
+        hiddenModels.filter(
+          (entry) =>
+            entry !== slug && !slug.startsWith(`${entry}-`) && !slug.startsWith(`${entry}[`),
+        ),
+      );
       return;
     }
     onHiddenModelsChange([...hiddenModels, slug]);
@@ -195,7 +199,7 @@ export function ProviderModelsSection({
         {orderedModels.map((model, index) => {
           const caps = model.capabilities;
           const capLabels: string[] = [];
-          const isHidden = !model.isCustom && hiddenModelSet.has(model.slug);
+          const isHidden = !model.isCustom && isProviderModelHidden(model.slug, hiddenModels);
           const isFavorite = favoriteModelSet.has(model.slug);
           const previousModel = orderedModels[index - 1];
           const nextModel = orderedModels[index + 1];

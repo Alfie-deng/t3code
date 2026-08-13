@@ -14,6 +14,34 @@ export function providerModelKey(instanceId: ProviderInstanceId, slug: string): 
   return `${instanceId}:${slug}`;
 }
 
+/**
+ * Whether a model slug is covered by a hidden-models preference entry.
+ *
+ * Exact match always counts. Prefixed variants also count when the stored
+ * hidden id is a strict prefix followed by `-` or `[` — so hiding
+ * `claude-opus-5` also hides `claude-opus-5-thinking-high` and
+ * `composer-2.5[fast=true]`, without treating `claude-opus-50` as hidden.
+ */
+export function isProviderModelHidden(
+  slug: string,
+  hiddenModels: ReadonlySet<string> | ReadonlyArray<string> | undefined,
+): boolean {
+  const hidden = toSet(hiddenModels);
+  if (hidden.size === 0) {
+    return false;
+  }
+  if (hidden.has(slug)) {
+    return true;
+  }
+  for (const entry of hidden) {
+    if (!entry) continue;
+    if (slug.startsWith(`${entry}-`) || slug.startsWith(`${entry}[`)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function rankByValue(values: ReadonlyArray<string>): ReadonlyMap<string, number> {
   return new Map(Arr.map(values, (value, index) => [value, index] as const));
 }

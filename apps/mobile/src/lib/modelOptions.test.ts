@@ -211,4 +211,45 @@ describe("mobile model options", () => {
       },
     ]);
   });
+
+  it("hides parameterized Cursor variants when a short base id is hidden", () => {
+    const config = {
+      providers: [
+        {
+          instanceId: "cursor",
+          driver: "cursor",
+          displayName: "Cursor",
+          enabled: true,
+          installed: true,
+          auth: { status: "authenticated" },
+          models: [
+            { slug: "composer-2", name: "Composer 2", isCustom: false, capabilities: null },
+            {
+              slug: "claude-opus-5-thinking-high",
+              name: "Opus 5 Thinking High",
+              isCustom: false,
+              capabilities: null,
+            },
+            { slug: "gpt-5.5-high", name: "GPT 5.5 High", isCustom: false, capabilities: null },
+          ],
+        },
+      ],
+      modelListPreferences: {
+        favorites: [],
+        providerModelPreferences: {
+          [ProviderInstanceId.make("cursor")]: {
+            hiddenModels: ["claude-opus-5", "gpt-5.5"],
+            modelOrder: [],
+          },
+        },
+      },
+    } as unknown as ServerConfig;
+
+    expect(groupByProvider(buildModelOptions(config, null))).toMatchObject([
+      {
+        providerKey: "cursor",
+        models: [{ key: "cursor:composer-2", isCustom: false }],
+      },
+    ]);
+  });
 });

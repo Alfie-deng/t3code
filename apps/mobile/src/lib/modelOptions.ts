@@ -9,7 +9,10 @@ import {
   buildProviderOptionSelectionsFromDescriptors,
   getProviderOptionDescriptors,
 } from "@t3tools/shared/model";
-import { sortModelsForProviderInstance } from "@t3tools/shared/modelOrdering";
+import {
+  sortModelsForProviderInstance,
+  isProviderModelHidden,
+} from "@t3tools/shared/modelOrdering";
 
 export type ModelOption = {
   readonly key: string;
@@ -149,9 +152,9 @@ export function applyModelListPreferences(
       hiddenModels: [],
       modelOrder: [],
     };
-    const hiddenModels = new Set(instancePrefs.hiddenModels);
+    const hiddenModels = instancePrefs.hiddenModels;
     const visible = models.filter(
-      (model) => model.isCustom || !hiddenModels.has(model.selection.model),
+      (model) => model.isCustom || !isProviderModelHidden(model.selection.model, hiddenModels),
     );
     const sorted = sortModelsForProviderInstance(
       visible.map((option) => ({ option, slug: option.selection.model })),
