@@ -18,6 +18,7 @@ import {
   syncDocumentWindowControlsOverlayClass,
 } from "./lib/windowControlsOverlay";
 import { AppRoot } from "./AppRoot";
+import { clerkAppearance } from "./components/clerk/clerkAppearance";
 
 // Electron loads the app from a file-backed shell, so hash history avoids path resolution issues.
 const history = isElectron ? createHashHistory() : createBrowserHistory();
@@ -60,6 +61,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     {clerkPublishableKey && hasCloudPublicConfig() ? (
       isElectron ? (
         <ElectronClerkProvider
+          appearance={clerkAppearance}
           publishableKey={clerkPublishableKey}
           passkeys={passkeys}
           localization={t3ClerkZhCN}
@@ -67,7 +69,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <ManagedRelayAuthProvider>{app}</ManagedRelayAuthProvider>
         </ElectronClerkProvider>
       ) : (
-        <ClerkProvider publishableKey={clerkPublishableKey} localization={t3ClerkZhCN}>
+        <ClerkProvider
+          appearance={clerkAppearance}
+          publishableKey={clerkPublishableKey}
+          localization={t3ClerkZhCN}
+        >
           <ManagedRelayAuthProvider>{app}</ManagedRelayAuthProvider>
         </ClerkProvider>
       )
