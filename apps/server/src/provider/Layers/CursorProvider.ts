@@ -625,8 +625,8 @@ export function getCursorFallbackModels(
   return providerModelsFromSettings([], cursorSettings.customModels, EMPTY_CAPABILITIES);
 }
 
-/** Timeout for `agent about` — it's slower than a simple `--version` probe. */
-const ABOUT_TIMEOUT_MS = 8_000;
+/** Timeout for `agent about` — cold start is often 3–8s, 8s was too tight. */
+const ABOUT_TIMEOUT_MS = 20_000;
 
 /** Strip ANSI escape sequences so we can parse plain key-value lines. */
 function stripAnsi(text: string): string {
@@ -1096,7 +1096,7 @@ export const checkCursorProviderStatus = Effect.fn("checkCursorProviderStatus")(
       probe: {
         installed: true,
         version: null,
-        status: "error",
+        status: "warning",
         auth: { status: "unknown" },
         message: "Cursor Agent CLI is installed but timed out while running `agent about`.",
       },

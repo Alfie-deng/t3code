@@ -263,7 +263,8 @@ Cursor 的 `list_available_models` 会给 `default`（界面叫 Auto）。第一
 - `resolveCursorAcpSessionModelId`：Auto/`default` 不在当前选择器里就跳过，别硬写
 - `applyCursorAcpModelSelection` 先读会话 config，再决定要不要 `setModel`
 - 模型发现超时从 30s 提到 60s（健康检查另拉 ACP 时容易顶满 30s）
-- 验收：选 Auto 连发两轮不应再报 `Invalid value "default"`；具体模型（composer-2.5 等）仍能切
+- `agent about` 超时从 8s 提到 20s；超时降成 warning（桌面错误条不弹），别再把冷启动慢当成没装
+- 验收：选 Auto 连发两轮不应再报 `Invalid value "default"`；具体模型（composer-2.5 等）仍能切；冷启动不应再弹 `timed out while running agent about` 错误条
 
 日常用法：收藏里不要钉 `cursor/default`，用 `composer-2.5` / `grok-4.5`。HTTP/1.1（`~/.cursor/cli-config.json` → `network.useHttp1ForAgent`）继续留着，它只挡 HTTP/2，挡不住 TLS 中途被 Clash TUN 掐断。
 
