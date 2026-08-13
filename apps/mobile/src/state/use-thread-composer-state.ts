@@ -1,5 +1,5 @@
 import { useAtomValue } from "@effect/atom-react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   CommandId,
@@ -11,7 +11,11 @@ import {
   type ThreadId,
 } from "@t3tools/contracts";
 import { safeErrorLogAttributes } from "@t3tools/client-runtime/errors";
-import { deriveActiveWorkStartedAt } from "@t3tools/shared/orchestrationTiming";
+import {
+  isThreadActivelyWorking,
+  resolveStickyWorkingTimerStartedAt,
+  resolveWorkingTimerDurableStartedAt,
+} from "@t3tools/shared/orchestrationTiming";
 
 import { makeQueuedMessageMetadata } from "../lib/commandMetadata";
 import {
@@ -21,6 +25,11 @@ import {
 } from "../lib/composerImages";
 import type { DraftComposerImageAttachment } from "../lib/composerImages";
 import { scopedThreadKey } from "../lib/scopedEntities";
+import {
+  clearStickyWorkingTimerForThread,
+  readStickyWorkingTimerForThread,
+  writeStickyWorkingTimerForThread,
+} from "../lib/stickyWorkingTimer";
 import { buildThreadFeed } from "../lib/threadActivity";
 import { appAtomRegistry } from "../state/atom-registry";
 import {
@@ -116,22 +125,89 @@ export function useThreadComposerState() {
     };
   }, [selectedThreadDetail, selectedThreadShell]);
 
-  const activeWorkStartedAt = useMemo(() => {
-    const selectedThread = selectedThreadDetail ?? selectedThreadShell;
-    if (!selectedThread) {
-      return null;
-    }
+  // Sticky clock from the first busy frame (usually local send) through cold
+  // start into true running — 7s of wait becomes "Working for 7s" then 8s.
+  // Anchors live in a module map so switching threads does not restart at 1s.
+  // `localDispatchStartedAt` also bridges the outbox→projection gap: the queue
+  // can drain before session flips to starting, and without this hold the
+  // Working row blinks off and the sticky anchor is wiped.
+  const [localDispatchStartedAt, setLocalDispatchStartedAt] = useState<string | null>(null);
+  const [stickyWorkingStartedAt, setStickyWorkingStartedAt] = useState<string | null>(() =>
+    selectedThreadKey ? readStickyWorkingTimerForThread(selectedThreadKey) : null,
+  );
 
-    return deriveActiveWorkStartedAt(
-      selectedThread.latestTurn,
-      selectedThreadSessionActivity,
-      null,
-    );
-  }, [selectedThreadDetail, selectedThreadSessionActivity, selectedThreadShell]);
+  useEffect(() => {
+    if (!selectedThreadKey) {
+      setLocalDispatchStartedAt(null);
+      setStickyWorkingStartedAt(null);
+      return;
+    }
+    setLocalDispatchStartedAt(null);
+    setStickyWorkingStartedAt(readStickyWorkingTimerForThread(selectedThreadKey));
+  }, [selectedThreadKey]);
+
+  const orchestrationBusy = isThreadActivelyWorking({
+    orchestrationStatus: selectedThreadSessionActivity?.orchestrationStatus,
+    hasQueuedOutbound: selectedThreadQueueCount > 0,
+  });
+
+  const durableWorkingStartedAt = resolveWorkingTimerDurableStartedAt(
+    selectedThread?.latestTurn ?? null,
+  );
+
+  // Ack local dispatch once the turn has a real start/finish timestamp, or the
+  // session landed in a terminal state — mirrors desktop send-busy clearing.
+  useEffect(() => {
+    if (localDispatchStartedAt === null) {
+      return;
+    }
+    const latestTurn = selectedThread?.latestTurn ?? null;
+    if (latestTurn?.startedAt != null || latestTurn?.completedAt != null) {
+      setLocalDispatchStartedAt(null);
+      return;
+    }
+    const status = selectedThreadSessionActivity?.orchestrationStatus ?? null;
+    if (status === "error" || status === "interrupted" || status === "stopped") {
+      setLocalDispatchStartedAt(null);
+    }
+  }, [
+    localDispatchStartedAt,
+    selectedThread?.latestTurn,
+    selectedThreadSessionActivity?.orchestrationStatus,
+  ]);
+
+  const isWorking = orchestrationBusy || localDispatchStartedAt !== null;
+
+  useEffect(() => {
+    if (!selectedThreadKey) {
+      return;
+    }
+    if (!isWorking) {
+      clearStickyWorkingTimerForThread(selectedThreadKey);
+      setStickyWorkingStartedAt(null);
+      setLocalDispatchStartedAt(null);
+      return;
+    }
+    const resolved = resolveStickyWorkingTimerStartedAt({
+      isWorking: true,
+      previousAnchor: readStickyWorkingTimerForThread(selectedThreadKey),
+      localDispatchStartedAt,
+      durableStartedAt: durableWorkingStartedAt,
+      nowIso: new Date().toISOString(),
+    });
+    writeStickyWorkingTimerForThread(selectedThreadKey, resolved);
+    setStickyWorkingStartedAt(resolved);
+  }, [isWorking, localDispatchStartedAt, durableWorkingStartedAt, selectedThreadKey]);
+
+  const activeWorkStartedAt = isWorking
+    ? (stickyWorkingStartedAt ?? localDispatchStartedAt ?? durableWorkingStartedAt)
+    : null;
 
   const activeThreadBusy =
-    !!selectedThread &&
-    (selectedThread.session?.status === "running" || selectedThread.session?.status === "starting");
+    (!!selectedThread &&
+      (selectedThread.session?.status === "running" ||
+        selectedThread.session?.status === "starting")) ||
+    localDispatchStartedAt !== null;
 
   const onSendMessage = useCallback(async () => {
     if (!selectedThreadShell) {
@@ -166,6 +242,13 @@ export function useThreadComposerState() {
       interactionMode: draft.interactionMode ?? thread.interactionMode,
       createdAt: metadata.createdAt,
     });
+    // Pin the Working clock on the send tap — outbox publish is sync, so the
+    // queued count flips busy before the next paint; still write the local
+    // dispatch anchor so cold-start wait counts from this frame.
+    const sendStartedAt = metadata.createdAt;
+    setLocalDispatchStartedAt(sendStartedAt);
+    writeStickyWorkingTimerForThread(threadKey, sendStartedAt);
+    setStickyWorkingStartedAt(sendStartedAt);
     clearComposerDraftContent(threadKey);
     enqueuePromise.catch((error: unknown) => {
       // Restore text via merge (idempotent) but attachments via the uncapped
@@ -174,6 +257,9 @@ export function useThreadComposerState() {
       // the user attached new ones while the write was in flight.
       void mergeComposerDraftContent(threadKey, { text, attachments: [] });
       appendComposerDraftAttachments(threadKey, attachments);
+      clearStickyWorkingTimerForThread(threadKey);
+      setLocalDispatchStartedAt(null);
+      setStickyWorkingStartedAt(null);
       setPendingConnectionError(
         error instanceof Error ? error.message : "Failed to save the queued message.",
       );

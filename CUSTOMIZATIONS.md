@@ -43,7 +43,7 @@
 | 上次合入上游                                    | `edd915ee4`（合入上游 23 笔至 `5a8461480`：主题/侧栏/手机作曲与标题重生/用量近 24h）                                         |
 | 合并基点 merge-base（相对当下 `upstream/main`） | `5a8461480`（已与 `upstream/main` 对齐）                                                                                     |
 | 官方 tip（已 fetch）                            | `5a8461480`                                                                                                                  |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**仍是合前包**；源码已超前，**尚未**覆盖安装）                                         |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-13 12:34 覆盖**：含 Auto/`default` 跳过 + 发现超时 60s；版本号仍是 0.0.33）  |
 | 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-12 16:05 重装**：去 ThreadFeed 叠钮，留上游滚到底） |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
@@ -203,18 +203,19 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 
 状态：**必须保留**（合上游手机改动时逐条核对）
 
-| 定制                    | 位置                                                                           | 要点                                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| 靛蓝强调色              | `apps/mobile/global.css`                                                       | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items    |
-| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                            | iOS `PingFangSC-Regular` / `Semibold`                                                                       |
-| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                    |
-| 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle` | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                          |
-| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                               | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留 |
-| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                        | 只留 T3 Code 字标                                                                                           |
-| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                        | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                             |
-| 线程标题字重            | 同文件 headerTitleStyle                                                        | `800 → 700`                                                                                                 |
-| Bundle / 能力裁剪       | 见 §3.7「手机个人 Team」                                                       | 真机自用必须走个人 Team 路径；细节与命令只维护在 §3.7 / §6.2，这里不重复抄                                  |
-| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                                  | **每次** `expo prebuild` 后、装机前跑；抬 deployment target 到 18，修 Xcode 27 与旧 Pod                     |
+| 定制                    | 位置                                                                              | 要点                                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 靛蓝强调色              | `apps/mobile/global.css`                                                          | 亮色 primary / user-bubble `#5856d6`；暗色 `#5e5ce6`。列表工作状态色见 `threadPresentation` / list items    |
+| 线程列表苹方            | `thread-list-items.tsx`、`thread-list-v2-items.tsx`                               | iOS `PingFangSC-Regular` / `Semibold`                                                                       |
+| 主页项目组头行距收紧    | `thread-list-items.tsx` `ThreadListGroupHeader`                                   | 折叠只露文件夹时，非首行 `paddingTop` 从 24→10、`paddingBottom` 12→6；勿恢复上游松散间距                    |
+| 重连文案固定短句        | `workspace-connection-status.ts`、`ThreadComposer`、`WorkspaceConnectionTitle`    | 连接中/重试一律 `正在重新连接…`，不拼环境名；状态字走苹方 Semibold                                          |
+| 发送后空态 Working 灯   | `use-thread-composer-state` + `stickyWorkingTimer` + shared `orchestrationTiming` | 与桌面同逻辑：点发送就亮「正在运行」计秒；`starting`/队列中也算忙；按线程粘住锚点，切走再回来不从 1s 重数   |
+| 藏主页 iOS 搜索栏筛选钮 | `HomeHeader.tsx` `IosHomeHeader`                                                  | 不传 `filterMenu` / `filterButtonId` 给 native mail search toolbar；搜索框靠左；筛选能力仍可从别处/逻辑保留 |
+| 去 ALPHA 徽标           | `CompactBrandTitle.tsx`                                                           | 只留 T3 Code 字标                                                                                           |
+| 藏线程页右上工具栏      | `ThreadRouteScreen.tsx`                                                           | `renderThreadRouteBody(false)` — 藏 git/files/terminal 顶栏钮；能力别删代码路径                             |
+| 线程标题字重            | 同文件 headerTitleStyle                                                           | `800 → 700`                                                                                                 |
+| Bundle / 能力裁剪       | 见 §3.7「手机个人 Team」                                                          | 真机自用必须走个人 Team 路径；细节与命令只维护在 §3.7 / §6.2，这里不重复抄                                  |
+| prebuild 后修复         | `scripts/fix-ios-prebuild.sh`                                                     | **每次** `expo prebuild` 后、装机前跑；抬 deployment target 到 18，修 Xcode 27 与旧 Pod                     |
 
 ### 3.7 构建与签名资产
 
@@ -243,6 +244,19 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 | 勿用         | CoreDevice UUID（形如 `0F07F1E5-…`）当 `--device`；锁屏时 launch 常失败                                        |
 
 合上游时若 `app.config.ts` 又把 `appleTeamId` 写死成 `ARK85ZXQ4Z`：**必须**改回「个人 Team → `D4SUBHNYW9`，否则公司队」。装完用 `codesign -dv` 看 `TeamIdentifier=D4SUBHNYW9` + `Identifier=com.jetdeng.t3code`。
+
+### 3.8 Cursor ACP：Auto/`default` 第二轮不要硬塞
+
+状态：**必须保留**
+
+Cursor 的 `list_available_models` 会给 `default`（界面叫 Auto）。第一轮之后会话选择器常被换成 `gpt-5.4-medium-fast` 这类参数化 id，列表里不再有 `default`。T3 若每轮再 `setModel("default")`，会在自己的校验里炸成「Invalid value default」，回合直接起不来。
+
+- `resolveCursorAcpSessionModelId`：Auto/`default` 不在当前选择器里就跳过，别硬写
+- `applyCursorAcpModelSelection` 先读会话 config，再决定要不要 `setModel`
+- 模型发现超时从 30s 提到 60s（健康检查另拉 ACP 时容易顶满 30s）
+- 验收：选 Auto 连发两轮不应再报 `Invalid value "default"`；具体模型（composer-2.5 等）仍能切
+
+日常用法：收藏里不要钉 `cursor/default`，用 `composer-2.5` / `grok-4.5`。HTTP/1.1（`~/.cursor/cli-config.json` → `network.useHttp1ForAgent`）继续留着，它只挡 HTTP/2，挡不住 TLS 中途被 Clash TUN 掐断。
 
 ---
 
@@ -294,6 +308,7 @@ cd ~/developer/t3code
 - [ ] 列表标题苹方；主页搜索栏左侧无筛选钮；重连文案为「正在重新连接…」
 - [ ] 线程页右上无 git/files/terminal 三钮；标题非极粗 800
 - [ ] 滚到底钮：只用上游 `ThreadDetailScreen` 那一颗（勿再在 `ThreadFeed` 叠第二颗）；贴输入框上方可点
+- [ ] 点发送立刻出现「正在运行」计秒；冷启动空态不空白；切线程回来秒数不从 1 重数
 - [ ] 模型选择器长度跟桌面隐藏偏好走；「其他模型」文案；草稿框无英文长 placeholder
 - [ ] （合过标题重生后）线程菜单有「重新生成标题」中文项
 - [ ] （合过用量后）用量页有「近 24 小时」

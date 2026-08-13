@@ -28,6 +28,8 @@ squashfs-root/
 dist-electron/
 .electron-runtime/
 .desktop-install-bak/
+.desktop-stage/
+.desktop-stage-app-path
 .showcase/
 apps/mobile/.showcase/
 artifacts/app-store/screenshots/

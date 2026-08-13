@@ -80,36 +80,72 @@ function eventFor(menu: ReturnType<typeof buildThreadSettingsMenu>, id: string |
   return id === undefined ? undefined : menu.events.get(id);
 }
 
+function actionById(
+  items: ReadonlyArray<{ id?: string; subactions?: unknown[] }>,
+  id: string,
+):
+  | {
+      id?: string;
+      title?: string;
+      subtitle?: string;
+      state?: string;
+      attributes?: unknown;
+      subactions?: unknown[];
+    }
+  | undefined {
+  for (const item of items) {
+    if (item.id === id) {
+      return item as {
+        id?: string;
+        title?: string;
+        subtitle?: string;
+        state?: string;
+        attributes?: unknown;
+        subactions?: unknown[];
+      };
+    }
+  }
+  return undefined;
+}
+
 describe("buildThreadSettingsMenu", () => {
   it("orders the top level as model, options, runtime", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
+    expect(menu.actions.map((action) => action.id)).toEqual([
+      "model",
+      "option:effort",
+      "option:fastMode",
+      "runtime",
+    ]);
     expect(menu.actions.map((action) => action.title)).toEqual([
-      "Model",
-      "Reasoning",
-      "Fast mode",
-      "Runtime",
+      "模型",
+      "思考强度",
+      "快速模式",
+      "操作权限",
     ]);
   });
 
   it("summarizes the current choice on each submenu row", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
-    expect(menu.actions.find((action) => action.title === "Model")?.subtitle).toBe("gpt-current");
-    expect(menu.actions.find((action) => action.title === "Reasoning")?.subtitle).toBe("High");
-    expect(menu.actions.find((action) => action.title === "Runtime")?.subtitle).toBe("Auto");
+    expect(actionById(menu.actions, "model")?.subtitle).toBe("gpt-current");
+    expect(actionById(menu.actions, "option:effort")?.subtitle).toBe("高");
+    expect(actionById(menu.actions, "runtime")?.subtitle).toBe("自动");
   });
 
   it("checkmarks the selected model and resolves selection events", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
-    const modelItems = menu.actions.find((action) => action.title === "Model")?.subactions ?? [];
-    const current = modelItems.find((action) => action.title === "gpt-current");
+    const modelItems = actionById(menu.actions, "model")?.subactions ?? [];
+    const current = actionById(modelItems as ReadonlyArray<{ id?: string }>, "model:0:0");
     expect(current?.state).toBe("on");
-    expect(current?.subtitle).toBe("Default");
-    expect(modelItems.find((action) => action.title === "gpt-next")?.state).toBe("off");
+    expect(current?.subtitle).toBe("默认");
+    expect(actionById(modelItems as ReadonlyArray<{ id?: string }>, "model:0:1")?.state).toBe(
+      "off",
+    );
 
-    const event = eventFor(menu, modelItems.find((action) => action.title === "gpt-next")?.id);
+    const event = eventFor(menu, "model:0:1");
     expect(event?.type).toBe("select-model");
     expect(event?.type === "select-model" ? event.option.selection.model : null).toBe("gpt-next");
   });
@@ -117,16 +153,16 @@ describe("buildThreadSettingsMenu", () => {
   it("folds unselected legacy models behind a nested submenu", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
-    const modelItems = menu.actions.find((action) => action.title === "Model")?.subactions ?? [];
-    expect(modelItems.map((action) => action.title)).toEqual([
-      "gpt-current",
-      "gpt-next",
-      "Legacy Models",
-    ]);
+    const modelItems = actionById(menu.actions, "model")?.subactions ?? [];
+    expect((modelItems as ReadonlyArray<{ title?: string }>).map((action) => action.title)).toEqual(
+      ["gpt-current", "gpt-next", "其他模型"],
+    );
     expect(
-      modelItems
-        .find((action) => action.title === "Legacy Models")
-        ?.subactions?.map((action) => action.title),
+      (
+        actionById(modelItems as ReadonlyArray<{ id?: string }>, "legacy-models")?.subactions as
+          | ReadonlyArray<{ title?: string }>
+          | undefined
+      )?.map((action) => action.title),
     ).toEqual(["gpt-old"]);
   });
 
@@ -138,13 +174,11 @@ describe("buildThreadSettingsMenu", () => {
       selectedModel: legacy?.selection ?? null,
     });
 
-    const modelItems = menu.actions.find((action) => action.title === "Model")?.subactions ?? [];
-    expect(modelItems.map((action) => action.title)).toEqual([
-      "gpt-current",
-      "gpt-next",
-      "gpt-old",
-    ]);
-    expect(modelItems.find((action) => action.title === "gpt-old")?.state).toBe("on");
+    const modelItems = actionById(menu.actions, "model")?.subactions ?? [];
+    expect((modelItems as ReadonlyArray<{ title?: string }>).map((action) => action.title)).toEqual(
+      ["gpt-current", "gpt-next", "gpt-old"],
+    );
+    expect(actionById(modelItems as ReadonlyArray<{ id?: string }>, "model:0:2")?.state).toBe("on");
   });
 
   it("hides prompt-injected and workflow-trigger efforts but still summarizes them", () => {
@@ -153,38 +187,53 @@ describe("buildThreadSettingsMenu", () => {
       optionDescriptors: [{ ...effortDescriptor, currentValue: "ultracode" }],
     });
 
-    const reasoning = menu.actions.find((action) => action.title === "Reasoning");
-    expect(reasoning?.subactions?.map((action) => action.title)).toEqual(["Low", "Medium", "High"]);
+    const reasoning = actionById(menu.actions, "option:effort");
+    expect(
+      (reasoning?.subactions as ReadonlyArray<{ title?: string }> | undefined)?.map(
+        (action) => action.title,
+      ),
+    ).toEqual(["低", "中", "高"]);
     // The hidden value stays visible as the current summary; it just can't be
     // picked from the phone.
     expect(reasoning?.subtitle).toBe("Ultracode");
-    expect(reasoning?.subactions?.every((action) => action.state === "off")).toBe(true);
+    expect(
+      (reasoning?.subactions as ReadonlyArray<{ state?: string }> | undefined)?.every(
+        (action) => action.state === "off",
+      ),
+    ).toBe(true);
   });
 
   it("resolves select-option and runtime events with checkmarked current values", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
     const reasoningItems =
-      menu.actions.find((action) => action.title === "Reasoning")?.subactions ?? [];
-    expect(reasoningItems.find((action) => action.title === "High")?.state).toBe("on");
-    expect(eventFor(menu, reasoningItems.find((action) => action.title === "Low")?.id)).toEqual({
+      (actionById(menu.actions, "option:effort")?.subactions as
+        | ReadonlyArray<{ id?: string; title?: string; state?: string }>
+        | undefined) ?? [];
+    expect(actionById(reasoningItems, "option:effort:high")?.state).toBe("on");
+    expect(eventFor(menu, "option:effort:low")).toEqual({
       type: "set-option",
       optionId: "effort",
       value: "low",
     });
 
     const runtimeItems =
-      menu.actions.find((action) => action.title === "Runtime")?.subactions ?? [];
-    expect(runtimeItems.find((action) => action.title === "Auto")?.state).toBe("on");
-    expect(
-      eventFor(menu, runtimeItems.find((action) => action.title === "Full access")?.id),
-    ).toEqual({ type: "set-runtime", mode: "full-access" });
+      (actionById(menu.actions, "runtime")?.subactions as
+        | ReadonlyArray<{ id?: string; title?: string; state?: string }>
+        | undefined) ?? [];
+    expect(actionById(runtimeItems, "runtime:auto")?.state).toBe("on");
+    expect(actionById(runtimeItems, "runtime:full-access")?.title).toBe("完全访问");
+    expect(eventFor(menu, "runtime:full-access")).toEqual({
+      type: "set-runtime",
+      mode: "full-access",
+    });
   });
 
   it("toggles boolean options with the inverted current value", () => {
     const menu = buildThreadSettingsMenu(baseInput());
 
-    const fastMode = menu.actions.find((action) => action.title === "Fast mode");
+    const fastMode = actionById(menu.actions, "option:fastMode");
+    expect(fastMode?.title).toBe("快速模式");
     expect(fastMode?.state).toBe("off");
     expect(fastMode?.subactions).toBeUndefined();
     expect(eventFor(menu, fastMode?.id)).toEqual({
@@ -197,7 +246,7 @@ describe("buildThreadSettingsMenu", () => {
       ...baseInput(),
       optionDescriptors: [{ ...fastModeDescriptor, currentValue: true }],
     });
-    const enabledRow = enabled.actions.find((action) => action.title === "Fast mode");
+    const enabledRow = actionById(enabled.actions, "option:fastMode");
     expect(enabledRow?.state).toBe("on");
     expect(eventFor(enabled, enabledRow?.id)).toEqual({
       type: "set-option",
@@ -212,25 +261,33 @@ describe("buildThreadSettingsMenu", () => {
     // Root-level boolean toggles refresh in place with clean chrome, so they
     // keep the menu presented.
     expect(
-      menu.actions.find((action) => action.title === "Fast mode")?.attributes?.keepsMenuPresented,
+      (
+        actionById(menu.actions, "option:fastMode")?.attributes as
+          | { keepsMenuPresented?: boolean }
+          | undefined
+      )?.keepsMenuPresented,
     ).toBe(true);
 
     // Picks inside nested submenus close the menu: staying presented leaves
     // the submenu on screen with an expanded-submenu header, and the
     // bottom-anchored collapse back out drops by the levels' height delta.
     const expected = undefined;
-    const modelItems = menu.actions.find((action) => action.title === "Model")?.subactions ?? [];
-    const reasoningItems =
-      menu.actions.find((action) => action.title === "Reasoning")?.subactions ?? [];
-    const runtimeItems =
-      menu.actions.find((action) => action.title === "Runtime")?.subactions ?? [];
-    const nestedPicks = [...modelItems, ...reasoningItems, ...runtimeItems].filter(
-      (action) => action.subactions === undefined,
-    );
+    const modelItems = actionById(menu.actions, "model")?.subactions ?? [];
+    const reasoningItems = actionById(menu.actions, "option:effort")?.subactions ?? [];
+    const runtimeItems = actionById(menu.actions, "runtime")?.subactions ?? [];
+    const nestedPicks = [
+      ...(modelItems as ReadonlyArray<{ subactions?: unknown[]; attributes?: unknown }>),
+      ...(reasoningItems as ReadonlyArray<{ subactions?: unknown[]; attributes?: unknown }>),
+      ...(runtimeItems as ReadonlyArray<{ subactions?: unknown[]; attributes?: unknown }>),
+    ].filter((action) => action.subactions === undefined);
     expect(nestedPicks.length).toBeGreaterThan(0);
-    expect(nestedPicks.every((action) => action.attributes?.keepsMenuPresented === expected)).toBe(
-      true,
-    );
+    expect(
+      nestedPicks.every(
+        (action) =>
+          (action.attributes as { keepsMenuPresented?: boolean } | undefined)
+            ?.keepsMenuPresented === expected,
+      ),
+    ).toBe(true);
   });
 
   it("sections models by provider only when multiple groups are offered", () => {
@@ -243,15 +300,22 @@ describe("buildThreadSettingsMenu", () => {
       runtimeMode: "auto",
     });
 
-    const modelItems = menu.actions.find((action) => action.title === "Model")?.subactions ?? [];
+    const modelItems = actionById(menu.actions, "model")?.subactions ?? [];
     expect(
-      modelItems.map((action) => ({ title: action.title, inline: action.displayInline ?? false })),
+      (modelItems as ReadonlyArray<{ title?: string; displayInline?: boolean }>).map((action) => ({
+        title: action.title,
+        inline: action.displayInline ?? false,
+      })),
     ).toEqual([
       { title: "Codex", inline: true },
       { title: "Claude", inline: true },
     ]);
-    const claudeSection = modelItems.find((action) => action.title === "Claude");
-    expect(claudeSection?.subactions?.map((action) => action.title)).toEqual(["fable-5"]);
+    const claudeSection = actionById(modelItems as ReadonlyArray<{ id?: string }>, "model-group:1");
+    expect(
+      (claudeSection?.subactions as ReadonlyArray<{ title?: string }> | undefined)?.map(
+        (action) => action.title,
+      ),
+    ).toEqual(["fable-5"]);
   });
 
   const eventTypes = (menu: ReturnType<typeof buildThreadSettingsMenu>) => {

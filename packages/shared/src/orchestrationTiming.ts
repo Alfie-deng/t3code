@@ -2,6 +2,7 @@ type LatestTurnTiming = {
   readonly turnId: string | null;
   readonly startedAt: string | null;
   readonly completedAt: string | null;
+  readonly requestedAt?: string | null;
 };
 
 type SessionActivityState = {
@@ -51,4 +52,57 @@ export function deriveActiveWorkStartedAt(
     return latestTurn?.startedAt ?? sendStartedAt;
   }
   return sendStartedAt;
+}
+
+/**
+ * Durable turn timestamps for the live "Working for Xs" clock after a view
+ * remounts (route changes wipe component state). Prefer `requestedAt`
+ * (send / pending) so cold-start wait stays counted; then `startedAt`.
+ */
+export function resolveWorkingTimerDurableStartedAt(
+  latestTurn: LatestTurnTiming | null,
+): string | null {
+  const requestedAt = latestTurn?.requestedAt ?? null;
+  const startedAt = latestTurn?.startedAt ?? null;
+  if (requestedAt && startedAt) {
+    return requestedAt <= startedAt ? requestedAt : startedAt;
+  }
+  return requestedAt ?? startedAt;
+}
+
+/**
+ * Sticky live "Working for Xs" clock.
+ *
+ * The busy row lights as soon as the user sends (local dispatch / connecting
+ * filler). That wait is intentional UI — and the second count must run through
+ * it so a 7s cold start shows "Working for 7s", then continues at 8s when the
+ * provider is truly running. Never reset the anchor when phase flips to running.
+ *
+ * `previousAnchor` must survive remounts (module-level per-thread store).
+ * `durableStartedAt` covers the case where sticky was never written
+ * (e.g. cold reload mid-run) — never fall straight through to `nowIso` or the
+ * counter restarts at 1s after switching threads.
+ */
+export function resolveStickyWorkingTimerStartedAt(input: {
+  isWorking: boolean;
+  previousAnchor: string | null;
+  localDispatchStartedAt: string | null;
+  durableStartedAt: string | null;
+  nowIso: string;
+}): string | null {
+  if (!input.isWorking) {
+    return null;
+  }
+  return (
+    input.previousAnchor ?? input.localDispatchStartedAt ?? input.durableStartedAt ?? input.nowIso
+  );
+}
+
+/** True while a thread should show the live Working row (including cold start). */
+export function isThreadActivelyWorking(input: {
+  readonly orchestrationStatus: string | null | undefined;
+  readonly hasQueuedOutbound: boolean;
+}): boolean {
+  const status = input.orchestrationStatus ?? null;
+  return status === "running" || status === "starting" || input.hasQueuedOutbound;
 }

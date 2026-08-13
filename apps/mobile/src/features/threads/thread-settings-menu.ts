@@ -6,6 +6,7 @@ import {
 } from "@t3tools/shared/model";
 
 import type { ModelOption, ProviderGroup } from "../../lib/modelOptions";
+import { t } from "../../localization/zhCN";
 
 /**
  * Desktop-oriented effort keywords that don't belong in the phone picker.
@@ -83,7 +84,7 @@ export function buildThreadSettingsMenu(input: {
     return {
       id,
       title: option.label,
-      ...(option.isDefault ? { subtitle: "Default" } : {}),
+      ...(option.isDefault ? { subtitle: t("Default") } : {}),
       state: isSelected(option) ? "on" : "off",
     };
   };
@@ -125,14 +126,14 @@ export function buildThreadSettingsMenu(input: {
   if (legacyItems.length > 0) {
     modelItems.push({
       id: "legacy-models",
-      title: "Legacy Models",
+      title: t("Legacy models"),
       subactions: legacyItems,
     });
   }
   if (modelItems.length > 0) {
     actions.push({
       id: "model",
-      title: "Model",
+      title: t("Model"),
       ...(selectedModelLabel === undefined
         ? input.selectedModel
           ? { subtitle: input.selectedModel.model }
@@ -152,7 +153,7 @@ export function buildThreadSettingsMenu(input: {
       });
       actions.push({
         id,
-        title: descriptor.label,
+        title: t(descriptor.label),
         state: descriptor.currentValue ? "on" : "off",
         attributes: keepPresented,
       });
@@ -164,7 +165,7 @@ export function buildThreadSettingsMenu(input: {
       events.set(id, { type: "set-option", optionId: descriptor.id, value: choice.id });
       return {
         id,
-        title: choice.label,
+        title: t(choice.label),
         state: choice.id === currentValue ? "on" : "off",
       };
     });
@@ -174,25 +175,23 @@ export function buildThreadSettingsMenu(input: {
     const currentLabel = getProviderOptionCurrentLabel(descriptor);
     actions.push({
       id: `option:${descriptor.id}`,
-      title: descriptor.label,
-      ...(currentLabel === undefined ? {} : { subtitle: currentLabel }),
+      title: t(descriptor.label),
+      ...(currentLabel === undefined ? {} : { subtitle: t(currentLabel) }),
       subactions: choices,
     });
   }
 
-  const runtimeLabel = RUNTIME_MODE_CHOICES.find(
-    (choice) => choice.mode === input.runtimeMode,
-  )?.label;
+  const runtimeChoice = RUNTIME_MODE_CHOICES.find((choice) => choice.mode === input.runtimeMode);
   actions.push({
     id: "runtime",
-    title: "Runtime",
-    ...(runtimeLabel === undefined ? {} : { subtitle: runtimeLabel }),
+    title: t("Runtime"),
+    ...(runtimeChoice === undefined ? {} : { subtitle: t(runtimeChoice.label) }),
     subactions: RUNTIME_MODE_CHOICES.map((choice): MenuAction => {
       const id = `runtime:${choice.mode}`;
       events.set(id, { type: "set-runtime", mode: choice.mode });
       return {
         id,
-        title: choice.label,
+        title: t(choice.label),
         state: choice.mode === input.runtimeMode ? "on" : "off",
       };
     }),
