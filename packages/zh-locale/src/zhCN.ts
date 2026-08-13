@@ -4837,6 +4837,14 @@ function translateProviderTransportDetail(value: string): string {
     return "模型服务连接意外中断。请重试；若持续失败，请切换模型或检查网络/代理。";
   }
   if (
+    /^socket hang up\.?$/i.test(detail) ||
+    /^other side closed\.?$/i.test(detail) ||
+    /^(?:read|write)\s+ECONNRESET\.?$/i.test(detail) ||
+    /^ECONNRESET\.?$/i.test(detail)
+  ) {
+    return "网络连接被对方提前关闭。请检查网络或代理后重试。";
+  }
+  if (
     /^Client network socket disconnected before secure TLS connection was established\.?$/i.test(
       detail,
     )

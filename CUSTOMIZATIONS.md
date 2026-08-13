@@ -43,7 +43,7 @@
 | 上次合入上游                                    | `d5ed73267`（合入上游 21 笔至 `6bc6cb6be`：PR 面/主题/右侧空态/手机气泡列表与命令层）                                                                 |
 | 合并基点 merge-base（相对当下 `upstream/main`） | `6bc6cb6be`（已与 `upstream/main` 对齐）                                                                                                              |
 | 官方 tip（已 fetch）                            | `6bc6cb6be`                                                                                                                                           |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-13 13:38 覆盖**：含本轮上游 PR 面；签名 Alfie Development；侧栏仍藏 PR/检查更新）                     |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-13 15:05 覆盖**：含不能换模型整句 + hang up/ECONNRESET 中文；签名 Alfie Development）                 |
 | 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.3`（**2026-08-13 13:45 重装**：含气泡有序列表 + 命令层毛玻璃 + 短名隐藏；签名 D4SUBHNYW9） |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。

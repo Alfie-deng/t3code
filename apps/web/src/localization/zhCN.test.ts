@@ -207,6 +207,15 @@ describe("T3 Code 简体中文工作流文案", () => {
         "RetriableError: Stream ended without turnEnded — connection likely dropped mid-stream",
       ),
     ).toBe("错误：可重试失败：输出流中途断开，回合未正常结束。请检查网络后重试。");
+    expect(translateZhCnUiText("RetriableError: [aborted] socket hang up")).toBe(
+      "错误：可重试失败（已中止）：网络连接被对方提前关闭。请检查网络或代理后重试。",
+    );
+    expect(translateZhCnUiText("Error: RetriableError: [aborted] socket hang up")).toBe(
+      "错误：可重试失败（已中止）：网络连接被对方提前关闭。请检查网络或代理后重试。",
+    );
+    expect(translateZhCnUiText("RetriableError: [aborted] read ECONNRESET")).toBe(
+      "错误：可重试失败（已中止）：网络连接被对方提前关闭。请检查网络或代理后重试。",
+    );
     expect(
       translateZhCnUiText(
         'Invalid value "default" for session config option "model": expected one of auto, composer-2.5, gpt-5.5-high',
