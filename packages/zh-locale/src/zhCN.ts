@@ -4150,6 +4150,9 @@ const EXTRA_UI_TEXT: Readonly<Record<string, string>> = {
     "将永久清除那些对话的历史记录。",
   "This provider does not allow switching models after a conversation has started.":
     "此提供商不允许在对话开始后切换模型。",
+  "Start a new thread to use this model.": "请开新对话再使用该模型。",
+  "This provider does not allow switching models after a conversation has started. Start a new thread to use this model.":
+    "此提供商不允许在对话开始后切换模型。请开新对话再使用该模型。",
   "This removes only the project entries, not the files on disk.":
     "这只会移除项目记录，不会删除磁盘上的文件。",
   "This removes only this project entry.": "这只会移除此项目记录。",
@@ -6858,6 +6861,11 @@ export function translateExact(value: string): string {
     /^(.+) is unavailable in this thread\. Start a new thread to switch providers\.$/.exec(value);
   if (threadProviderLockedMatch) {
     return `${threadProviderLockedMatch[1]} 在此对话中不可用。请开新对话再切换提供商。`;
+  }
+  const threadModelLockedMatch = /^(.+) Start a new thread to use this model\.$/.exec(value);
+  if (threadModelLockedMatch) {
+    const prefix = translateExact(threadModelLockedMatch[1]?.trim() ?? "");
+    return `${prefix}请开新对话再使用该模型。`;
   }
 
   const exact = UI_TEXT_ALL[value];

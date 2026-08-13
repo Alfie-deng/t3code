@@ -169,6 +169,11 @@ describe("T3 Code 简体中文工作流文案", () => {
       ),
     ).toBe("Cursor 在此对话中不可用。请开新对话再切换提供商。");
     expect(
+      translateZhCnUiText(
+        "This provider does not allow switching models after a conversation has started. Start a new thread to use this model.",
+      ),
+    ).toBe("此提供商不允许在对话开始后切换模型。请开新对话再使用该模型。");
+    expect(
       translateZhCnUiText("Selected model is at capacity. Please try a different model."),
     ).toBe("所选模型当前容量已满，请尝试其他模型。");
     expect(
