@@ -118,4 +118,34 @@ describe("applyCursorAcpModelSelection", () => {
       { type: "config", configId: "fast", value: "true" },
     ]);
   });
+
+  it("does not re-apply Auto after Cursor drops default from the session selector", async () => {
+    const calls: Array<
+      | { readonly type: "model"; readonly value: string }
+      | { readonly type: "config"; readonly configId: string; readonly value: string | boolean }
+    > = [];
+
+    const runtime = {
+      getConfigOptions: Effect.succeed(parameterizedGpt54ConfigOptions),
+      setModel: (value: string) =>
+        Effect.sync(() => {
+          calls.push({ type: "model", value });
+        }),
+      setConfigOption: (configId: string, value: string | boolean) =>
+        Effect.sync(() => {
+          calls.push({ type: "config", configId, value });
+        }),
+    };
+
+    await Effect.runPromise(
+      applyCursorAcpModelSelection({
+        runtime,
+        model: "default",
+        selections: [{ id: "reasoning", value: "high" }],
+        mapError: ({ step, cause }) => `${step}: ${cause.message}`,
+      }),
+    );
+
+    expect(calls).toEqual([{ type: "config", configId: "reasoning", value: "high" }]);
+  });
 });

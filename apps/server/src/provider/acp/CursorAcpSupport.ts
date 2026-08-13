@@ -8,8 +8,8 @@ import type * as EffectAcpErrors from "effect-acp/errors";
 
 import {
   CURSOR_PARAMETERIZED_MODEL_PICKER_CAPABILITIES,
-  resolveCursorAcpBaseModelId,
   resolveCursorAcpConfigUpdates,
+  resolveCursorAcpSessionModelId,
 } from "../Layers/CursorProvider.ts";
 import * as AcpSessionRuntime from "./AcpSessionRuntime.ts";
 
@@ -87,14 +87,18 @@ export function applyCursorAcpModelSelection<E>(input: {
   readonly mapError: (context: CursorAcpModelSelectionErrorContext) => E;
 }): Effect.Effect<void, E> {
   return Effect.gen(function* () {
-    yield* input.runtime.setModel(resolveCursorAcpBaseModelId(input.model)).pipe(
-      Effect.mapError((cause) =>
-        input.mapError({
-          cause,
-          step: "set-model",
-        }),
-      ),
-    );
+    const configOptions = yield* input.runtime.getConfigOptions;
+    const resolvedModel = resolveCursorAcpSessionModelId(input.model, configOptions);
+    if (resolvedModel !== undefined) {
+      yield* input.runtime.setModel(resolvedModel).pipe(
+        Effect.mapError((cause) =>
+          input.mapError({
+            cause,
+            step: "set-model",
+          }),
+        ),
+      );
+    }
 
     const configUpdates = resolveCursorAcpConfigUpdates(
       yield* input.runtime.getConfigOptions,

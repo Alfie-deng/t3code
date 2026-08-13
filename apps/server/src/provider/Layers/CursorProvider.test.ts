@@ -22,6 +22,7 @@ import {
   parseCursorCliConfigChannel,
   parseCursorVersionDate,
   resolveCursorAcpBaseModelId,
+  resolveCursorAcpSessionModelId,
   resolveCursorAcpConfigUpdates,
 } from "./CursorProvider.ts";
 
@@ -632,6 +633,39 @@ describe("resolveCursorAcpBaseModelId", () => {
     );
     expect(resolveCursorAcpBaseModelId("composer-2")).toBe("composer-2");
     expect(resolveCursorAcpBaseModelId("auto")).toBe("auto");
+  });
+});
+
+describe("resolveCursorAcpSessionModelId", () => {
+  it("keeps Auto when the session selector still lists default", () => {
+    expect(
+      resolveCursorAcpSessionModelId("default", [
+        {
+          id: "model",
+          name: "Model",
+          category: "model",
+          type: "select",
+          currentValue: "default",
+          options: [
+            { value: "default", name: "Auto" },
+            { value: "composer-2.5", name: "Composer 2.5" },
+          ],
+        },
+      ]),
+    ).toBe("default");
+  });
+
+  it("skips Auto after Cursor replaces the selector with parameterized ids", () => {
+    expect(
+      resolveCursorAcpSessionModelId("default", parameterizedGpt54ConfigOptions),
+    ).toBeUndefined();
+    expect(resolveCursorAcpSessionModelId("auto", parameterizedGpt54ConfigOptions)).toBeUndefined();
+  });
+
+  it("still forwards a concrete model that the selector accepts", () => {
+    expect(
+      resolveCursorAcpSessionModelId("gpt-5.4-medium-fast", parameterizedGpt54ConfigOptions),
+    ).toBe("gpt-5.4-medium-fast");
   });
 });
 

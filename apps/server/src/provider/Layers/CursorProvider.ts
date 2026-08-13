@@ -46,6 +46,7 @@ import {
 } from "../providerMaintenance.ts";
 import * as AcpSessionRuntime from "../acp/AcpSessionRuntime.ts";
 import { CursorListAvailableModelsResponse } from "../acp/CursorAcpExtension.ts";
+import { collectSessionConfigOptionValues } from "../acp/AcpRuntimeModel.ts";
 
 const decodeCursorListAvailableModelsResponse = Schema.decodeUnknownEffect(
   CursorListAvailableModelsResponse,
@@ -59,7 +60,7 @@ const EMPTY_CAPABILITIES: ModelCapabilities = createModelCapabilities({
   optionDescriptors: [],
 });
 
-const CURSOR_ACP_MODEL_DISCOVERY_TIMEOUT_MS = 30_000;
+const CURSOR_ACP_MODEL_DISCOVERY_TIMEOUT_MS = 60_000;
 const CURSOR_PARAMETERIZED_MODEL_PICKER_MIN_VERSION_DATE = 2026_04_08;
 const CURSOR_CLI_INSTALLATION_DOCS_URL = "https://cursor.com/docs/cli/installation";
 const CURSOR_ACP_MODEL_DISCOVERY_FAILED_MESSAGE = [
@@ -474,6 +475,53 @@ export function resolveCursorAcpBaseModelId(model: string | null | undefined): s
   const trimmed = model?.trim();
   const base = trimmed && trimmed.length > 0 ? trimmed : "default";
   return base.includes("[") ? base.slice(0, base.indexOf("[")) : base;
+}
+
+export function isCursorAcpAutoModelId(model: string | null | undefined): boolean {
+  const normalized = model?.trim().toLowerCase();
+  return normalized === "default" || normalized === "auto";
+}
+
+function findCursorSessionModelConfigOption(
+  configOptions: ReadonlyArray<EffectAcpSchema.SessionConfigOption> | null | undefined,
+): EffectAcpSchema.SessionConfigOption | undefined {
+  if (!configOptions || configOptions.length === 0) {
+    return undefined;
+  }
+  return (
+    configOptions.find((option) => getCursorConfigOptionCategory(option) === "model") ??
+    configOptions.find((option) => option.id.trim().toLowerCase() === "model")
+  );
+}
+
+/**
+ * Resolve the model id that is safe to send to `session/set_config_option`.
+ *
+ * Cursor advertises `default` (Auto) from `list_available_models`, but after
+ * the first turn it often replaces the session model selector with
+ * parameterized ids such as `gpt-5.4-medium-fast`. Re-applying `default` then
+ * fails T3's own validation and aborts the turn.
+ *
+ * Return `undefined` to keep the session's current model.
+ */
+export function resolveCursorAcpSessionModelId(
+  model: string | null | undefined,
+  configOptions: ReadonlyArray<EffectAcpSchema.SessionConfigOption> | null | undefined,
+): string | undefined {
+  const base = resolveCursorAcpBaseModelId(model);
+  const modelOption = findCursorSessionModelConfigOption(configOptions);
+  if (!modelOption || modelOption.type !== "select") {
+    return isCursorAcpAutoModelId(base) ? undefined : base;
+  }
+
+  const allowedValues = collectSessionConfigOptionValues(modelOption);
+  if (allowedValues.includes(base)) {
+    return base;
+  }
+  if (isCursorAcpAutoModelId(base)) {
+    return allowedValues.find((value) => isCursorAcpAutoModelId(value));
+  }
+  return base;
 }
 
 export function resolveCursorAcpConfigUpdates(
