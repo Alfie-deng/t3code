@@ -380,10 +380,9 @@ export function writeStickyWorkingTimerForThread(
     stickyWorkingTimerByThreadId.delete(threadId);
     return;
   }
-  const existing = stickyWorkingTimerByThreadId.get(threadId);
-  if (existing && existing <= startedAt) {
-    return;
-  }
+  // Store whatever resolveStickyWorkingTimerStartedAt decided. Keeping only the
+  // earliest write blocked new sends from replacing a previous turn's anchor,
+  // which stacked idle time into the next "Working for" clock.
   stickyWorkingTimerByThreadId.set(threadId, startedAt);
 }
 

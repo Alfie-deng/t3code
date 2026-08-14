@@ -446,11 +446,11 @@ describe("sticky working timer per thread", () => {
     resetStickyWorkingTimersForTests();
   });
 
-  it("keeps the earliest anchor across remount-style reads", () => {
+  it("stores the resolved anchor so a new send can replace the previous turn", () => {
     const threadId = ThreadId.make("thread-working");
     writeStickyWorkingTimerForThread(threadId, "2026-02-27T21:10:00.000Z");
-    writeStickyWorkingTimerForThread(threadId, "2026-02-27T21:10:40.000Z");
-    expect(readStickyWorkingTimerForThread(threadId)).toBe("2026-02-27T21:10:00.000Z");
+    writeStickyWorkingTimerForThread(threadId, "2026-02-27T21:12:00.000Z");
+    expect(readStickyWorkingTimerForThread(threadId)).toBe("2026-02-27T21:12:00.000Z");
   });
 
   it("isolates anchors by thread and clears only the target", () => {

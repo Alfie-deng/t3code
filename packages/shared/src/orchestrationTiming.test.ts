@@ -28,6 +28,17 @@ describe("resolveWorkingTimerDurableStartedAt", () => {
       }),
     ).toBe("2026-02-27T21:10:00.000Z");
   });
+
+  it("ignores settled turns so the next send does not inherit the previous clock", () => {
+    expect(
+      resolveWorkingTimerDurableStartedAt({
+        turnId: "t1",
+        requestedAt: "2026-02-27T21:10:00.000Z",
+        startedAt: "2026-02-27T21:10:01.000Z",
+        completedAt: "2026-02-27T21:10:40.000Z",
+      }),
+    ).toBeNull();
+  });
 });
 
 describe("resolveStickyWorkingTimerStartedAt", () => {
@@ -65,6 +76,18 @@ describe("resolveStickyWorkingTimerStartedAt", () => {
         nowIso: "2026-02-27T21:10:40.000Z",
       }),
     ).toBe("2026-02-27T21:10:00.000Z");
+  });
+
+  it("lets a newer local send replace a stale previous-turn sticky", () => {
+    expect(
+      resolveStickyWorkingTimerStartedAt({
+        isWorking: true,
+        previousAnchor: "2026-02-27T21:10:00.000Z",
+        localDispatchStartedAt: "2026-02-27T21:12:00.000Z",
+        durableStartedAt: null,
+        nowIso: "2026-02-27T21:12:00.050Z",
+      }),
+    ).toBe("2026-02-27T21:12:00.000Z");
   });
 
   it("clears when not working", () => {

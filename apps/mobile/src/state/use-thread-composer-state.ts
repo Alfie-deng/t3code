@@ -128,21 +128,27 @@ export function useThreadComposerState() {
   // Sticky clock from the first busy frame (usually local send) through cold
   // start into true running — 7s of wait becomes "Working for 7s" then 8s.
   // Anchors live in a module map so switching threads does not restart at 1s.
-  // `localDispatchStartedAt` also bridges the outbox→projection gap: the queue
-  // can drain before session flips to starting, and without this hold the
-  // Working row blinks off and the sticky anchor is wiped.
-  const [localDispatchStartedAt, setLocalDispatchStartedAt] = useState<string | null>(null);
+  // `localDispatch` also bridges the outbox→projection gap: the queue can drain
+  // before session flips to starting, and without this hold the Working row
+  // blinks off and the sticky anchor is wiped.
+  const [localDispatch, setLocalDispatch] = useState<{
+    readonly startedAt: string;
+    readonly latestTurnTurnId: string | null;
+    readonly latestTurnStartedAt: string | null;
+    readonly latestTurnCompletedAt: string | null;
+  } | null>(null);
+  const localDispatchStartedAt = localDispatch?.startedAt ?? null;
   const [stickyWorkingStartedAt, setStickyWorkingStartedAt] = useState<string | null>(() =>
     selectedThreadKey ? readStickyWorkingTimerForThread(selectedThreadKey) : null,
   );
 
   useEffect(() => {
     if (!selectedThreadKey) {
-      setLocalDispatchStartedAt(null);
+      setLocalDispatch(null);
       setStickyWorkingStartedAt(null);
       return;
     }
-    setLocalDispatchStartedAt(null);
+    setLocalDispatch(null);
     setStickyWorkingStartedAt(readStickyWorkingTimerForThread(selectedThreadKey));
   }, [selectedThreadKey]);
 
@@ -155,28 +161,34 @@ export function useThreadComposerState() {
     selectedThread?.latestTurn ?? null,
   );
 
-  // Ack local dispatch once the turn has a real start/finish timestamp, or the
-  // session landed in a terminal state — mirrors desktop send-busy clearing.
+  // Ack local dispatch only when turn start/finish *advances* past the snapshot
+  // taken at send — the previous settled turn already has completedAt and must
+  // not clear send-busy (that made the next turn clock jump back across idle).
   useEffect(() => {
-    if (localDispatchStartedAt === null) {
+    if (localDispatch === null) {
       return;
     }
     const latestTurn = selectedThread?.latestTurn ?? null;
-    if (latestTurn?.startedAt != null || latestTurn?.completedAt != null) {
-      setLocalDispatchStartedAt(null);
+    const startedAtAdvanced =
+      latestTurn?.startedAt != null && localDispatch.latestTurnStartedAt !== latestTurn.startedAt;
+    const completedAtAdvanced =
+      latestTurn?.completedAt != null &&
+      localDispatch.latestTurnCompletedAt !== latestTurn.completedAt;
+    if (startedAtAdvanced || completedAtAdvanced) {
+      setLocalDispatch(null);
       return;
     }
     const status = selectedThreadSessionActivity?.orchestrationStatus ?? null;
     if (status === "error" || status === "interrupted" || status === "stopped") {
-      setLocalDispatchStartedAt(null);
+      setLocalDispatch(null);
     }
   }, [
-    localDispatchStartedAt,
+    localDispatch,
     selectedThread?.latestTurn,
     selectedThreadSessionActivity?.orchestrationStatus,
   ]);
 
-  const isWorking = orchestrationBusy || localDispatchStartedAt !== null;
+  const isWorking = orchestrationBusy || localDispatch !== null;
 
   useEffect(() => {
     if (!selectedThreadKey) {
@@ -185,7 +197,7 @@ export function useThreadComposerState() {
     if (!isWorking) {
       clearStickyWorkingTimerForThread(selectedThreadKey);
       setStickyWorkingStartedAt(null);
-      setLocalDispatchStartedAt(null);
+      setLocalDispatch(null);
       return;
     }
     const resolved = resolveStickyWorkingTimerStartedAt({
@@ -207,7 +219,7 @@ export function useThreadComposerState() {
     (!!selectedThread &&
       (selectedThread.session?.status === "running" ||
         selectedThread.session?.status === "starting")) ||
-    localDispatchStartedAt !== null;
+    localDispatch !== null;
 
   const onSendMessage = useCallback(async () => {
     if (!selectedThreadShell) {
@@ -246,7 +258,13 @@ export function useThreadComposerState() {
     // queued count flips busy before the next paint; still write the local
     // dispatch anchor so cold-start wait counts from this frame.
     const sendStartedAt = metadata.createdAt;
-    setLocalDispatchStartedAt(sendStartedAt);
+    const latestTurn = thread.latestTurn ?? null;
+    setLocalDispatch({
+      startedAt: sendStartedAt,
+      latestTurnTurnId: latestTurn?.turnId ?? null,
+      latestTurnStartedAt: latestTurn?.startedAt ?? null,
+      latestTurnCompletedAt: latestTurn?.completedAt ?? null,
+    });
     writeStickyWorkingTimerForThread(threadKey, sendStartedAt);
     setStickyWorkingStartedAt(sendStartedAt);
     clearComposerDraftContent(threadKey);
@@ -258,7 +276,7 @@ export function useThreadComposerState() {
       void mergeComposerDraftContent(threadKey, { text, attachments: [] });
       appendComposerDraftAttachments(threadKey, attachments);
       clearStickyWorkingTimerForThread(threadKey);
-      setLocalDispatchStartedAt(null);
+      setLocalDispatch(null);
       setStickyWorkingStartedAt(null);
       setPendingConnectionError(
         error instanceof Error ? error.message : "Failed to save the queued message.",

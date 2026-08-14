@@ -358,10 +358,17 @@ export function deriveActiveWorkStartedAt(
  * Durable turn timestamps for the live "Working for Xs" clock after ChatView
  * remounts (thread route changes wipe component state). Prefer `requestedAt`
  * (send / pending) so cold-start wait stays counted; then `startedAt`.
+ *
+ * Settled turns (`completedAt` set) must not feed the live clock — otherwise
+ * the next send can fall back to the previous turn's start and count the idle
+ * gap between turns.
  */
 export function resolveWorkingTimerDurableStartedAt(
   latestTurn: LatestTurnTiming | null,
 ): string | null {
+  if (latestTurn?.completedAt) {
+    return null;
+  }
   const requestedAt = latestTurn?.requestedAt ?? null;
   const startedAt = latestTurn?.startedAt ?? null;
   if (requestedAt && startedAt) {
@@ -382,6 +389,9 @@ export function resolveWorkingTimerDurableStartedAt(
  * store). `durableStartedAt` covers the case where sticky was never written
  * (e.g. cold reload mid-run) — never fall straight through to `nowIso` or the
  * counter restarts at 1s after switching threads.
+ *
+ * A newer `localDispatchStartedAt` always wins over a stale sticky from the
+ * previous turn — otherwise the next send stacks the prior turn plus idle time.
  */
 export function resolveStickyWorkingTimerStartedAt(input: {
   isWorking: boolean;
@@ -392,6 +402,12 @@ export function resolveStickyWorkingTimerStartedAt(input: {
 }): string | null {
   if (!input.isWorking) {
     return null;
+  }
+  if (
+    input.localDispatchStartedAt &&
+    (!input.previousAnchor || input.previousAnchor < input.localDispatchStartedAt)
+  ) {
+    return input.localDispatchStartedAt;
   }
   return (
     input.previousAnchor ?? input.localDispatchStartedAt ?? input.durableStartedAt ?? input.nowIso

@@ -12,10 +12,10 @@ describe("stickyWorkingTimer", () => {
     resetStickyWorkingTimersForTests();
   });
 
-  it("keeps the earliest anchor across remount-style writes", () => {
+  it("stores the resolved anchor so a new send can replace the previous turn", () => {
     writeStickyWorkingTimerForThread("env:thread-a", "2026-02-27T21:10:00.000Z");
-    writeStickyWorkingTimerForThread("env:thread-a", "2026-02-27T21:10:40.000Z");
-    expect(readStickyWorkingTimerForThread("env:thread-a")).toBe("2026-02-27T21:10:00.000Z");
+    writeStickyWorkingTimerForThread("env:thread-a", "2026-02-27T21:12:00.000Z");
+    expect(readStickyWorkingTimerForThread("env:thread-a")).toBe("2026-02-27T21:12:00.000Z");
   });
 
   it("isolates anchors by thread key and clears only the target", () => {

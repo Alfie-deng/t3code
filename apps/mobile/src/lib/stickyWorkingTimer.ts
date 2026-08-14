@@ -16,10 +16,6 @@ export function writeStickyWorkingTimerForThread(
     stickyWorkingTimerByThreadKey.delete(threadKey);
     return;
   }
-  const existing = stickyWorkingTimerByThreadKey.get(threadKey);
-  if (existing && existing <= startedAt) {
-    return;
-  }
   stickyWorkingTimerByThreadKey.set(threadKey, startedAt);
 }
 
