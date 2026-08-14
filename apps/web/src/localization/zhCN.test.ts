@@ -333,6 +333,22 @@ describe("T3 Code 简体中文工作流文案", () => {
     );
   });
 
+  it("translates right-panel empty-state cards and auto-settle settings", () => {
+    expect(translateZhCnUiText("Available for Git repositories.")).toBe("仅适用于 Git 仓库。");
+    expect(translateZhCnUiText("No pull request on this branch yet.")).toBe("此分支尚无拉取请求。");
+    expect(translateZhCnUiText("Follow subagents and workflows.")).toBe("跟踪子智能体与工作流。");
+    expect(translateZhCnUiText("Open this branch's pull request.")).toBe("打开此分支的拉取请求。");
+    expect(translateZhCnUiText("Only available in the desktop app.")).toBe("仅桌面应用可用。");
+    expect(translateZhCnUiText("Available when a project is open.")).toBe("打开项目后可用。");
+    expect(translateZhCnUiText("Available from a thread.")).toBe("在对话中可用。");
+    expect(translateZhCnUiText("Auto-settle merged threads")).toBe("合并后自动收起对话");
+    expect(
+      translateZhCnUiText(
+        "Settle a thread when its pull request merges. Closed pull requests still settle automatically.",
+      ),
+    ).toBe("拉取请求合并后收起对话。已关闭的拉取请求仍会自动收起。");
+  });
+
   it("translates keybinding conditions for display without changing expressions", () => {
     expect(translateZhCnUiText("terminalFocus")).toBe("终端已聚焦");
     expect(translateZhCnUiText("modelPickerOpen")).toBe("模型选择器已打开");
