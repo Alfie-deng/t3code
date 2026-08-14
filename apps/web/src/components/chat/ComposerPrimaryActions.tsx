@@ -83,14 +83,10 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
     environmentIdentificationMode === "artwork",
   );
 
-  const renderStopGenerationButton = (insidePendingAction: boolean) => (
+  const renderStopGenerationButton = () => (
     <button
       type="button"
-      className={cn(
-        "flex cursor-pointer items-center justify-center rounded-full bg-destructive/90 text-white shadow-xs shadow-destructive/24 inset-shadow-[0_1px_--theme(--color-white/16%)] transition-all duration-150 hover:bg-destructive hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none",
-        "relative left-0.5",
-        insidePendingAction ? "size-[30px] sm:size-[26px]" : "size-[30px] sm:h-[30px] sm:w-[30px]",
-      )}
+      className="flex size-7 cursor-pointer items-center justify-center rounded-full bg-foreground text-background shadow-xs shadow-foreground/20 inset-shadow-[0_1px_--theme(--color-white/16%)] transition-all duration-150 hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none sm:size-[26px]"
       {...pointerFocusProps}
       onClick={onInterrupt}
       aria-label="Stop generation"
@@ -98,7 +94,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
       <span
         aria-hidden="true"
         data-synara-icon="stop-square"
-        className="block size-2.5 rounded-[1px] bg-current"
+        className="block size-2 rounded-[1px] bg-current"
       />
     </button>
   );
@@ -106,7 +102,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
   if (pendingAction) {
     return (
       <div className={cn("flex items-center justify-end", compact ? "gap-1.5" : "gap-2")}>
-        {isRunning ? renderStopGenerationButton(true) : null}
+        {isRunning ? renderStopGenerationButton() : null}
         {pendingAction.questionIndex > 0 ? (
           compact ? (
             <Button
@@ -159,7 +155,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
   }
 
   if (isRunning) {
-    return renderStopGenerationButton(false);
+    return renderStopGenerationButton();
   }
 
   if (showPlanFollowUpPrompt) {
@@ -223,10 +219,10 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
     <button
       type="submit"
       className={cn(
-        "relative left-0.5 isolate flex h-[34px] w-[34px] items-center justify-center overflow-hidden rounded-full shadow-xs transition-all duration-150 enabled:cursor-pointer enabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none disabled:pointer-events-none disabled:opacity-30 disabled:shadow-none disabled:hover:scale-100 sm:h-[30px] sm:w-[30px]",
+        "isolate flex size-7 items-center justify-center overflow-hidden rounded-full shadow-xs transition-all duration-150 enabled:cursor-pointer enabled:inset-shadow-[0_1px_--theme(--color-white/16%)] hover:scale-105 active:inset-shadow-[0_1px_--theme(--color-black/8%)] active:shadow-none disabled:pointer-events-none disabled:opacity-30 disabled:shadow-none disabled:hover:scale-100 sm:size-7",
         stageBackdropVariant
           ? "bg-transparent text-white enabled:shadow-black/24 enabled:hover:brightness-110"
-          : "bg-message-action text-message-action-foreground enabled:shadow-message-action/24 hover:bg-message-action-hover",
+          : "bg-foreground text-background enabled:shadow-foreground/20 hover:bg-foreground/90",
       )}
       {...pointerFocusProps}
       disabled={
@@ -261,7 +257,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
         <span
           aria-hidden="true"
           data-synara-icon="arrow-up"
-          className="inline-block size-4.5 shrink-0 translate-y-px bg-current"
+          className="inline-block size-5 shrink-0 translate-y-px bg-current"
           style={{ WebkitMask: SYNARA_ARROW_UP_MASK, mask: SYNARA_ARROW_UP_MASK }}
         />
       )}

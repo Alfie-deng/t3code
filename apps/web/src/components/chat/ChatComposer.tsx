@@ -2908,12 +2908,12 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           <div
             ref={setComposerMenuAnchor}
             className={cn(
-              "relative px-3 pb-2 sm:px-4",
+              "relative px-3 sm:px-4",
               hasComposerHeader
-                ? "pt-2.5 sm:pt-3"
+                ? "pt-2.5 pb-2 sm:pt-3"
                 : PERSONAL_UI.compactComposer
-                  ? "pt-3"
-                  : "pt-3.5 sm:pt-4",
+                  ? "pt-3 pb-2"
+                  : "pt-3.5 pb-2 sm:pt-4",
               isComposerCollapsedMobile && "hidden",
             )}
           >
@@ -3169,7 +3169,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
               data-chat-composer-footer="true"
               data-chat-composer-footer-compact={isComposerFooterCompact ? "true" : "false"}
               className={cn(
-                "flex min-w-0 flex-nowrap items-center justify-between gap-2 overflow-visible px-3 sm:px-4",
+                "flex min-w-0 flex-nowrap items-center justify-between gap-2 overflow-visible pl-3 pr-1.5 sm:pl-4 sm:pr-1.5",
                 PERSONAL_UI.compactComposer ? "pb-1.5" : "pb-3 sm:pb-4",
                 pendingUserInputs.length > 0 && "pt-2",
                 isComposerFooterCompact ? "gap-1.5" : "gap-2 sm:gap-0",

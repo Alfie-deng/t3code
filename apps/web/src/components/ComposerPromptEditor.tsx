@@ -1762,7 +1762,7 @@ function ComposerPromptEditorInner({
                 draftHero
                   ? "max-h-[9.375rem] min-h-[2.5lh]"
                   : compact
-                    ? "max-h-[9.375rem] min-h-[2lh]"
+                    ? "max-h-[9.375rem] min-h-[3lh]"
                     : "max-h-50 min-h-17.5",
                 className,
               )}

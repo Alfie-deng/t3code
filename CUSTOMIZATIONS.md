@@ -37,14 +37,14 @@
 
 ## 1. 当前盘点（2026-08-14）
 
-| 字段                                            | 值                                                                                                                                        |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 私人 tip                                        | `07d8665e7`（合入上游 23 笔 + 桌面 Working 计时不叠上一回合）                                                                             |
-| 上次合入上游                                    | `07d8665e7`（合入上游 23 笔至 `7e01d33f0`：手机底栏设置/预览 favicon/Markdown/PR 面等）                                                   |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `7e01d33f0`（已与 `upstream/main` 对齐）                                                                                                  |
-| 官方 tip（已 fetch）                            | `7e01d33f0`                                                                                                                               |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-14 17:14 覆盖**：补右侧空态/自动收起漏翻；签名 Alfie Development）                        |
-| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.4`（**2026-08-14 16:35 重装**：底栏任务设置 + Markdown 修复；签名 D4SUBHNYW9） |
+| 字段                                            | 值                                                                                                                                             |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 私人 tip                                        | `07d8665e7`（合入上游 23 笔 + 桌面 Working 计时不叠上一回合）                                                                                  |
+| 上次合入上游                                    | `07d8665e7`（合入上游 23 笔至 `7e01d33f0`：手机底栏设置/预览 favicon/Markdown/PR 面等）                                                        |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `7e01d33f0`（已与 `upstream/main` 对齐）                                                                                                       |
+| 官方 tip（已 fetch）                            | `7e01d33f0`                                                                                                                                    |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-14 19:10 覆盖**：会话输入框加高到 3lh 对齐 Synara 空白；发送黑圆保留；签名 Alfie Development） |
+| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · `1.0.4`（**2026-08-14 16:35 重装**：底栏任务设置 + Markdown 修复；签名 D4SUBHNYW9）      |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
 
@@ -197,25 +197,25 @@ threadContentFontSizeStepPx: 1; // 仅线程正文域 +1px，不接全局字号�
 
 连带必须保留的实现细节：
 
-| 项                        | 位置 / 要点                                                                                                                                        |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 线程标题窄点击区          | `ChatHeader.tsx`：标题菜单按钮勿 `flex-1`；空白区可拖窗                                                                                            |
-| 已有对话占位              | 「提出后续修改」；仅草稿英雄态用新线程占位（`ChatComposer` 的 draft 分流，`b8a16de91`）                                                            |
-| 紧凑输入框                | `ComposerPromptEditor` `compact`：`2lh` 等；草稿态略增高且勿污染已有对话                                                                           |
-| 封面文案                  | `DraftHeroHeadline`：「想在〔项目名〕构建什么？」；无虚线下划线                                                                                    |
-| 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                                                                              |
-| 发送/停止外形             | 外圆各 -2px、右移 2px；箭头 mask 用 `public/synara-icons/arrow-up.svg`                                                                             |
-| 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                                                                                  |
-| 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                                                                           |
-| 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用                                                                  |
-| 藏侧栏检查更新            | `SidebarChrome`：`hideSidebarUpdateCheck`；本地覆盖安装无 auto-update feed，升级走 §6 重装                                                         |
-| 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning                                                                       |
-| 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件                                                                 |
-| 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）                                                               |
-| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                                                                         |
-| 发送后空态 Working 灯     | 一点发送就开始「正在运行」计秒；冷启动接着数到真 running，不归零；切线程回来也不从 1s 重数；**新发送必须从本次发送起算，不得叠上一回合与中间空闲** |
-| 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                                                                                |
-| 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                                                                                 |
+| 项                        | 位置 / 要点                                                                                                                                                                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 线程标题窄点击区          | `ChatHeader.tsx`：标题菜单按钮勿 `flex-1`；空白区可拖窗                                                                                                                                                                                              |
+| 已有对话占位              | 「提出后续修改」；仅草稿英雄态用新线程占位（`ChatComposer` 的 draft 分流，`b8a16de91`）                                                                                                                                                              |
+| 紧凑输入框                | 会话态对齐 Synara 视觉高度：编辑区 `min-h-[3lh]`（Synara 是 `2lh`@12px + `pt 0.75rem`/`pb 0.5rem`，T3 14px 下要用 3lh 才能留出同样空白）+ 外壳 `pt-3 pb-2`；草稿英雄仍略增高                                                                         |
+| 封面文案                  | `DraftHeroHeadline`：「想在〔项目名〕构建什么？」；无虚线下划线                                                                                                                                                                                      |
+| 英雄区上移                | `ChatView` 空白草稿 `-translate-y-16`                                                                                                                                                                                                                |
+| 发送/停止外形             | 复用 Synara 桌面端：发送 `size-7`（28px）、停止 `size-7 / sm:size-[26px]`、箭头 `size-5`、停止方块 `size-2`；填充用 `bg-foreground text-background`（不是靛蓝 message-action）；页脚右边距 `pr-1.5`；箭头 mask 用 `public/synara-icons/arrow-up.svg` |
+| 藏最终变更卡片            | `MessagesTimeline`：末尾 changed files 摘要卡不渲染；差异能力仍在                                                                                                                                                                                    |
+| 藏搜索栏 ⌘K 提示          | `LegacySidebar`：功能在，可见 Kbd 提示无                                                                                                                                                                                                             |
+| 藏侧栏 Pull Requests      | `SidebarChrome`：`hideSidebarPullRequests`；手输 `/pull-requests`、线程 PR 仍可用                                                                                                                                                                    |
+| 藏侧栏检查更新            | `SidebarChrome`：`hideSidebarUpdateCheck`；本地覆盖安装无 auto-update feed，升级走 §6 重装                                                                                                                                                           |
+| 提供商状态卡片            | `providerStatusBannerErrorsOnly`：只弹 error，藏「正在检查可用性」等 warning                                                                                                                                                                         |
+| 拖入 Markdown/文本        | `composerTextFileDrop`：拖入后把正文塞进输入框（带头文件名）；协议仍只支持图片附件                                                                                                                                                                   |
+| 聊天气泡 Markdown 表格    | 自动换行贴合气泡；字号从 `0.75rem` 提到 `sm`（`0.875rem` / `--thread-font-size-sm`）                                                                                                                                                                 |
+| 滚动胶囊 → 下箭头圆钮     | `ChatView`                                                                                                                                                                                                                                           |
+| 发送后空态 Working 灯     | 一点发送就开始「正在运行」计秒；冷启动接着数到真 running，不归零；切线程回来也不从 1s 重数；**新发送必须从本次发送起算，不得叠上一回合与中间空闲**                                                                                                   |
+| 用量中文单位与 Token 术语 | `packages/shared/src/usageFormat.ts` + Usage 页组件                                                                                                                                                                                                  |
+| 运行时错误汉化            | 共享词典集中；见 §3.1 与 inventory                                                                                                                                                                                                                   |
 
 ### 3.6 手机 UI / 视觉 / 交互钉
 

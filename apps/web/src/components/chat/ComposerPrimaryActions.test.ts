@@ -190,10 +190,19 @@ describe("ComposerPrimaryActions", () => {
     expect(renderPendingActions(false)).not.toContain('aria-label="Stop generation"');
   });
 
-  it("matches the small pending action size without changing the standalone size", () => {
-    expect(renderPendingActions(true)).toContain("size-8 sm:size-7");
-    expect(renderStandaloneStop()).toContain("size-8 sm:h-8 sm:w-8");
-    expect(renderStandaloneStop()).not.toContain("sm:size-7");
+  it("matches Synara desktop send/stop sizes in the composer footer", () => {
+    const pendingStop = renderPendingActions(true);
+    expect(pendingStop).toContain("size-7");
+    expect(pendingStop).toContain("sm:size-[26px]");
+
+    const standaloneStop = renderStandaloneStop();
+    expect(standaloneStop).toContain("size-7");
+    expect(standaloneStop).toContain("sm:size-[26px]");
+
+    const send = renderSendButton();
+    expect(send).toContain("size-7");
+    expect(send).toContain("sm:size-7");
+    expect(send).toContain("size-5");
   });
 
   it("renders stage artwork inside the send button when artwork identification is active", () => {
@@ -204,15 +213,15 @@ describe("ComposerPrimaryActions", () => {
 
     expect(markup).toContain("stage-nightly");
     expect(markup).toContain("bg-transparent text-white");
-    expect(markup).not.toContain("bg-message-action text-message-action-foreground");
+    expect(markup).not.toContain("bg-foreground text-background");
   });
 
-  it("keeps the normal send-button fill when artwork identification is inactive", () => {
+  it("keeps the Synara foreground send-button fill when artwork identification is inactive", () => {
     stageArtworkState.variant = "nightly";
 
     const markup = renderSendButton();
 
     expect(markup).not.toContain("stage-nightly");
-    expect(markup).toContain("bg-message-action text-message-action-foreground");
+    expect(markup).toContain("bg-foreground text-background");
   });
 });
