@@ -616,7 +616,10 @@ function AppSettingsSection() {
     if (updateInFlight.current) return;
     updateInFlight.current = true;
     try {
+      // The user asked for this restart by tapping the version row, so it may
+      // apply immediately instead of prompting.
       await runAppUpdateCheck({
+        applyMode: "immediate",
         onFailure: (message) => Alert.alert(t("Update failed"), message),
         onStateChange: setUpdateState,
       });
@@ -639,11 +642,15 @@ function AppSettingsSection() {
       ? "检查中…"
       : updateState === "downloading"
         ? "下载中…"
-        : updateState === "restarting"
-          ? "重启中…"
-          : updateState === "current"
-            ? "已是最新"
-            : null;
+        : // "ready" appears only when this check joined an in-flight background-mode
+          // check; that download installs at the next backgrounding.
+          updateState === "ready"
+          ? "更新已就绪"
+          : updateState === "restarting"
+            ? "重启中…"
+            : updateState === "current"
+              ? "已是最新"
+              : null;
 
   const versionRow = (
     <View className="flex-row items-center gap-4 p-4">

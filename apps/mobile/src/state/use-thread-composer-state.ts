@@ -215,12 +215,6 @@ export function useThreadComposerState() {
     ? (stickyWorkingStartedAt ?? localDispatchStartedAt ?? durableWorkingStartedAt)
     : null;
 
-  const activeThreadBusy =
-    (!!selectedThread &&
-      (selectedThread.session?.status === "running" ||
-        selectedThread.session?.status === "starting")) ||
-    localDispatch !== null;
-
   const onSendMessage = useCallback(async () => {
     if (!selectedThreadShell) {
       return null;
@@ -412,7 +406,6 @@ export function useThreadComposerState() {
     modelSelection,
     runtimeMode,
     interactionMode,
-    activeThreadBusy,
     onChangeDraftMessage,
     onPickDraftImages,
     onPasteIntoDraft,
