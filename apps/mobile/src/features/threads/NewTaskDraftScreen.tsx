@@ -852,13 +852,12 @@ export function NewTaskDraftScreen(props: {
     <View className="items-center gap-6 px-6" testID="new-task-hero">
       <View className="w-full items-center gap-1.5">
         <Text className="text-center text-2xl font-t3-medium tracking-tight text-foreground">
-          What should we build
+          {t("What should we build in")}
         </Text>
         <View className="max-w-full flex-row items-center justify-center">
-          <Text className="text-2xl font-t3-medium tracking-tight text-foreground">in </Text>
           <Pressable
-            accessibilityHint="Opens the project picker"
-            accessibilityLabel={`Change project from ${selectedProject.title}`}
+            accessibilityHint={t("Opens the project picker")}
+            accessibilityLabel={`${t("Change project from")} ${selectedProject.title}`}
             accessibilityRole="button"
             disabled={isIncomingShareTransferPending}
             onPress={chooseProject}
@@ -875,16 +874,19 @@ export function NewTaskDraftScreen(props: {
               {selectedProject.title}
             </Text>
           </Pressable>
-          <Text className="text-2xl font-t3-medium tracking-tight text-foreground">?</Text>
+          <Text className="text-2xl font-t3-medium tracking-tight text-foreground">
+            {" "}
+            {t("Build what?")}
+          </Text>
         </View>
       </View>
 
       <ComposerInlineControl
-        accessibilityLabel={`Environment: ${selectedEnvironmentLabel}`}
+        accessibilityLabel={`${t("Environment:")} ${selectedEnvironmentLabel}`}
         chevronDirection="right"
         disabled={isIncomingShareTransferPending}
         icon="desktopcomputer"
-        label={`on ${selectedEnvironmentLabel}`}
+        label={t(`on ${selectedEnvironmentLabel}`)}
         maxWidth={260}
         onPress={
           flow.environments.length > 1 ? () => openContextPicker("NewTaskEnvironment") : undefined
@@ -915,8 +917,10 @@ export function NewTaskDraftScreen(props: {
   const workspaceControls = (
     <View className="flex-row items-center gap-1 px-2">
       <ComposerInlineControl
-        accessibilityHint={`Switches to ${flow.workspaceMode === "local" ? "a new worktree" : "the current checkout"}`}
-        accessibilityLabel={workspaceLabel}
+        accessibilityHint={t(
+          `Switches to ${flow.workspaceMode === "local" ? "a new worktree" : "the current checkout"}`,
+        )}
+        accessibilityLabel={t(workspaceLabel)}
         disabled={isIncomingShareTransferPending}
         iconNode={
           <NewTaskWorkspaceIcon
@@ -924,18 +928,18 @@ export function NewTaskDraftScreen(props: {
             worktreePath={flow.selectedWorktreePath}
           />
         }
-        label={workspaceLabel}
+        label={t(workspaceLabel)}
         maxWidth={flow.workspaceMode === "local" ? 220 : 148}
         onPress={() => flow.setWorkspaceMode(flow.workspaceMode === "local" ? "worktree" : "local")}
         showChevron={false}
       />
 
       <ComposerInlineControl
-        accessibilityLabel={`${flow.workspaceMode === "worktree" ? "Base branch" : "Branch"}: ${selectedBranchLabel}`}
+        accessibilityLabel={`${t(flow.workspaceMode === "worktree" ? "Base branch" : "Branch")}: ${t(selectedBranchLabel)}`}
         chevronDirection="right"
         disabled={isIncomingShareTransferPending}
         icon="arrow.triangle.branch"
-        label={showBranchLoading ? t("Loading branches…") : selectedBranchLabel}
+        label={showBranchLoading ? t("Loading branches…") : t(selectedBranchLabel)}
         maxWidth={190}
         onPress={() => openContextPicker("NewTaskBranch")}
       />
@@ -978,27 +982,29 @@ export function NewTaskDraftScreen(props: {
             contentPaddingRight={8}
           >
             <ComposerToolbarButton
-              accessibilityLabel="Add attachment"
+              accessibilityLabel={t("Add attachment")}
               disabled={isIncomingShareTransferPending}
               icon="plus"
               onPress={() => void handlePickImages()}
               showChevron={false}
             />
             <ComposerInlineControl
-              accessibilityLabel="Model and reasoning settings"
+              accessibilityLabel={t("Model and reasoning settings")}
               disabled={isIncomingShareTransferPending}
               emphasized
               iconNode={
                 <ProviderIcon provider={flow.selectedModelOption?.providerDriver} size={16} />
               }
-              label={flow.selectedModelOption?.label ?? "Choose model"}
+              label={flow.selectedModelOption?.label ?? t("Choose model")}
               maxWidth={152}
               onPress={settingsSheetPresentation.open}
             />
             {flow.planModeEnabled ? (
               <ComposerInlineControl
-                accessibilityHint={`Switches to ${flow.interactionMode === "plan" ? "Build" : "Plan"} mode`}
-                accessibilityLabel={`Interaction mode: ${flow.interactionMode === "plan" ? "Plan" : "Build"}`}
+                accessibilityHint={t(
+                  `Switches to ${flow.interactionMode === "plan" ? "Build" : "Plan"} mode`,
+                )}
+                accessibilityLabel={`${t("Interaction mode")}: ${t(flow.interactionMode === "plan" ? "Plan" : "Build")}`}
                 disabled={isIncomingShareTransferPending}
                 emphasized
                 icon={
@@ -1006,7 +1012,7 @@ export function NewTaskDraftScreen(props: {
                     ? { ios: "list.bullet.clipboard", android: "auto_awesome" }
                     : { ios: "hammer", android: "construction" }
                 }
-                label={flow.interactionMode === "plan" ? "Plan" : "Build"}
+                label={t(flow.interactionMode === "plan" ? "Plan" : "Build")}
                 onPress={() =>
                   flow.setInteractionMode(flow.interactionMode === "plan" ? "default" : "plan")
                 }
@@ -1015,9 +1021,13 @@ export function NewTaskDraftScreen(props: {
             ) : null}
           </ComposerToolbarScroller>
           <ComposerToolbarButton
-            accessibilityLabel={
-              flow.submitting ? "Starting task" : environmentConnected ? "Start task" : "Queue task"
-            }
+            accessibilityLabel={t(
+              flow.submitting
+                ? "Starting task"
+                : environmentConnected
+                  ? "Start task"
+                  : "Queue task",
+            )}
             disabled={!canStart}
             icon={environmentConnected ? "arrow.up" : "tray.and.arrow.up"}
             onPress={() => void handleStart()}
@@ -1033,7 +1043,7 @@ export function NewTaskDraftScreen(props: {
     return (
       <View className="flex-1 bg-sheet" collapsable={false}>
         <NativeStackScreenOptions options={{ headerShown: false }} />
-        <AndroidScreenHeader title="New task" onBack={closeNewTask} />
+        <AndroidScreenHeader title={t("New task")} onBack={closeNewTask} />
         {heroViewport}
 
         <KeyboardStickyView

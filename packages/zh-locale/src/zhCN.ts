@@ -380,7 +380,6 @@ const UI_TEXT: Readonly<Record<string, string>> = {
   Archive: "归档",
   Archived: "已归档",
   Automations: "自动化工作流",
-  Back: "后退",
   Browse: "浏览",
   "Type path": "输入路径",
   "Cancel add project": "取消添加项目",
@@ -4444,6 +4443,24 @@ const MOBILE_APPEND_UI_TEXT: Readonly<Record<string, string>> = {
   "This terminal route needs an active thread and workspace.": "此终端路由需要活跃的对话和工作区。",
   "This thread does not have a workspace root yet, so there is nowhere to open a shell.":
     "此对话还没有工作区根目录，因此无处打开 Shell。",
+  "Choose branch": "选择分支",
+  "Choose model": "选择模型",
+  "Starting task": "正在开始任务",
+  "Start task": "开始任务",
+  "Queue task": "排队任务",
+  "Model and reasoning settings": "模型与思考设置",
+  "Add attachment": "添加附件",
+  "Base branch": "基础分支",
+  "Interaction mode": "交互模式",
+  "Switches to": "切换到",
+  "Opens the project picker": "打开项目选择器",
+  "Change project from": "将项目从",
+  "Switches to a new worktree": "切换到新工作树",
+  "Switches to the current checkout": "切换到当前检出",
+  "Switches to Build mode": "切换到构建模式",
+  "Switches to Plan mode": "切换到计划模式",
+  Plan: "计划",
+  Build: "构建",
 };
 
 const UI_TEXT_ALL: Readonly<Record<string, string>> = {
@@ -6280,6 +6297,16 @@ export function translateExact(value: string): string {
     if (exactFrom) return exactFrom;
     return `基于 ${fromBranchMatch[1]}`;
   }
+  const onEnvironmentMatch = /^on (.+)$/.exec(value);
+  if (onEnvironmentMatch) return `在 ${onEnvironmentMatch[1]} 上`;
+  const switchesToMatch = /^Switches to (.+)$/.exec(value);
+  if (switchesToMatch) {
+    const exactSwitchesTo = UI_TEXT_ALL[value];
+    if (exactSwitchesTo) return exactSwitchesTo;
+    return `切换到${switchesToMatch[1]}`;
+  }
+  const changeProjectFromMatch = /^Change project from (.+)$/.exec(value);
+  if (changeProjectFromMatch) return `将项目从${changeProjectFromMatch[1]}切换`;
   const projectPromptMatch = /^What should we do in (.+?)\s*\?$/.exec(value);
   if (projectPromptMatch) return `我们该在 ${projectPromptMatch[1]} 构建什么？`;
   const projectNameInMatch = /^Project name in (.+)$/i.exec(value);
