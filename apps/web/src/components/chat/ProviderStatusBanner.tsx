@@ -4,6 +4,7 @@ import { InfoIcon, XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { translateZhCnUiText } from "~/localization/zhCN";
 import { PERSONAL_UI } from "../../personalUi";
+import { Button } from "../ui/button";
 import { formatProviderDriverKindLabel } from "../../providerModels";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
@@ -91,14 +92,15 @@ export const ProviderStatusBanner = memo(function ProviderStatusBanner({
             </TooltipPopup>
           </Tooltip>
         </div>
-        <button
-          type="button"
+        <Button
           aria-label={dismissLabel}
-          className="absolute top-2 right-2 inline-flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-foreground/8 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute top-2 right-2 size-6 text-muted-foreground hover:text-foreground"
           onClick={onDismiss}
+          size="icon-xs"
+          variant="ghost"
         >
           <XIcon aria-hidden className="size-3.5" />
-        </button>
+        </Button>
       </div>
     </div>
   );
