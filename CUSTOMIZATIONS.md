@@ -35,16 +35,16 @@
 
 ---
 
-## 1. 当前盘点（2026-08-14）
+## 1. 当前盘点（2026-08-15）
 
-| 字段                                            | 值                                                                                                                                                                                    |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 私人 tip                                        | `617edff03`（合入上游 9 笔 + 会话输入框对齐 Synara）                                                                                                                                  |
-| 上次合入上游                                    | `617edff03`（合入上游 9 笔至 `1a6599437`：标题栏共享 inset/手机键盘建议/OTA 崩溃/桌面更新文案/Live Activity 等）                                                                      |
-| 合并基点 merge-base（相对当下 `upstream/main`） | `1a6599437`（已与 `upstream/main` 对齐）                                                                                                                                              |
-| 官方 tip（已 fetch）                            | `1a6599437`                                                                                                                                                                           |
-| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-15 00:22 覆盖**：合入上游 9 笔（标题栏 inset/手机键盘/OTA/桌面更新文案/Live Activity）；签名 Alfie Development）                      |
-| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · Release（**2026-08-15 01:40 重装**：新任务页汉化——封面「想在…构建什么？」/on 环境/当前检出/选择分支/选择模型；签名 D4SUBHNYW9） |
+| 字段                                            | 值                                                                                                                                                    |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 私人 tip                                        | `f77c04e12`（合入上游 130 笔 + 新任务页汉化）                                                                                                         |
+| 上次合入上游                                    | `ce5939c43`（合入上游 130 笔至 `57a299a78`：PR 面/OKLCH/移动用量仪表盘/终端轮询/SSH 本地编辑器等）                                                    |
+| 合并基点 merge-base（相对当下 `upstream/main`） | `57a299a78`（已与 `upstream/main` 对齐）                                                                                                              |
+| 官方 tip（已 fetch）                            | `57a299a78`                                                                                                                                           |
+| 桌面安装版                                      | `/Applications/T3 Code.app` `0.0.33`（**2026-08-15 10:27 覆盖**：合入上游 130 笔；签名 Alfie Development，verify 通过，asar 含 memmy bridge）         |
+| 手机安装版                                      | 真机 Alfie iPhone 17 Pro Max · `com.jetdeng.t3code` · Release（**2026-08-15 10:35 重装**：合入上游 130 笔 + 新任务页汉化；签名 D4SUBHNYW9，启动成功） |
 
 下次合完上游 / 覆盖安装后：立刻改本表 tip、上次合入、merge-base、两行安装版，并勾 §5。
 
@@ -56,6 +56,17 @@
 - 吃进：标题栏共享 inset 对齐、手机键盘建议保留、OTA 更新重启崩溃修复、桌面更新状态文案、Live Activity 发布停用时防陈旧、手机 git 进度 overlay 间距。
 - 冲突：无（工作区干净直合，无冲突文件）。
 - 安装：桌面 §6.1 覆盖（签名 Alfie Development `ADCEE876…`，verify 通过，asar 含 memmy/modelListPreferences）；手机 §6.2 真机重装（Release，Team D4SUBHNYW9，启动成功）。
+
+### 2026-08-15 合上游 130 笔 + 双端覆盖安装
+
+**合上游（130 笔 → `57a299a78`）**
+
+- 保住：本地中文定制（zhCN 翻译/字号/ghostty 滚动条/model picker fade 等）、draftHero、线程正文 +1px、隐藏变更卡片。
+- 吃进：PR 面板大改版、OKLCH 调色板、移动用量仪表盘、Open VSX 主题搜索、SSH 本地编辑器、终端轮询优化、button 组件化、`topbar-scroll-fade` 类名。
+- 冲突：9 文件（ChatView/ComposerPromptEditor/RightPanelTabs/MessagesTimeline.test/ProviderStatusBanner/KeybindingsSettings/ProviderModelsSection/UsagePage/index.css）——保留本地翻译与尺寸定制，吸收上游组件升级。
+- 同批修：MessagesTimeline.test 断言跟随本地翻译（"上下文已压缩"）；ProviderStatusBanner 合并残留重复 JSX。
+- 丢弃：旧 `cursor-home` stash（8-14 WIP，已过时，上游重写了 Cursor ACP 支持）。
+- 安装：桌面 §6.1 覆盖（签名 Alfie Development，verify 通过，asar 含 memmy bridge）；手机 §6.2 真机重装（Release，Team D4SUBHNYW9，启动成功，PID 18685）。
 
 ### 2026-08-14 合并纪要
 
